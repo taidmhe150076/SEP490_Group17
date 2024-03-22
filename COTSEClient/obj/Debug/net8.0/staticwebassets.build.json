@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "tpFxsTGHmr2SoxwMzPFrrWXldz/KjCuZpZDxVYW+JuA=",
+  "Hash": "orF6gA2Oq7avcnRv3jJIyglA06M0shaknqIqUO7U+EE=",
   "Source": "COTSEClient",
   "BasePath": "_content/COTSEClient",
   "Mode": "Default",
@@ -53,6 +53,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\COTSEClient.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\loginStyle.css",
+      "SourceId": "COTSEClient",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\",
+      "BasePath": "_content/COTSEClient",
+      "RelativePath": "css/loginStyle.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\loginStyle.css"
     },
     {
       "Identity": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\site.css",

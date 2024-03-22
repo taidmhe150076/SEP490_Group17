@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\COTSEClient.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\loginStyle.css",
+      "PackagePath": "staticwebassets\\css\\loginStyle.css"
+    },
+    {
       "Id": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },

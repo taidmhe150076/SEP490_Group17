@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Personal - Start Bootstrap Template</title>
+    <title>SEP490-G17-WebApplications</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Custom Google font-->
@@ -33,14 +33,28 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
                         <li class="nav-item"><a class="nav-link" href="/Home">Trang chủ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/NewWorkshop">Tạo mới workshop</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/AllWorkshop">Các workshop đã diễn ra</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Đăng xuất</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Login">Đăng xuất</a></li>
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Tùy chọn
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li class="dropdown-item"><a class="nav-link" href="/NewWorkshop">Tạo mới workshop</a></li>
+                                <li class="dropdown-item"><a class="nav-link" href="/AllWorkshop">Các workshop đã diễn ra</a></li>
+                                <li class="dropdown-item"><a class="nav-link" href="/AddData">Tạo dữ liệu hội thảo</a></li>
+                                <li class="dropdown-item"><a class="nav-link" href="/AllDepartments">Các phòng ban</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
