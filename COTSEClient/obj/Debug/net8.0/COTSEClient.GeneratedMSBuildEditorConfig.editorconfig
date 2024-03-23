@@ -30,6 +30,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxBZGREYXRhV29ya3Nob3AuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/devkw/OneDrive/Desktop/WS/SEP490_Group17/COTSEClient/Pages/Department/AddNewSeries.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxBZGROZXdTZXJpZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/devkw/OneDrive/Desktop/WS/SEP490_Group17/COTSEClient/Pages/Department/AddNewWorkshop.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxBZGROZXdXb3Jrc2hvcC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -38,8 +42,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxBbGxEZXBhcm1lbnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/devkw/OneDrive/Desktop/WS/SEP490_Group17/COTSEClient/Pages/Department/AllSeriesWorkshop.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxBbGxTZXJpZXNXb3Jrc2hvcC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/devkw/OneDrive/Desktop/WS/SEP490_Group17/COTSEClient/Pages/Department/AllWorkshop.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxBbGxXb3Jrc2hvcC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/devkw/OneDrive/Desktop/WS/SEP490_Group17/COTSEClient/Pages/Department/WorkshopDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGVwYXJ0bWVudFxXb3Jrc2hvcERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/devkw/OneDrive/Desktop/WS/SEP490_Group17/COTSEClient/Pages/Error.cshtml]
