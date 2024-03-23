@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("COTSEClient")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d6132ea3a20c9dee42c69e313f93e096dd26a711")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+daddb9a44e71940c4556eaf6c0961f91585f0b1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("COTSEClient")]
 [assembly: System.Reflection.AssemblyTitleAttribute("COTSEClient")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

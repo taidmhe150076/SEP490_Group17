@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "orF6gA2Oq7avcnRv3jJIyglA06M0shaknqIqUO7U+EE=",
+  "Hash": "eBY728eRpGJ8oBeVn8pQpSsjkP8PEZVoGV1VagyPJTI=",
   "Source": "COTSEClient",
   "BasePath": "_content/COTSEClient",
   "Mode": "Default",
@@ -72,6 +72,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\loginStyle.css"
+    },
+    {
+      "Identity": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\quizzStyle.css",
+      "SourceId": "COTSEClient",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\",
+      "BasePath": "_content/COTSEClient",
+      "RelativePath": "css/quizzStyle.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\quizzStyle.css"
     },
     {
       "Identity": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\site.css",
