@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets\\css\\loginStyle.css"
     },
     {
+      "Id": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\quizzStyle.css",
+      "PackagePath": "staticwebassets\\css\\quizzStyle.css"
+    },
+    {
       "Id": "C:\\Users\\devkw\\OneDrive\\Desktop\\WS\\SEP490_Group17\\COTSEClient\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },

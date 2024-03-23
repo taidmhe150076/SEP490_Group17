@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\APICOTSE.props" />
-</Project>

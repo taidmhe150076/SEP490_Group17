@@ -1,0 +1,97 @@
+﻿@page "/DoQuizz"
+@model COTSEClient.Pages.Quizzes.DoQuizzesModel
+@{
+}
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Câu hỏi về hội thảo</title>
+    <link href="~/css/quizzstyle.css" rel="stylesheet" />
+</head>
+
+<body oncontextmenu='return false' class='snippet-body'>
+    <div class="widget-wrap">
+        <h1>Câu hỏi hiểu biết về chủ để hội thảo</h1>
+        <div id="quizWrap">
+            <div id="quizQn"> Docker ra đời năm nào?</div>
+            <div id="quizAns">
+                <input type="radio" name="quiz" id="quizo0">
+                <label for="quizo0">2000</label>
+
+                <input type="radio" name="quiz" id="quizo1">
+                <label for="quizo1">2001</label>
+
+                <input type="radio" name="quiz" id="quizo2">
+                <label for="quizo2">2002</label>
+
+                <input type="radio" name="quiz" id="quizo3">
+                <label for="quizo3">2003</label>
+            </div>
+            <div id="quizQn"> Docker ra đời năm nào?</div>
+            <div id="quizAns">
+                <input type="radio" name="quiz" id="quizo0">
+                <label for="quizo0">2000</label>
+
+                <input type="radio" name="quiz" id="quizo1">
+                <label for="quizo1">2001</label>
+
+                <input type="radio" name="quiz" id="quizo2">
+                <label for="quizo2">2002</label>
+
+                <input type="radio" name="quiz" id="quizo3">
+                <label for="quizo3">2003</label>
+            </div>
+            <div id="quizQn"> Docker ra đời năm nào?</div>
+            <div id="quizAns">
+                <input type="radio" name="quiz" id="quizo0">
+                <label for="quizo0">2000</label>
+
+                <input type="radio" name="quiz" id="quizo1">
+                <label for="quizo1">2001</label>
+
+                <input type="radio" name="quiz" id="quizo2">
+                <label for="quizo2">2002</label>
+
+                <input type="radio" name="quiz" id="quizo3">
+                <label for="quizo3">2003</label>
+            </div>
+            <div id="quizQn"> Docker ra đời năm nào?</div>
+            <div id="quizAns">
+                <input type="radio" name="quiz" id="quizo0">
+                <label for="quizo0">2000</label>
+
+                <input type="radio" name="quiz" id="quizo1">
+                <label for="quizo1">2001</label>
+
+                <input type="radio" name="quiz" id="quizo2">
+                <label for="quizo2">2002</label>
+
+                <input type="radio" name="quiz" id="quizo3">
+                <label for="quizo3">2003</label>
+            </div>
+        </div>
+        <button id="submitButton" class="submit-button">Gửi câu trả lời</button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const labels = document.querySelectorAll('#quizAns label');
+
+            labels.forEach(function (label) {
+                label.addEventListener('click', function () {
+                    labels.forEach(function (el) {
+                        el.classList.remove('clicked');
+                    });
+                    this.classList.add('clicked');
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
