@@ -1,0 +1,15 @@
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\bin\Debug\net8.0\DataAccess.deps.json
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\bin\Debug\net8.0\DataAccess.runtimeconfig.json
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\bin\Debug\net8.0\DataAccess.dll
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\bin\Debug\net8.0\DataAccess.pdb
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.csproj.AssemblyReference.cache
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.AssemblyInfoInputs.cache
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.AssemblyInfo.cs
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.sourcelink.json
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.dll
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\refint\DataAccess.dll
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.pdb
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\DataAccess.genruntimeconfig.cache
+C:\Users\devkw\OneDrive\Desktop\WS\SEP490_Group17\DataAccess\obj\Debug\net8.0\ref\DataAccess.dll
