@@ -15,13 +15,17 @@ public partial class Workshop
 
     public int? WorkshopSeriesId { get; set; }
 
-    public int StatusId { get; set; }
+    public int? StatusId { get; set; }
 
-    public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();
+    public string? KeyPresenter { get; set; }
+
+    public int? Index { get; set; }
 
     public virtual User? Presenter { get; set; }
 
-    public virtual StatusWorkShop Status { get; set; } = null!;
+    public virtual StatusWorkShop? Status { get; set; }
+
+    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
     public virtual ICollection<WorkShopSurveyQuestion> WorkShopSurveyQuestions { get; set; } = new List<WorkShopSurveyQuestion>();
 

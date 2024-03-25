@@ -3,15 +3,17 @@ using System.Collections.Generic;
 
 namespace DataAccess.Models;
 
-public partial class AnswerQuestion
+public partial class TestQuestion
 {
     public int Id { get; set; }
 
     public int QuestionId { get; set; }
 
-    public string AnswerText { get; set; } = null!;
+    public int TestId { get; set; }
 
-    public bool IsCorrectAnswer { get; set; }
+    public DateTime? Date { get; set; }
 
     public virtual WorkshopQuestion Question { get; set; } = null!;
+
+    public virtual Test Test { get; set; } = null!;
 }

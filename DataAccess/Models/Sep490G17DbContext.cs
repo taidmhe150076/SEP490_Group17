@@ -17,21 +17,29 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<Account> Accounts { get; set; }
 
+    public virtual DbSet<AnswerParticipant> AnswerParticipants { get; set; }
+
     public virtual DbSet<AnswerQuestion> AnswerQuestions { get; set; }
 
     public virtual DbSet<AnswerSurvey> AnswerSurveys { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
 
+    public virtual DbSet<ParticiPantScore> ParticiPantScores { get; set; }
+
     public virtual DbSet<Participant> Participants { get; set; }
 
-    public virtual DbSet<QuestionParticipantsDetail> QuestionParticipantsDetails { get; set; }
+    public virtual DbSet<ParticipantAnswer> ParticipantAnswers { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<StatusWorkShop> StatusWorkShops { get; set; }
 
     public virtual DbSet<SurveyAnswerDetail> SurveyAnswerDetails { get; set; }
+
+    public virtual DbSet<Test> Tests { get; set; }
+
+    public virtual DbSet<TestQuestion> TestQuestions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -48,7 +56,7 @@ public partial class Sep490G17DbContext : DbContext
     public virtual DbSet<WorkshopSeries> WorkshopSeries { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=DESKTOP-LJLCRRI;database=SEP490_G17_DB;uid=sa;pwd=123;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -66,6 +74,31 @@ public partial class Sep490G17DbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.ValidDate).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<AnswerParticipant>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId });
+
+            entity.Property(e => e.QuestionId).HasColumnName("Question_id");
+            entity.Property(e => e.Answer).HasMaxLength(50);
+            entity.Property(e => e.SubmissionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("submission_time");
+
+            entity.HasOne(d => d.Participant).WithMany(p => p.AnswerParticipants)
+                .HasForeignKey(d => d.ParticipantId)
+                .HasConstraintName("FK_AnswerParticipants_ParticipantAnswers");
+
+            entity.HasOne(d => d.Question).WithMany(p => p.AnswerParticipants)
+                .HasForeignKey(d => d.QuestionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AnswerParticipants_WorkshopQuestion");
+
+            entity.HasOne(d => d.Test).WithMany(p => p.AnswerParticipants)
+                .HasForeignKey(d => d.TestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AnswerParticipants_Test");
         });
 
         modelBuilder.Entity<AnswerQuestion>(entity =>
@@ -104,35 +137,37 @@ public partial class Sep490G17DbContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<ParticiPantScore>(entity =>
+        {
+            entity.HasKey(e => new { e.TestId, e.ParticipantId });
+
+            entity.HasOne(d => d.Participant).WithMany(p => p.ParticiPantScores)
+                .HasForeignKey(d => d.ParticipantId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ParticiPantScores_ParticipantAnswers");
+
+            entity.HasOne(d => d.Test).WithMany(p => p.ParticiPantScores)
+                .HasForeignKey(d => d.TestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ParticiPantScores_Test");
+        });
+
         modelBuilder.Entity<Participant>(entity =>
         {
             entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.FavoriteTopics).HasMaxLength(255);
             entity.Property(e => e.FullName).HasMaxLength(50);
+            entity.Property(e => e.Major).HasMaxLength(50);
+            entity.Property(e => e.TimeStamp).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Workshop).WithMany(p => p.Participants)
-                .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK_Participants_Workshop");
+            entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.Participants)
+                .HasForeignKey(d => d.WorkshopSeriesId)
+                .HasConstraintName("FK_Participants_WorkshopSeries");
         });
 
-        modelBuilder.Entity<QuestionParticipantsDetail>(entity =>
+        modelBuilder.Entity<ParticipantAnswer>(entity =>
         {
-            entity.HasKey(e => new { e.Id, e.QuestionId, e.AnswerId }).HasName("PK_QuestionParticipants_Details_1");
-
-            entity.ToTable("QuestionParticipants_Details");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Date).HasColumnType("datetime");
             entity.Property(e => e.ParticipantsEmail).HasMaxLength(50);
-
-            entity.HasOne(d => d.Answer).WithMany(p => p.QuestionParticipantsDetails)
-                .HasForeignKey(d => d.AnswerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_QuestionParticipants_Details_AnswerQuestion");
-
-            entity.HasOne(d => d.Question).WithMany(p => p.QuestionParticipantsDetails)
-                .HasForeignKey(d => d.QuestionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_QuestionParticipants_Details_WorkshopQuestion");
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -175,6 +210,41 @@ public partial class Sep490G17DbContext : DbContext
                 .HasForeignKey(d => d.WorkShopSurveyQuestionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SurveyAnswerDetail_WorkShopSurveyQuestion");
+        });
+
+        modelBuilder.Entity<Test>(entity =>
+        {
+            entity.ToTable("Test");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.DateStart).HasColumnType("datetime");
+            entity.Property(e => e.ExpiredTime).HasColumnType("datetime");
+            entity.Property(e => e.TestName).HasMaxLength(50);
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.Tests)
+                .HasForeignKey(d => d.WorkshopId)
+                .HasConstraintName("FK_Test_Workshop");
+        });
+
+        modelBuilder.Entity<TestQuestion>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId });
+
+            entity.ToTable("TestQuestion");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.QuestionId).HasColumnName("Question_id");
+            entity.Property(e => e.Date).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Question).WithMany(p => p.TestQuestions)
+                .HasForeignKey(d => d.QuestionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TestQuestion_WorkshopQuestion");
+
+            entity.HasOne(d => d.Test).WithMany(p => p.TestQuestions)
+                .HasForeignKey(d => d.TestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TestQuestion_Test");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -259,6 +329,7 @@ public partial class Sep490G17DbContext : DbContext
             entity.ToTable("Workshop");
 
             entity.Property(e => e.DatePresent).HasColumnType("datetime");
+            entity.Property(e => e.KeyPresenter).HasMaxLength(50);
             entity.Property(e => e.WorkshopName)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -269,7 +340,6 @@ public partial class Sep490G17DbContext : DbContext
 
             entity.HasOne(d => d.Status).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.StatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Workshop_StatusWorkShop");
 
             entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.Workshops)
@@ -282,10 +352,6 @@ public partial class Sep490G17DbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Workshop__3213E83FF3408217");
 
             entity.ToTable("WorkshopQuestion");
-
-            entity.Property(e => e.QuestionText)
-                .HasMaxLength(255)
-                .IsUnicode(false);
 
             entity.HasOne(d => d.Workshop).WithMany(p => p.WorkshopQuestions)
                 .HasForeignKey(d => d.WorkshopId)

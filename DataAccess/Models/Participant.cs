@@ -11,7 +11,13 @@ public partial class Participant
 
     public string Email { get; set; } = null!;
 
-    public int? WorkshopId { get; set; }
+    public int? WorkshopSeriesId { get; set; }
 
-    public virtual Workshop? Workshop { get; set; }
+    public DateTime? TimeStamp { get; set; }
+
+    public string? Major { get; set; }
+
+    public string? FavoriteTopics { get; set; }
+
+    public virtual WorkshopSeries? WorkshopSeries { get; set; }
 }

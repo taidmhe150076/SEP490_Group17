@@ -17,5 +17,7 @@ public partial class WorkshopSeries
 
     public virtual Department? Department { get; set; }
 
+    public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();
+
     public virtual ICollection<Workshop> Workshops { get; set; } = new List<Workshop>();
 }
