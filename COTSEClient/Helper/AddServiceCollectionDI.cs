@@ -8,6 +8,7 @@ namespace COTSEClient.Helper
         public static void AddScopeServiceCollectionDI(IServiceCollection services)
         {
             services.AddScoped<IRepositoryParticipants, RepositoryParticipants>();
+            services.AddScoped<IRepositoryWorkshops, RepositoryWorkshops>();
         }
     }
 }
