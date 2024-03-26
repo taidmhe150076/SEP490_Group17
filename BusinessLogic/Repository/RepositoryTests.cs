@@ -51,7 +51,7 @@ namespace BusinessLogic.Repository
         {
             try
             {
-                _context.Update(test);
+                _context.Tests.Update(test);
                 return _context.SaveChanges();
             }
             catch (Exception ex)
