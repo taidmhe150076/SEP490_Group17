@@ -20,7 +20,7 @@ namespace COTSEClient.Pages.Presenters
             _repositoryTests = repositoryTests;
             _repositoryParticipants = repositoryParticipants;
         }
-
+        static string? invitationCode;
         [BindProperty]
         public int? WorkshopId { get; set; }
         public string? WorkshopName { get; set; }
@@ -36,6 +36,7 @@ namespace COTSEClient.Pages.Presenters
                 {
                     return RedirectToPage("EnterKey");
                 }
+                invitationCode = key;
                 var findWorkshopByKey = _repositoryWorkshops.GetWorkshopByKeyPresenter(key);
                 WorkshopId = findWorkshopByKey?.Id;
                 WorkshopName = findWorkshopByKey?.WorkshopName;
@@ -66,7 +67,7 @@ namespace COTSEClient.Pages.Presenters
                     var genQR = Helper.HelperMethods.GenerateQRCode(url);
                     newTest.QrTest = genQR;
                     var resultUpdate = _repositoryTests.UpdateTest(newTest);
-                    return RedirectToPage("PresenterWorkshop");
+                    return RedirectToPage("PresenterWorkshop", new { key = invitationCode });
                 }
                 return BadRequest("Can't insert Test");
             }
