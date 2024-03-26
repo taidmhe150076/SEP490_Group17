@@ -7,11 +7,15 @@ namespace COTSEClient.Pages.Presenters
 {
     public class PresenterWorkshopModel : PageModel
     {
-        public readonly IRepositoryWorkshops _repositoryWorkshops;
-        public readonly IRepositoryTests _repositoryTests;
-        public readonly IRepositoryParticipants _repositoryParticipants;
-        public PresenterWorkshopModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryTests repositoryTests, IRepositoryParticipants repositoryParticipants)
+        private readonly IConfiguration _configuration;
+        private string? baseUrl;
+        private readonly IRepositoryWorkshops _repositoryWorkshops;
+        private readonly IRepositoryTests _repositoryTests;
+        private readonly IRepositoryParticipants _repositoryParticipants;
+        public PresenterWorkshopModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryTests repositoryTests, IRepositoryParticipants repositoryParticipants,IConfiguration configuration)
         {
+            _configuration = configuration;
+            baseUrl = _configuration["BaseURL"];
             _repositoryWorkshops = repositoryWorkshops;
             _repositoryTests = repositoryTests;
             _repositoryParticipants = repositoryParticipants;
@@ -38,9 +42,9 @@ namespace COTSEClient.Pages.Presenters
                 TestList = _repositoryTests.GetTestByWorkshopId(WorkshopId);
                 return Page();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return BadRequest(ex.Message);
             }
         }
 
@@ -58,14 +62,15 @@ namespace COTSEClient.Pages.Presenters
                 var result = _repositoryTests.InsertTest(newTest);
                 if (result > 0)
                 {
-                    string url = "https://localhost:7149/workshopTest/" + "QuestionTest?testId=" + newTest.Id + "&&workShopId=" + WorkshopId;
+                    string url = baseUrl +"workshopTest/" + "QuestionTest?testId=" + newTest.Id + "&&workShopId=" + WorkshopId;
                     QRTest = Helper.HelperMethods.GenerateQRCode(url);
+                    return Page();
                 }
-                return Page();
+                return BadRequest("Can't insert Test");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return BadRequest(ex.Message);
             }
         }
     }
