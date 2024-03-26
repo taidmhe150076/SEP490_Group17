@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.IRepository;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,14 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
-
         public List<Workshop> GetWorkshops()
+
         {
             return _context.Workshops.ToList();
+        }
+        public Workshop GetWorkshopByKeyPresenter(string invitationCode)
+        {
+            return _context.Workshops.FirstOrDefault(x => x.KeyPresenter.Equals(invitationCode.Trim()));
         }
     }
 }

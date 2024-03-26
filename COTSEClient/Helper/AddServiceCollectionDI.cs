@@ -9,6 +9,7 @@ namespace COTSEClient.Helper
         {
             services.AddScoped<IRepositoryParticipants, RepositoryParticipants>();
             services.AddScoped<IRepositoryWorkshops, RepositoryWorkshops>();
+            services.AddScoped<IRepositoryTests, RepositoryTests>();
         }
     }
 }

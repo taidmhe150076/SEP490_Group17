@@ -10,5 +10,6 @@ namespace BusinessLogic.IRepository
     public interface IRepositoryWorkshops
     {
         public List<Workshop> GetWorkshops();
+        public Workshop GetWorkshopByKeyPresenter(string invitationCode);
     }
 }

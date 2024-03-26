@@ -15,6 +15,19 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
+
+        public List<Participant> GetParticipants()
+        {
+            try
+            {
+                return _context.Participants.OrderBy(x => x.TimeStamp).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public List<Participant> GetParticipantsOrderBy()
         {
             return _context.Participants.OrderBy(x => x.TimeStamp).ToList();
