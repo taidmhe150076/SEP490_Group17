@@ -46,5 +46,18 @@ namespace BusinessLogic.Repository
                 throw;
             }
         }
+
+        public int UpdateTest(Test test)
+        {
+            try
+            {
+                _context.Update(test);
+                return _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

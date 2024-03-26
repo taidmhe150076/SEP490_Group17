@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Quizzes
@@ -7,6 +6,7 @@ namespace COTSEClient.Pages.Quizzes
     {
         public void OnGet()
         {
+
         }
     }
 }

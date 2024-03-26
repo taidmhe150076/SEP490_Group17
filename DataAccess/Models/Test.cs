@@ -15,6 +15,8 @@ public partial class Test
 
     public DateTime? ExpiredTime { get; set; }
 
+    public string? QrTest { get; set; }
+
     public virtual ICollection<AnswerParticipant> AnswerParticipants { get; set; } = new List<AnswerParticipant>();
 
     public virtual ICollection<ParticiPantScore> ParticiPantScores { get; set; } = new List<ParticiPantScore>();
