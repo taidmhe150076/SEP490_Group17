@@ -1,0 +1,85 @@
+﻿@page
+@model COTSEClient.Pages.Presenters.PresenterWorkshopModel
+@{
+}
+<html lang="en">
+<body class="d-flex flex-column h-100 bg-light">
+    <main class="flex-shrink-0">
+        <div class="container px-5 my-5">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">@Model.WorkshopName</span></h1>
+            </div>
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-11 col-xl-9 col-xxl-8">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="questionExcel" class="form-label">Nhập câu hỏi từ Excel:</label>
+                                <input type="file" id="questionExcel" name="questionExcel" class="form-control" accept=".xlsx, .xls" />
+                                <label for="questionExcel" class="form-label">Nhập URL Slide</label>
+                                <input type="text" name="questionExcel" class="form-control" placeholder="URL Slide" />
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary me-3">Gửi</button>
+                            </div>
+                        </form>
+                        <form method="post" asp-page-handler="CreateTest">
+                            <div class="mb-3">
+                                <label for="workshopName" class="form-label">TestName</label>
+                                <input type="text" name="testName" /><br />
+                                <label class="form-label">ExpiredTime</label>
+                                <input type="date" name="expiredTime" />
+                                <input type="hidden" asp-for="@Model.WorkshopId" />
+                            </div>
+                            <button type="submit" class="btn btn-primary me-3">CreateTest</button>
+                        </form>
+                        @if (Model.QRTest != null)
+                        {
+                            <img id="qrCodeImage" src="@Html.Raw(Model.QRTest)" alt="QR Code">
+                            <div id="countdown"></div>
+                            <script>
+                                var timeleft = 60; // Thời gian đếm ngược (số giây)
+                                var downloadTimer = setInterval(function () {
+                                    document.getElementById("countdown").innerHTML = "Thời gian còn lại: " + timeleft + " giây";
+                                    timeleft -= 1;
+                                    if (timeleft <= 0) {
+                                        clearInterval(downloadTimer);
+                                        document.getElementById("qrCodeImage").style.display = "none";
+                                        document.getElementById("countdown").innerHTML = "Thời gian đã hết";
+                                    }
+                                }, 1000);
+                            </script>
+                        }
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">TestName</th>
+                                <th scope="col">WorkshopName</th>
+                                <th scope="col">DateStart</th>
+                                <th scope="col">ExpiredTime</th>
+                                <th scope="col">QR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TestList)
+                            {
+                                <tr>
+                                    <td>@item.TestName</td>
+                                    <td>@item.Workshop?.WorkshopName</td>
+                                    <td>@item.DateStart</td>
+                                    <td>@item.ExpiredTime</td>
+                                    <td></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>
