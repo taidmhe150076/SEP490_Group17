@@ -63,8 +63,10 @@ namespace COTSEClient.Pages.Presenters
                 if (result > 0)
                 {
                     string url = baseUrl + "Presenters/DoQuizz/" + "QuestionTest?testId=" + newTest.Id + "&&workShopId=" + WorkshopId;
-                    QRTest = Helper.HelperMethods.GenerateQRCode(url);
-                    return Page();
+                    var genQR = Helper.HelperMethods.GenerateQRCode(url);
+                    newTest.QrTest = genQR;
+                    var resultUpdate = _repositoryTests.UpdateTest(newTest);
+                    return RedirectToPage("PresenterWorkshop");
                 }
                 return BadRequest("Can't insert Test");
             }
