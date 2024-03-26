@@ -4,28 +4,76 @@
     Layout = "_Layout";
 }
 <!DOCTYPE html>
-
 <html lang="en">
+<head>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
 <body class="d-flex flex-column h-100 bg-light">
     <main class="flex-shrink-0">
+        <!-- Page Content-->
         <div class="container px-5 my-5">
-            <div class="col-lg-11 col-xl-9 col-xxl-8">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h2 class="text-primary fw-bolder mb-0">Tạo chuỗi hội thảo mới</h2>
-                    <form method="post">
-                        <div class="form-group">
-                            <label for="leaderName">Tên chuỗi hội thảo:</label>
-                            <input type="text" class="form-control" id="leaderName" name="leaderName" placeholder="Nhập tên chuỗi hội thảo">
-                        </div>
-                        <div class="form-group">
-                            <label for="startDate">Ngày bắt đầu:</label>
-                            <input type="date" class="form-control" id="startDate" name="startDate">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Lưu</button>
-                    </form>
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Tạo mới hội thảo</span></h1>
+            </div>
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-11 col-xl-9 col-xxl-8">
+                    <!-- Experience Section-->
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <form asp-page-handler="AddNewSeries" method="post" id="importForm" enctype="multipart/form-data">
+                            <input type="file" id="workshopFile" accept=".xlsx" style="display: none;" asp-for="Upload">
+                            <label for="workshopFile" class="btn btn-primary px-4 py-3">
+                                <div class="d-inline-block bi bi-upload me-2"></div>
+                                Import Data Excel
+                            </label>
+                        </form>
+                    </div>
+
+                    <!-- Display imported workshop data -->
+                    @if (Model.WorkShopList != null)
+                    {
+                        <form asp-page="AddNewSeries" method="post">
+                            <input type="hidden" asp-for="@Model.SeriesWorkshopId" />
+                            <div class="table-responsive">
+                                <h2>Dữ liệu From Excel </h2>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Ngày diễn ra</th>
+                                            <th scope="col">Tiêu đề</th>
+                                            <th scope="col">Mail Presenter</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (var i = 0; i < Model.WorkShopList.Count; i++)
+                                        {
+                                            var item = Model.WorkShopList[i];
+                                            <input type="hidden" asp-for="@Model.OrtherWorkShopList[i].WorkshopName" value="@Model.WorkShopList[i].WorkshopName" />
+                                            <input type="hidden" asp-for="@Model.OrtherWorkShopList[i].KeyPresenter" value="@Model.WorkShopList[i].KeyPresenter" />
+                                            <input type="hidden" asp-for="@Model.OrtherWorkShopList[i].WorkshopSeriesId" value="@Model.WorkShopList[i].WorkshopSeriesId" />
+                                            <tr>
+                                                <td>
+                                                    <input type="date" asp-for="@Model.OrtherWorkShopList[i].DatePresent" required />
+                                                </td>
+                                                <td>@item.WorkshopName</td>
+                                                <td>
+                                                    <input type="email" asp-for="@Model.OrtherWorkShopList[i].Email" placeholder="Enter Mail" required />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <input class="btn btn-primary px-4 py-3" type="submit" value="Lưu" />
+                            </div>
+                        </form>
+                    }
                 </div>
             </div>
         </div>
     </main>
+    <script>
+        document.getElementById('workshopFile').addEventListener('change', function () {
+            document.getElementById('importForm').submit();
+        });
+    </script>
 </body>
 </html>

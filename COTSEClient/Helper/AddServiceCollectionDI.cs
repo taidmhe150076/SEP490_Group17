@@ -13,6 +13,7 @@ namespace COTSEClient.Helper
             services.AddScoped<IRepositoryWorkshopQuestions, RepositoryWorkshopQuestions>();
             services.AddScoped<IRepositoryParticipantAnswer, RepositoryParticipantAnswer>();
             services.AddScoped<IRepositoryParticiPantScore, RepositoryParticiPantScore>();
+            services.AddScoped<IRepositoryWorkshopSeries, RepositoryWorkshopSeries>();
         }
     }
 }

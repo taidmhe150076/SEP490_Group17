@@ -49,5 +49,55 @@ namespace BusinessLogic.Repository
                 throw;
             }
         }
+
+        public List<Workshop> GetWorkshopBySeriesWorkshopId(int? seriesWorkshopId)
+        {
+            try
+            {
+                return _context.Workshops.Where(x => x.WorkshopSeriesId == seriesWorkshopId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public Workshop GetWorkshopBySeriesWorkshopIdAndWorkshopName(int? seriesWorkshopId, string workshopName)
+        {
+            try
+            {
+                return _context.Workshops.FirstOrDefault(x => x.WorkshopSeriesId == seriesWorkshopId && x.WorkshopName.Equals(workshopName));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public int UpdateDatePresent(Workshop workshop)
+        {
+            try
+            {
+                _context.Workshops.Update(workshop);
+                return _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public int InsertWorkshop(Workshop workshop)
+        {
+            try
+            {
+                _context.Workshops.Add(workshop);
+                return _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
