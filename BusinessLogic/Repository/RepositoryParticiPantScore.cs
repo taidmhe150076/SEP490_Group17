@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.IRepository;
+using COTSEClient.Models;
 using DataAccess.Models;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
-
         public int InsertParticiPantScore(ParticiPantScore particiPantScore)
         {
             try

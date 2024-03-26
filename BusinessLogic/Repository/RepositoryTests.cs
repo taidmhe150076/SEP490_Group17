@@ -34,6 +34,18 @@ namespace BusinessLogic.Repository
             
         }
 
+        public List<Test> GetScoresTestsByWorkshopId(int? workshopId)
+        {
+            try
+            {
+                return _context.Tests.Include(x => x.ParticiPantScores).ThenInclude(x => x.Participant).Where(x => x.WorkshopId == workshopId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public int InsertTest(Test test)
         {
             try

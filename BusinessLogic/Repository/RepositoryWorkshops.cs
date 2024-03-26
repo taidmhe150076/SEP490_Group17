@@ -18,13 +18,36 @@ namespace BusinessLogic.Repository
             _context = context;
         }
         public List<Workshop> GetWorkshops()
-
         {
             return _context.Workshops.ToList();
         }
         public Workshop GetWorkshopByKeyPresenter(string invitationCode)
         {
             return _context.Workshops.FirstOrDefault(x => x.KeyPresenter.Equals(invitationCode.Trim()));
+        }
+
+        public List<Workshop> GetParticiPantScoresByWorkshopId(int? workshopId)
+        {
+            try
+            {
+                return _context.Workshops.Include(x => x.Tests).ThenInclude(x => x.ParticiPantScores).Where(x => x.Id == workshopId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Workshop GetWorkshopByWorkshopId(int? workshopId)
+        {
+            try
+            {
+                return _context.Workshops.FirstOrDefault(x => x.Id == workshopId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

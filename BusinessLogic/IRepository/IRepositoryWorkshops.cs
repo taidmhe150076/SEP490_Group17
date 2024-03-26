@@ -11,5 +11,8 @@ namespace BusinessLogic.IRepository
     {
         public List<Workshop> GetWorkshops();
         public Workshop GetWorkshopByKeyPresenter(string invitationCode);
+        public List<Workshop> GetParticiPantScoresByWorkshopId(int? workshopId);
+        public Workshop GetWorkshopByWorkshopId(int? workshopId);
+
     }
 }
