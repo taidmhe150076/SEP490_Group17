@@ -21,17 +21,23 @@
             <div class="right">
                 <div class="content">
                     <h2>Đăng nhập</h2>
-                    <form method="post" onsubmit="return false;">
+                    <form method="post" >
                         <div class="form-outline mb-4">
-                            <input type="email" id="email" class="form-control form-control-lg"
+                            <input type="email" id="email" name="username" class="form-control form-control-lg"
                                    placeholder="Enter a valid email address" />
                         </div>
 
                         <div class="form-outline mb-3">
-                            <input type="password" id="password" class="form-control form-control-lg"
+                            <input type="password" id="password" name="password" class="form-control form-control-lg"
                                    placeholder="Enter password" />
                         </div>
                         <button id="login" type="submit">Login</button>
+                         @if (ViewData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger" style="color:red" role="alert">
+                                @ViewData["ErrorMessage"]
+                            </div>
+                        }
                     </form>
                 </div>
             </div>
