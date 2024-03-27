@@ -1,5 +1,6 @@
 using BusinessLogic.IRepository;
 using BusinessLogic.Repository;
+using DataAccess.Common;
 using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -33,42 +34,58 @@ namespace COTSEClient.Pages.Survey
         }
 
         [BindProperty]
-        public IFormFile fileSurvey { get; set; }
+        public List<IFormFile> fileSurveys { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (fileSurvey == null)
-            {
-                ModelState.AddModelError("File", "File not imported");
+            if (fileSurveys.Count == 1) {
+                if (fileSurveys[0] == null)
+                {
+                    ModelState.AddModelError("File", "File not imported");
+                    return Page();
+                }
+                if (!_repo.validateFileName(fileSurveys[0].FileName))
+                {
+                    ModelState.AddModelError("File", "wrong file format");
+                    return Page();
+                }
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", fileSurveys[0].FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await fileSurveys[0].CopyToAsync(stream);
+                };
+                try
+                {
+                    var questions = _repo.GetSentimentAnswer(filePath);
+                    var json_data = await getFeedbackJsonString(questions);
+                    feedbackResults = _repo.Rate(questions, json_data);
+                    feedbackCount.Add("Positive", feedbackResults.Where(feedback => feedback.getResult() == "Positive").Count());
+                    feedbackCount.Add("Negative", feedbackResults.Where(feedback => feedback.getResult() == "Negative").Count());
+                    feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.getResult() == "Neutral").Count());
+                    //feedbackCount.Add("Very bad", feedbackResults.Where(feedback => feedback.startRating() == 1).Count());
+                    //feedbackCount.Add("Bad", feedbackResults.Where(feedback => feedback.startRating() == 2).Count());
+                    //feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.startRating() == 3).Count());
+                    //feedbackCount.Add("Good", feedbackResults.Where(feedback => feedback.startRating() == 4).Count());
+                    //feedbackCount.Add("Very Good", feedbackResults.Where(feedback => feedback.startRating() == 5).Count());
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("File", e.Message);
+                }
+
+            }
+
+            if (fileSurveys == null || fileSurveys.Count == 0) {
+                ModelState.AddModelError("ERR_FILES_LOAD", SurveyErrorMessage.ERR_FILES_LOAD);
                 return Page();
             }
-            if (!_repo.validateFileName(fileSurvey.FileName))
+            var list_file_name = fileSurveys.Select(x => x.FileName).ToList();
+            bool all_validate = _repo.validateFilesName(list_file_name).All(kv => kv.Item2);
+            if (!all_validate)
             {
-                ModelState.AddModelError("File", "wrong file format");
-                return Page();
-            }
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", fileSurvey.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await fileSurvey.CopyToAsync(stream);
-            };
-            try
-            {
-                var questions = _repo.GetSentimentAnswer(filePath);
-                var json_data = await getFeedbackJsonString(questions);
-                feedbackResults = _repo.Rate(questions, json_data);
-                feedbackCount.Add("Positive", feedbackResults.Where(feedback => feedback.getResult() == "Positive").Count());
-                feedbackCount.Add("Negative", feedbackResults.Where(feedback => feedback.getResult() == "Negative").Count());
-                feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.getResult() == "Neutral").Count());
-                //feedbackCount.Add("Very bad", feedbackResults.Where(feedback => feedback.startRating() == 1).Count());
-                //feedbackCount.Add("Bad", feedbackResults.Where(feedback => feedback.startRating() == 2).Count());
-                //feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.startRating() == 3).Count());
-                //feedbackCount.Add("Good", feedbackResults.Where(feedback => feedback.startRating() == 4).Count());
-                //feedbackCount.Add("Very Good", feedbackResults.Where(feedback => feedback.startRating() == 5).Count());
-            }
-            catch (Exception e)
-            {
-                ModelState.AddModelError("File", e.Message);
+                string error_message = SurveyErrorMessage.ERR_FILENAMES_FORMAT;
+
+                ModelState.AddModelError("","");
             }
             return Page();
         }
