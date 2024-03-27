@@ -31,6 +31,8 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<ParticipantAnswer> ParticipantAnswers { get; set; }
 
+    public virtual DbSet<Presenter> Presenters { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<StatusWorkShop> StatusWorkShops { get; set; }
@@ -168,6 +170,13 @@ public partial class Sep490G17DbContext : DbContext
         modelBuilder.Entity<ParticipantAnswer>(entity =>
         {
             entity.Property(e => e.ParticipantsEmail).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Presenter>(entity =>
+        {
+            entity.ToTable("Presenter");
+
+            entity.Property(e => e.PresenterEmail).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -336,7 +345,7 @@ public partial class Sep490G17DbContext : DbContext
 
             entity.HasOne(d => d.Presenter).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.PresenterId)
-                .HasConstraintName("FK_Workshop_User");
+                .HasConstraintName("FK_Workshop_Presenter");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.StatusId)

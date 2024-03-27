@@ -54,7 +54,7 @@ namespace BusinessLogic.Repository
         {
             try
             {
-                return _context.Workshops.Where(x => x.WorkshopSeriesId == seriesWorkshopId).ToList();
+                return _context.Workshops.Include(x => x.Presenter).Include(x => x.Status).Where(x => x.WorkshopSeriesId == seriesWorkshopId).ToList();
             }
             catch (Exception)
             {

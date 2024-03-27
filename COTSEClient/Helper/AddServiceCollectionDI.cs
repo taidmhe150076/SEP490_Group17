@@ -14,6 +14,7 @@ namespace COTSEClient.Helper
             services.AddScoped<IRepositoryParticipantAnswer, RepositoryParticipantAnswer>();
             services.AddScoped<IRepositoryParticiPantScore, RepositoryParticiPantScore>();
             services.AddScoped<IRepositoryWorkshopSeries, RepositoryWorkshopSeries>();
+            services.AddScoped<IRepositoryPresenter, RepositoryPresenter>();
         }
     }
 }
