@@ -1,0 +1,110 @@
+﻿@page "/SurveyReport"
+@model SurveyModel
+@{
+
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<!-- library script -->
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@Html.ValidationSummary(false, "")
+
+<style>
+    .test {
+        height: -moz-available; /* WebKit-based browsers will ignore this. */
+        height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+        height: fill-available;
+        height: calc(100vh - 200px);
+        border: 1px solid black;
+    }
+</style>
+
+<div id="app" class="row test" style="height:100vh">
+    <div class="row py-2">
+        <h4>
+            Create Survey Report
+        </h4>
+    </div>
+    <div>
+        @if (Model.feedbackResults == null)
+        {
+            <form method="post" enctype="multipart/form-data">
+                <input type="file" name="fileSurvey" class="form-control-file" />
+
+                <input type="submit" name="submit" value="submit" />
+            </form>
+        }
+
+        @if (Model.feedbackResults != null)
+        {
+            <div class="row">
+                <div class="row">
+                    <h5>change sentiment chart display</h5>
+                    <div>
+                        <select id="selectChart" onchange="changeSentimentChart()">
+                            <option value="polarArea"> Radar chart</option>
+                            <option value="bar"> Bar chart</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="width:50%; height:50vh" class="row">
+                    <canvas id="sentiment_chart"></canvas>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                        View Detail
+                    </button>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="height=80vh;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Feedback detail</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="overflow-y:scroll">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Feedback</th>
+                                        <th>Sentiment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var result in Model.feedbackResults)
+                                    {
+                                        <tr>
+                                            <td>@result.Question</td>
+                                            <td>@result.getResult()</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>
+        var sentiment_data = @Html.Raw(Json.Serialize(Model.feedbackCount));
+    </script>
+
+    <script src="~/js/Survey.js">
+    </script>
+</div>
