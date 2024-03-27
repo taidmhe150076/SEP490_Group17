@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.IRepository
 {
-    public interface IRepositoryParticipants
+    public interface IRepositoryPresenter
     {
-        public List<Participant> GetParticipantsOrderBy();
-        public List<Participant> GetParticipants();
-
+        public int InsertPresenter(Presenter presenter);
     }
 }

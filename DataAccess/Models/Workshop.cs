@@ -21,7 +21,7 @@ public partial class Workshop
 
     public int? Index { get; set; }
 
-    public virtual User? Presenter { get; set; }
+    public virtual Presenter? Presenter { get; set; }
 
     public virtual StatusWorkShop? Status { get; set; }
 

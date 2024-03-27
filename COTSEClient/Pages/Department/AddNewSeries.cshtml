@@ -4,28 +4,99 @@
     Layout = "_Layout";
 }
 <!DOCTYPE html>
-
 <html lang="en">
+<head>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
 <body class="d-flex flex-column h-100 bg-light">
     <main class="flex-shrink-0">
+        <!-- Page Content-->
         <div class="container px-5 my-5">
-            <div class="col-lg-11 col-xl-9 col-xxl-8">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h2 class="text-primary fw-bolder mb-0">Tạo chuỗi hội thảo mới</h2>
-                    <form method="post">
-                        <div class="form-group">
-                            <label for="leaderName">Tên chuỗi hội thảo:</label>
-                            <input type="text" class="form-control" id="leaderName" name="leaderName" placeholder="Nhập tên chuỗi hội thảo">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Tạo mới hội thảo</span></h1>
+            </div>
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-11 col-xl-9 col-xxl-8">
+                    <!-- Experience Section-->
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <form asp-page-handler="AddNewSeries" method="post" id="importForm" enctype="multipart/form-data">
+                            <input type="file" id="workshopFile" accept=".xlsx" style="display: none;" asp-for="Upload">
+                            <label for="workshopFile" class="btn btn-primary px-4 py-3">
+                                <div class="d-inline-block bi bi-upload me-2"></div>
+                                Import Data Excel
+                            </label>
+                        </form>
+                    </div>
+
+                    <!-- Display imported workshop data -->
+                    @if (Model.WorkShopList != null)
+                    {
+                        <input type="hidden" asp-for="@Model.SeriesWorkshopId" />
+                        <div class="table-responsive">
+                            <h2>Dữ liệu From Excel </h2>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Ngày diễn ra</th>
+                                        <th scope="col">Mail Presenter</th>
+                                        <th scope="col">Tiêu đề</th>
+                                        <th scope="col">Number Favorite Topics</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.WorkShopList.Count; i++)
+                                    {
+                                        var item = Model.WorkShopList[i];
+                                        <input type="hidden" id="workshopSeriesId_@item.Id" value="@item.WorkshopSeriesId" />
+                                        <tr>
+                                            @if (item.DatePresent != null && item.Presenter?.PresenterEmail != null)
+                                            {
+                                                <td>@item.DatePresent</td>
+                                                <td>@item.Presenter?.PresenterEmail</td>
+                                            }
+                                            else
+                                            {
+                                                <td>
+                                                    <input id="date_@item.Id" type="date" required />
+                                                </td>
+                                                <td>
+                                                    <input id="mail_@item.Id" type="email" placeholder="Enter Mail" required />
+                                                </td>
+                                            }
+                                            <td>@item.WorkshopName</td>
+                                            <td>@item.Index</td>
+                                            <td>@item.Status?.Status</td>
+                                            <td>
+                                                <button onclick="handleClick(@item.Id)"> asignt</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="form-group">
-                            <label for="startDate">Ngày bắt đầu:</label>
-                            <input type="date" class="form-control" id="startDate" name="startDate">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Lưu</button>
-                    </form>
+                    }
                 </div>
             </div>
         </div>
     </main>
+    <script>
+        document.getElementById('workshopFile').addEventListener('change', function () {
+            document.getElementById('importForm').submit();
+        });
+    </script>
+
+    <script>
+        function handleClick(itemId) {
+            console.log(itemId);
+            var dateValue = document.getElementById('date_' + itemId).value;
+            var emailValue = document.getElementById('mail_' + itemId).value;
+            var workshopSeriesId = document.getElementById('workshopSeriesId_' + itemId).value;
+            console.log("Date value for item " + itemId + ": " + dateValue);
+
+            this.href = `NewSeries?idWorkshop=${itemId}&email=${emailValue}&date=${dateValue}&seriesWorkshopId=${workshopSeriesId}`;
+            location.href = this.href;
+        }
+    </script>
 </body>
 </html>

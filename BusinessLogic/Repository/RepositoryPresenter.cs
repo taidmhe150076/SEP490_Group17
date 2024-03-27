@@ -8,29 +8,24 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.Repository
 {
-    public class RepositoryParticipants : IRepositoryParticipants
+    public class RepositoryPresenter : IRepositoryPresenter
     {
         private readonly Sep490G17DbContext _context;
-        public RepositoryParticipants(Sep490G17DbContext context)
+        public RepositoryPresenter(Sep490G17DbContext context)
         {
             _context = context;
         }
-
-        public List<Participant> GetParticipants()
+        public int InsertPresenter(Presenter presenter)
         {
             try
             {
-                return _context.Participants.OrderBy(x => x.TimeStamp).ToList();
+                _context.Presenters.Add(presenter);
+                return _context.SaveChanges();
             }
             catch (Exception)
             {
                 throw;
             }
-        }
-
-        public List<Participant> GetParticipantsOrderBy()
-        {
-            return _context.Participants.OrderBy(x => x.TimeStamp).ToList();
         }
     }
 }
