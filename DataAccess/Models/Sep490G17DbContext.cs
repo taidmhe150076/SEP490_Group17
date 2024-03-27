@@ -43,6 +43,8 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<TestQuestion> TestQuestions { get; set; }
 
+    public virtual DbSet<TestType> TestTypes { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<WorkShopSurveyQuestion> WorkShopSurveyQuestions { get; set; }
@@ -230,6 +232,10 @@ public partial class Sep490G17DbContext : DbContext
             entity.Property(e => e.ExpiredTime).HasColumnType("datetime");
             entity.Property(e => e.TestName).HasMaxLength(50);
 
+            entity.HasOne(d => d.TestType).WithMany(p => p.Tests)
+                .HasForeignKey(d => d.TestTypeId)
+                .HasConstraintName("FK_Test_TestType");
+
             entity.HasOne(d => d.Workshop).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.WorkshopId)
                 .HasConstraintName("FK_Test_Workshop");
@@ -254,6 +260,13 @@ public partial class Sep490G17DbContext : DbContext
                 .HasForeignKey(d => d.TestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TestQuestion_Test");
+        });
+
+        modelBuilder.Entity<TestType>(entity =>
+        {
+            entity.ToTable("TestType");
+
+            entity.Property(e => e.TypeName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<User>(entity =>

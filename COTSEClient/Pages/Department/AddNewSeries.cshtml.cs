@@ -34,7 +34,7 @@ namespace COTSEClient.Pages.Department
             emailAdmin = _configuration["AccountAdmin:Email"];
             passwork = _configuration["AccountAdmin:Passwork"];
         }
-
+        [BindProperty]
         public IFormFile Upload { get; set; }
         [BindProperty]
         public List<Workshop>? WorkShopList { get; set; }

@@ -28,5 +28,18 @@ namespace BusinessLogic.Repository
                 throw ex;
             }
         }
+
+        public int InsertQuestion(WorkshopQuestion workshopQuestion)
+        {
+            try
+            {
+                _context.WorkshopQuestions.Add(workshopQuestion);
+                return _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
