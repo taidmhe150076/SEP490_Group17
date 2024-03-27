@@ -1,0 +1,31 @@
+﻿@page "/NewSeries"
+@model COTSEClient.Pages.Department.CreateNewSeriescshtmlModel
+@{
+    Layout = "_Layout";
+}
+<head>
+    <title>Tạo chuỗi hội thảo</title>
+</head>
+<body class="d-flex flex-column h-100 bg-light">
+    <main class="flex-shrink-0">
+        <div class="container px-5 my-5">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Tạo chuỗi hội thảo</span></h1>
+            </div>
+            <div class="container mt-4">
+                <form method="post" class="col-md-6 offset-md-3">
+                    <div class="form-group mb-3">
+                        <label for="seriesName">Tên Chuỗi Hội Thảo:</label>
+                        <input type="text" class="form-control" id="seriesName" name="seriesName" placeholder="Nhập tên chuỗi hội thảo">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="startDate">Ngày Bắt Đầu:</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Tạo mới</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    >
+</body>
