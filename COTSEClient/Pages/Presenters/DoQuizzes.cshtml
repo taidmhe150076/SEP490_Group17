@@ -2,140 +2,57 @@
 @model COTSEClient.Pages.Quizzes.DoQuizzesModel
 @{
 }
-@*<!DOCTYPE html>
- <html lang="vi">
-
- <head>
-     <meta charset='utf-8'>
-     <meta name='viewport' content='width=device-width, initial-scale=1'>
-     <title>Câu hỏi về hội thảo</title>
-     <link href="~/css/quizzstyle.css" rel="stylesheet" />
- </head>
-
- <body oncontextmenu='return false' class='snippet-body'>
-     <div class="widget-wrap">
-         <h1>Câu hỏi hiểu biết về chủ để hội thảo</h1>
-         <div id="quizWrap">
-             <div id="quizQn"> Docker ra đời năm nào?</div>
-             <div id="quizAns">
-                 <input type="radio" name="quiz" id="quizo0">
-                 <label for="quizo0">2000</label>
-
-                 <input type="radio" name="quiz" id="quizo1">
-                 <label for="quizo1">2001</label>
-
-                 <input type="radio" name="quiz" id="quizo2">
-                 <label for="quizo2">2002</label>
-
-                 <input type="radio" name="quiz" id="quizo3">
-                 <label for="quizo3">2003</label>
-             </div>
-             <div id="quizQn"> Docker ra đời năm nào?</div>
-             <div id="quizAns">
-                 <input type="radio" name="quiz" id="quizo0">
-                 <label for="quizo0">2000</label>
-
-                 <input type="radio" name="quiz" id="quizo1">
-                 <label for="quizo1">2001</label>
-
-                 <input type="radio" name="quiz" id="quizo2">
-                 <label for="quizo2">2002</label>
-
-                 <input type="radio" name="quiz" id="quizo3">
-                 <label for="quizo3">2003</label>
-             </div>
-             <div id="quizQn"> Docker ra đời năm nào?</div>
-             <div id="quizAns">
-                 <input type="radio" name="quiz" id="quizo0">
-                 <label for="quizo0">2000</label>
-
-                 <input type="radio" name="quiz" id="quizo1">
-                 <label for="quizo1">2001</label>
-
-                 <input type="radio" name="quiz" id="quizo2">
-                 <label for="quizo2">2002</label>
-
-                 <input type="radio" name="quiz" id="quizo3">
-                 <label for="quizo3">2003</label>
-             </div>
-             <div id="quizQn"> Docker ra đời năm nào?</div>
-             <div id="quizAns">
-                 <input type="radio" name="quiz" id="quizo0">
-                 <label for="quizo0">2000</label>
-
-                 <input type="radio" name="quiz" id="quizo1">
-                 <label for="quizo1">2001</label>
-
-                 <input type="radio" name="quiz" id="quizo2">
-                 <label for="quizo2">2002</label>
-
-                 <input type="radio" name="quiz" id="quizo3">
-                 <label for="quizo3">2003</label>
-             </div>
-         </div>
-         <button id="submitButton" class="submit-button">Gửi câu trả lời</button>
-
-     </div>
-
-     <script>
-         document.addEventListener('DOMContentLoaded', function () {
-             const labels = document.querySelectorAll('#quizAns label');
-
-             labels.forEach(function (label) {
-                 label.addEventListener('click', function () {
-                     labels.forEach(function (el) {
-                         el.classList.remove('clicked');
-                     });
-                     this.classList.add('clicked');
-                 });
-             });
-         });
-     </script>
-
- </body>
-
- </html>*@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Question Test</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/css/quizztemplate.css" rel="stylesheet" />
+</head>
+
 <body>
-    <div class="widget-wrap">
-        @if (Model.WorkshopQuestions != null)
-        {
-            <form asp-page="QuestionTest" method="post">
-                <div class="widget-wrap">
-                    <label>Participant Email</label>
-                    <input type="text" asp-for="@Model.ParticipantEmail" required>
-                    <h1>SIMPLE JS QUIZ</h1>
-                    <div id="quizWrap">
-
-                        @for (int i = 0; i < Model.WorkshopQuestions.Count; i++)
-                        {
-                            <div id="quizQn_@Model.WorkshopQuestions[i].Id"> @Model.WorkshopQuestions[i].QuestionText</div>
-                            foreach (var answer in @Model.WorkshopQuestions[i].AnswerQuestions)
-                            {
-                                <div id="quizAns">
-                                    <input type="radio" name="@answer.AnswerText" value="@Model.WorkshopQuestions[i].Id" onclick="handleRadioClick(this)">
-                                    <label>@answer.AnswerText</label>
-                                </div>
-                            }
-
-                            <input type="text" asp-for="@Model.AnswerParticipantList[i].QuestionId" id="@Model.WorkshopQuestions[i].Id" value="@Model.WorkshopQuestions[i].Id" />
-
-                            <input type="text" asp-for="@Model.AnswerParticipantList[i].Answer" id="AnswerParticipant_@Model.WorkshopQuestions[i].Id" />
-                        }
-                        <input type="hidden" asp-for="@Model.TestCurrentId" />
-                        <input type="hidden" asp-for="@Model.WorkShopId" />
-                        <input type="submit" value="submit" />
-
+    <div class="container mt-5">
+        <div class="widget-wrap">
+            @if (Model.WorkshopQuestions != null)
+            {
+                <form asp-page="QuestionTest" method="post">
+                    <label>Email người tham gia:</label>
+                    <input type="text" class="form-control mb-3" asp-for="@Model.ParticipantEmail" required>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <div class="survey-header">Câu hỏi dành cho hội thảo</div>
+                        </div>
                     </div>
-                </div>
-            </form>
 
-        }
+                    @for (int i = 0; i < Model.WorkshopQuestions.Count; i++)
+                    {
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <p class="card-text">@Model.WorkshopQuestions[i].QuestionText</p>
 
+                                @foreach (var answer in @Model.WorkshopQuestions[i].AnswerQuestions)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="question_@Model.WorkshopQuestions[i].Id" id="answer_@answer.AnswerText" value="@answer.AnswerText" onclick="handleRadioClick(this)">
+                                        <label class="form-check-label" for="answer_@answer.AnswerText">@answer.AnswerText</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <input type="hidden" asp-for="@Model.TestCurrentId" />
+                    <input type="hidden" asp-for="@Model.WorkShopId" />
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Gửi</button>
+                    </div>
+                </form>
+            }
+        </div>
     </div>
 
     <script>
@@ -143,16 +60,16 @@
             console.log("Clicked");
             var selectedAnswerId = radio.value;
             var selectedAnswerName = radio.name;
-            document.getElementById('AnswerParticipant_' + selectedAnswerId).value = selectedAnswerName;
-
+            document.getElementById('AnswerParticipant_' + selectedAnswerName).value = selectedAnswerId;
+            console.log(selectedAnswerName);
             console.log(selectedAnswerId);
 
             var allRadios = document.querySelectorAll('input[type="radio"]');
-            var currentQuestion = radio.closest('#quizQn');
+            var currentQuestion = radio.closest('.card');
             var radiosInCurrentQuestion = currentQuestion.querySelectorAll('input[type="radio"]');
 
             allRadios.forEach(function (radio) {
-                if (!radio.closest('#quizQn').isSameNode(currentQuestion)) {
+                if (!radio.closest('.card').isSameNode(currentQuestion)) {
                     radio.disabled = true;
                 }
             });
