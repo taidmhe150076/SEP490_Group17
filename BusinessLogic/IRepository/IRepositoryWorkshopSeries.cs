@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.IRepository
 {
-    public interface IRepositoryWorkshopQuestions
+    public interface IRepositoryWorkshopSeries
     {
-        public List<WorkshopQuestion> GetWorkshopQuestionsByWsId(int workShopId);
+        public int InsertWorkshopSeries(WorkshopSeries workshopSeries);
     }
 }

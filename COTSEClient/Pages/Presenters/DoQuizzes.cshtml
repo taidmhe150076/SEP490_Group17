@@ -1,4 +1,4 @@
-﻿@page "Presenters/DoQuizz"
+﻿@page
 @model COTSEClient.Pages.Quizzes.DoQuizzesModel
 @{
 }
@@ -96,6 +96,7 @@
 
  </html>*@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -126,6 +127,7 @@
                             <input type="text" asp-for="@Model.AnswerParticipantList[i].Answer" id="AnswerParticipant_@Model.WorkshopQuestions[i].Id" />
                         }
                         <input type="hidden" asp-for="@Model.TestCurrentId" />
+                        <input type="hidden" asp-for="@Model.WorkShopId" />
                         <input type="submit" value="submit" />
 
                     </div>

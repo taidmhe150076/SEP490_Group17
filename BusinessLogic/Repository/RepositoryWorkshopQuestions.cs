@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.IRepository;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,22 @@ namespace BusinessLogic.Repository
 {
     public class RepositoryWorkshopQuestions : IRepositoryWorkshopQuestions
     {
-        public List<WorkshopQuestion> GetWorkshopQuestionsByWsIdAndTestId()
+        private readonly Sep490G17DbContext _context;
+        public RepositoryWorkshopQuestions(Sep490G17DbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public List<WorkshopQuestion> GetWorkshopQuestionsByWsId(int workShopId)
+        {
+            try
+            {
+                return _context.WorkshopQuestions.Include(x => x.Workshop).Include(x => x.AnswerQuestions).Where(x => x.WorkshopId == workShopId).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

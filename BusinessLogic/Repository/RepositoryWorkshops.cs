@@ -18,13 +18,86 @@ namespace BusinessLogic.Repository
             _context = context;
         }
         public List<Workshop> GetWorkshops()
-
         {
             return _context.Workshops.ToList();
         }
         public Workshop GetWorkshopByKeyPresenter(string invitationCode)
         {
             return _context.Workshops.FirstOrDefault(x => x.KeyPresenter.Equals(invitationCode.Trim()));
+        }
+
+        public List<Workshop> GetParticiPantScoresByWorkshopId(int? workshopId)
+        {
+            try
+            {
+                return _context.Workshops.Include(x => x.Tests).ThenInclude(x => x.ParticiPantScores).Where(x => x.Id == workshopId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Workshop GetWorkshopByWorkshopId(int? workshopId)
+        {
+            try
+            {
+                return _context.Workshops.FirstOrDefault(x => x.Id == workshopId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<Workshop> GetWorkshopBySeriesWorkshopId(int? seriesWorkshopId)
+        {
+            try
+            {
+                return _context.Workshops.Where(x => x.WorkshopSeriesId == seriesWorkshopId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public Workshop GetWorkshopBySeriesWorkshopIdAndWorkshopName(int? seriesWorkshopId, string workshopName)
+        {
+            try
+            {
+                return _context.Workshops.FirstOrDefault(x => x.WorkshopSeriesId == seriesWorkshopId && x.WorkshopName.Equals(workshopName));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public int UpdateDatePresent(Workshop workshop)
+        {
+            try
+            {
+                _context.Workshops.Update(workshop);
+                return _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public int InsertWorkshop(Workshop workshop)
+        {
+            try
+            {
+                _context.Workshops.Add(workshop);
+                return _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
