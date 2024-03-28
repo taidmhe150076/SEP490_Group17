@@ -2,6 +2,7 @@
 @model COTSEClient.Pages.Report.TestWorkShopReportModel
 @{
     Layout = "_Layout";
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -67,6 +68,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Chart.js Datalabels plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -74,6 +76,7 @@
     <script>
         $(document).ready(function () {
             Chart.register(ChartDataLabels);
+            // Access the model data
             const data = @Html.Raw(Json.Serialize(Model.TestGPAScoreRangeDTO));
             console.log(data);
             let chart;
