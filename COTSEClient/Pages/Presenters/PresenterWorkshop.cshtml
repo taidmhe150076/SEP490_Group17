@@ -137,13 +137,13 @@
                             <td>@item.DateStart</td>
                             <td>@item.ExpiredTime</td>
                             <td>
-                                
-                                    <div>
-                                        <div class="eye-icon" onclick="showQRPopup('@item.QrTest')" data-bs-toggle="modal" data-bs-target="#qrPopup" style="cursor: pointer;">
-                                            <img src="~/Image/eye-icon.jpg" alt="Eye Icon" width="30" height="30">
-                                        </div>
+
+                                <div>
+                                    <div class="eye-icon" onclick="showQRPopup('@item.QrTest')" data-bs-toggle="modal" data-bs-target="#qrPopup" style="cursor: pointer;">
+                                        <img src="~/Image/eye_icon.png" alt="Eye Icon" width="30" height="30">
                                     </div>
-                                
+                                </div>
+
                             </td>
                         </tr>
                     }
@@ -156,6 +156,7 @@
         document.getElementById('questionExcel').addEventListener('change', function () {
             document.getElementById('importForm').submit();
         });
+    </script>
     <div class="modal fade" id="qrPopup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -173,7 +174,7 @@
 
     <script>
         function showQRPopup(itemId) {
-            console.log(itemId)
+            console.log(itemId +'alo')
             var qrCodeSrc = itemId;
             var popupQRCodeImage = document.getElementById("popupQRCodeImage");
             var popupCountdown = document.getElementById("popupCountdown");
