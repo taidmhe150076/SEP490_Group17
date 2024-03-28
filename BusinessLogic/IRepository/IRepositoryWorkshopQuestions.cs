@@ -10,5 +10,6 @@ namespace BusinessLogic.IRepository
     public interface IRepositoryWorkshopQuestions
     {
         public List<WorkshopQuestion> GetWorkshopQuestionsByWsId(int workShopId);
+        public int InsertQuestion(WorkshopQuestion workshopQuestion);
     }
 }

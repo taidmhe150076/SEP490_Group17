@@ -2,12 +2,14 @@
 using BusinessLogic.Repository;
 using COTSEClient.DTO;
 using COTSEClient.Helper;
+using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OfficeOpenXml;
 using System.ComponentModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace COTSEClient.Pages.Department
 {
@@ -16,21 +18,23 @@ namespace COTSEClient.Pages.Department
         public readonly IConfiguration _configuration;
         public readonly IRepositoryWorkshops _repositoryWorkshops;
         public readonly IRepositoryWorkshopSeries _repositoryWorkshopsSeries;
+        public readonly IRepositoryPresenter _repositoryPresenter;
         public string? urlRoom;
         public string? linkCF;
         public string? emailAdmin;
         public string? passwork;
-        public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IConfiguration configuration)
+        public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryPresenter repositoryPresenter, IConfiguration configuration)
         {
             _repositoryWorkshops = repositoryWorkshops;
             _repositoryWorkshopsSeries = repositoryWorkshopSeries;
+            _repositoryPresenter = repositoryPresenter;
             _configuration = configuration;
             urlRoom = _configuration["ConfigWorkshop:URLRoom"];
             linkCF = _configuration["ConfigWorkshop:LinkCF"];
             emailAdmin = _configuration["AccountAdmin:Email"];
             passwork = _configuration["AccountAdmin:Passwork"];
         }
-
+        [BindProperty]
         public IFormFile Upload { get; set; }
         [BindProperty]
         public List<Workshop>? WorkShopList { get; set; }
@@ -38,30 +42,22 @@ namespace COTSEClient.Pages.Department
         public List<WorkshopDTO>? OrtherWorkShopList { get; set; }
         [BindProperty]
         public int? SeriesWorkshopId { get; set; }
-        public void OnGet()
+        public void OnGet(int? seriesWorkshopId, int? idWorkshop, string? email, DateTime? date)
         {
-            //SeriesWorkshopId = 2;
-            if (SeriesWorkshopId != 0)
+            if (idWorkshop != null && email != null && date != null)
             {
-                WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(SeriesWorkshopId);
-                OrtherWorkShopList = new List<WorkshopDTO>();
-                foreach (var item in WorkShopList)
+                Presenter presenter = new Presenter
                 {
-                    WorkshopDTO workshop = new WorkshopDTO();
-                    OrtherWorkShopList.Add(workshop);
-                }
-            }
-        }
-
-        public IActionResult OnPost()
-        {
-            if (OrtherWorkShopList.Count() > 0)
-            {
-                foreach (var item in OrtherWorkShopList)
+                    PresenterEmail = email,
+                };
+                if (_repositoryPresenter.InsertPresenter(presenter) > 0)
                 {
-                    var findWs = _repositoryWorkshops.GetWorkshopBySeriesWorkshopIdAndWorkshopName(item.WorkshopSeriesId, item.WorkshopName);
+                    var findWs = _repositoryWorkshops.GetWorkshopByWorkshopId(idWorkshop);
+                    if (findWs != null)
                     {
-                        findWs.DatePresent = item.DatePresent;
+                        findWs.DatePresent = date;
+                        findWs.StatusId = COTSEConstants.STATUS_PENDING;
+                        findWs.PresenterId = presenter.PresenterId;
                         TeamplatePresenter teamplatePresenter = new TeamplatePresenter
                         {
                             WorkshopName = findWs.WorkshopName,
@@ -71,13 +67,51 @@ namespace COTSEClient.Pages.Department
                             LinkCF = linkCF,
                         };
                         var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
-                        String subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
-                        HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, item.Email);
+                        string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                        HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, email);
                         _repositoryWorkshops.UpdateDatePresent(findWs);
                     }
                 }
             }
-            return Page();
+            //SeriesWorkshopId = 2;
+            if (seriesWorkshopId > 0)
+            {
+                WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(seriesWorkshopId);
+                OrtherWorkShopList = new List<WorkshopDTO>();
+                foreach (var item in WorkShopList)
+                {
+                    WorkshopDTO workshop = new WorkshopDTO();
+                    OrtherWorkShopList.Add(workshop);
+                }
+            }
+            
+        }
+        
+        public IActionResult OnGetAsigntPresenter(int? id)
+        {
+            if (OrtherWorkShopList.Count() > 0 && id > 0)
+            {
+                var findWsOrthher = OrtherWorkShopList.FirstOrDefault(x => x.Id == id);
+                if (findWsOrthher != null)
+                {
+                    var findWs = _repositoryWorkshops.GetWorkshopByWorkshopId(findWsOrthher.Id);
+                    findWs.DatePresent = findWsOrthher.DatePresent;
+                    TeamplatePresenter teamplatePresenter = new TeamplatePresenter
+                    {
+                        WorkshopName = findWs.WorkshopName,
+                        TimePresenter = findWs.DatePresent.ToString(),
+                        KeyPresent = findWs.KeyPresenter,
+                        UrlRoom = urlRoom,
+                        LinkCF = linkCF,
+                    };
+                    var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
+                    string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                    HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, findWsOrthher.Email);
+                    _repositoryWorkshops.UpdateDatePresent(findWs);
+                }
+                return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWsOrthher.WorkshopSeriesId});
+            }
+            return BadRequest();
         }
 
         public IActionResult OnPostAddNewSeries()
@@ -155,7 +189,7 @@ namespace COTSEClient.Pages.Department
                                 DatePresent = null,
                                 WorkshopSeriesId = workshopSeries.Id,
                                 KeyPresenter = HelperMethods.GenerateSecretKey(topicNames[i].Topic + workshopSeries.Id, 6),
-                                StatusId = 1,
+                                StatusId = COTSEConstants.STATUS_DEFAULT,
                                 Index = topicNames[i].Count,
                             };
                             var resultInsertWorkshop = _repositoryWorkshops.InsertWorkshop(workshop);

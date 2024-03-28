@@ -2,6 +2,7 @@
 {
     public class WorkshopDTO
     {
+        public int? Id { get; set; }    
         public string? WorkshopName { get; set; }
 
         public DateTime? DatePresent { get; set; }

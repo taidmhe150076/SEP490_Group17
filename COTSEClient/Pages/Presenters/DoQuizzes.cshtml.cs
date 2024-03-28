@@ -26,7 +26,7 @@ namespace COTSEClient.Pages.Quizzes
         public int TestCurrentId { get; set; }
         [BindProperty]
         public int WorkShopId { get; set; }
-        public IActionResult OnGet(int testId = 1, int workShopId = 3)
+        public IActionResult OnGet(int testId, int workShopId)
         {
             TestCurrentId = testId;
             WorkshopQuestions = _repositoryWorkshopQuestions.GetWorkshopQuestionsByWsId(workShopId);

@@ -17,11 +17,15 @@ public partial class Test
 
     public string? QrTest { get; set; }
 
+    public int? TestTypeId { get; set; }
+
     public virtual ICollection<AnswerParticipant> AnswerParticipants { get; set; } = new List<AnswerParticipant>();
 
     public virtual ICollection<ParticiPantScore> ParticiPantScores { get; set; } = new List<ParticiPantScore>();
 
     public virtual ICollection<TestQuestion> TestQuestions { get; set; } = new List<TestQuestion>();
+
+    public virtual TestType? TestType { get; set; }
 
     public virtual Workshop? Workshop { get; set; }
 }

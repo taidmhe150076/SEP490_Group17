@@ -25,7 +25,7 @@ namespace BusinessLogic.Repository
                 {
                     throw new ArgumentNullException(nameof(workshopId));
                 }
-                return _context.Tests.Where(x => x.WorkshopId == workshopId).ToList();
+                return _context.Tests.Include(x => x.TestType).Where(x => x.WorkshopId == workshopId).ToList();
             }
             catch (Exception)
             {
