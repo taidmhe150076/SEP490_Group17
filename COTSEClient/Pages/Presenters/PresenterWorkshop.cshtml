@@ -40,6 +40,10 @@
             max-width: 100%;
             height: auto;
         }
+
+        .eye-icon {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -132,7 +136,15 @@
                             <td>@item.Workshop?.WorkshopName</td>
                             <td>@item.DateStart</td>
                             <td>@item.ExpiredTime</td>
-                            <td>@item.QrTest</td>
+                            <td>
+
+                                <div>
+                                    <div class="eye-icon" onclick="showQRPopup('@item.QrTest')" data-bs-toggle="modal" data-bs-target="#qrPopup" style="cursor: pointer;">
+                                        <img src="~/Image/eye_icon.png" alt="Eye Icon" width="30" height="30">
+                                    </div>
+                                </div>
+
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -144,6 +156,44 @@
         document.getElementById('questionExcel').addEventListener('change', function () {
             document.getElementById('importForm').submit();
         });
+    </script>
+    <div class="modal fade" id="qrPopup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="popupQRCodeImage" src="#" alt="QR Code" style="max-width: 100%; height: auto;">
+                    <p id="popupCountdown" class="countdown">Thời gian còn lại: 60 giây</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showQRPopup(itemId) {
+            console.log(itemId +'alo')
+            var qrCodeSrc = itemId;
+            var popupQRCodeImage = document.getElementById("popupQRCodeImage");
+            var popupCountdown = document.getElementById("popupCountdown");
+
+            popupQRCodeImage.src = qrCodeSrc;
+            startCountdown(popupCountdown);
+        }
+
+        function startCountdown(countdownElement) {
+            var timeleft = 60;
+            var downloadTimer = setInterval(function () {
+                countdownElement.innerHTML = "Thời gian còn lại: " + timeleft + " giây";
+                timeleft -= 1;
+                if (timeleft <= 0) {
+                    clearInterval(downloadTimer);
+                    countdownElement.innerHTML = "Thời gian đã hết";
+                }
+            }, 1000);
+        }
     </script>
 </body>
 </html>
