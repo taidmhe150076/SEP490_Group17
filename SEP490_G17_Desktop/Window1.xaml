@@ -1,0 +1,187 @@
+﻿<Window x:Class="SEP490_G17_Desktop.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SEP490_G17_Desktop"
+        mc:Ignorable="d"
+        Title="Window1" 
+        Height="700" 
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="Orange"
+        
+        >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="73*" />
+            <RowDefinition Height="558*" />
+            <RowDefinition Height="69*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="109*" />
+                <!-- Cột 1 -->
+                <ColumnDefinition Width="11*" />
+                <!-- Cột 2 -->
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Row="0" Grid.Column="0" Background="#FF7F00"
+             CornerRadius="10,0,100,0" HorizontalAlignment="Left" Width="1037" RenderTransformOrigin="0.5,0.5">
+
+
+                <TextBlock x:Name="nameOfTool"
+                    Text="NAME OF TOOL"
+                    Foreground="White"
+                    Style="{StaticResource HeaderStyle}" Margin="23,15,796,32" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            </Border>
+
+            <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource CloseBtn_Style}"  />
+        </Grid>
+
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="77*" />
+                <!-- Cột 1 -->
+                <ColumnDefinition Width="223*" />
+                <!-- Cột 2 -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Cột 1 sẽ chứa 2 hàng -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <!-- Hàng 1 -->
+                    <RowDefinition Height="*" />
+                    <!-- Hàng 2 -->
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" BorderThickness="0" Background="Gray" CornerRadius="25,0,0,0"  >
+                    <Grid>
+                        <TextBlock Text="Major" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Foreground="White" Margin="0,10,0,0" />
+                        <ListBox x:Name="listBox" Background="Transparent" BorderBrush="{x:Null}" Margin="0,42,0,0" />
+                    </Grid>
+                </Border>
+                <Border Grid.Row="2" CornerRadius="0,0,0,25" Background="Gray" >
+                    <Grid>
+                        <TextBlock Text="Semester" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Foreground="White" Margin="0,2,0,0" />
+                        <ListBox x:Name="listBox1" Background="Transparent" BorderBrush="{x:Null}" Margin="0,34,0,0" >
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Nội dung của cột 2 tại đây -->
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <!-- Hàng 1 -->
+                    <RowDefinition Height="*" />
+                    <!-- Hàng 2 -->
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="Bisque"  CornerRadius="0,25,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="244*" />
+                            <!-- Hàng 1 -->
+                            <RowDefinition Height="35*" />
+                            <!-- Hàng 2 -->
+                        </Grid.RowDefinitions>
+
+               
+
+
+                        <!-- Nội dung của Hàng 2 -->
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="195*" />
+                                <!-- Cột 1 -->
+                                <ColumnDefinition Width="565*" />
+                                <!-- Cột 2 -->
+                                <ColumnDefinition Width="132*" />
+                                <!-- Cột 3 -->
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="Play/Stop" FontSize="15" Margin="39,0,37,10"/>
+                            <Slider Grid.Column="1" x:Name="silderControl" Margin="12,2,32,12"/>
+
+                            <Button Grid.Column="2" Content="View Information" FontSize="15" Margin="0,0,10,10" ></Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <!-- Cột 1 -->
+                        <ColumnDefinition Width="*" />
+                        <!-- Cột 2 -->
+                        <ColumnDefinition Width="*" />
+                        <!-- Cột 3 -->
+                    </Grid.ColumnDefinitions>
+
+                    <Border  Grid.Column="0" Background="Gray" >
+                        <Grid>
+                            <TextBlock Text="Tool list" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Foreground="White" Margin="0,2,0,0" />
+                            <ListBox x:Name="listBox4" Background="Transparent" BorderBrush="{x:Null}" Margin="0,34,0,0" >
+
+
+                            </ListBox>
+                        </Grid>
+                    </Border>
+
+                    <Border  Grid.Column="1" Background="Gray" >
+                        <Grid>
+                            <TextBlock Text="Action"  HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Foreground="White" Margin="0,2,0,0"  />
+                            <ListBox x:Name="listBox3" Background="Transparent" BorderBrush="{x:Null}" Margin="0,34,0,0" >
+                            </ListBox>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Column="2"
+                         Margin="5,0,0,0">
+
+                        <Border  Background="Gray" CornerRadius="0,0,25,0">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <!-- Hàng 1 -->
+                                    <RowDefinition Height="*" />
+                                    <!-- Hàng 2 -->
+                                    <RowDefinition Height="*" />
+                                    <!-- Hàng 3 -->
+                                </Grid.RowDefinitions>
+                                <Button Grid.Row="0" Content="Export Now" ></Button>
+                                <Button Grid.Row="1" Content="Add to Export List" ></Button>
+                                <Button Grid.Row="2" Content="Export List" ></Button>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+
+
+
+
+            </Grid>
+        </Grid>
+
+
+        <Grid Grid.Row="2">
+
+            <Border Grid.Row="0" Grid.Column="0" Background="#FF7F00"
+             CornerRadius="100,0,0,0" RenderTransformOrigin="0.5,0.5" Margin="260,0,0,0">
+
+
+                <Grid Margin="762,10,31,10">
+                    <Button Content="Exit"></Button>
+                </Grid>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+</Window>

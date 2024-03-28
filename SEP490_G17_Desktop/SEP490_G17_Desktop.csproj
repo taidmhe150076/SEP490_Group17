@@ -8,4 +8,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Assets\close_icon.png" />
+    <None Remove="Assets\close_mo_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\close_icon.png" />
+    <Resource Include="Assets\close_mo_icon.png" />
+  </ItemGroup>
+
 </Project>
