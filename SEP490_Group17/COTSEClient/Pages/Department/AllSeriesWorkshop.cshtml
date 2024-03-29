@@ -1,0 +1,112 @@
+﻿@page "/AllSeries"
+@model COTSEClient.Pages.Department.AllSeriesWorkshopModel
+@{
+    Layout = "_Layout";
+}
+@{
+    ViewData["Title"] = "All Workshop Series";
+}
+
+<h1>All Workshop Series</h1>
+
+@if (Model.WorkshopSeriesList != null && Model.WorkshopSeriesList.Count > 0)
+{
+    <ul>
+        @foreach (var series in Model.WorkshopSeriesList)
+        {
+            <li>
+                <h2>@series.WorkshopSeriesName</h2>
+                <p>@series.Description</p>
+                <p>Start Date: @series.StartDate</p>
+                <p>End Date: @series.EndDate</p>
+                <img src="@series.Image" alt="Workshop Image">
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No Workshop Series available.</p>
+}
+
+
+@* <!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Các chuỗi hội thảo</title>
+
+</head>
+<body>
+    <main>
+        <section class="py-5">
+            <div class="container px-5 mb-5">
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Các chuỗi hội thảo</span></h1>
+                </div>
+                <div class="row gx-5 justify-content-center">
+                    <div class="col-lg-11 col-xl-9 col-xxl-8">
+                        <div class="card overflow-hidden shadow rounded-4 border-0 mb-5">
+                            <div class="card-body p-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="p-5">
+                                        <h2 class="fw-bolder">Chuỗi hội thảo 1</h2>
+                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius at enim eum illum aperiam placeat esse? Mollitia omnis minima saepe recusandae libero, iste ad asperiores! Explicabo commodi quo itaque! Ipsam!</p>
+                                        <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+                                    </div>
+                                    <img class="img-fluid" src="https://dummyimage.com/300x400/343a40/6c757d" alt="..." />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden shadow rounded-4 border-0">
+                            <div class="card-body p-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="p-5">
+                                        <h2 class="fw-bolder">Chuỗi hội thảo 2</h2>
+                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius at enim eum illum aperiam placeat esse? Mollitia omnis minima saepe recusandae libero, iste ad asperiores! Explicabo commodi quo itaque! Ipsam!</p>
+                                        <a class="btn btn-primary" href="#">Xem chi tiết</a>
+                                    </div>
+                                    <img class="img-fluid" src="https://dummyimage.com/300x400/343a40/6c757d" alt="..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-5 bg-gradient-primary-to-secondary text-white">
+            <div class="container px-5 my-5">
+                <div class="text-center">
+                    <h2 class="display-4 fw-bolder mb-4">Tạo chuỗi hội thảo mới?</h2>
+                    <a class="btn btn-outline-light btn-lg px-5 py-3 fs-6 fw-bolder" data-bs-toggle="modal" data-bs-target="#createSeriesModal">Tạo mới</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createSeriesModalLabel">Tạo Chuỗi Hội Thảo Mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="createSeriesForm">
+                            <div class="mb-3">
+                                <label for="seriesName" class="form-label">Tên Chuỗi Hội Thảo:</label>
+                                <input type="text" class="form-control" id="seriesName" name="seriesName" placeholder="Nhập tên chuỗi hội thảo">
+                            </div>
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Ngày Bắt Đầu:</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Tạo mới</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+ *@
