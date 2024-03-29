@@ -1,11 +1,15 @@
 using COTSEClient.Helper;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages().AddRazorPagesOptions(opts =>
+{
+    opts.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+});
 
 builder.Services.AddDbContext<Sep490G17DbContext>(options =>
 {
@@ -46,5 +50,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
 
 app.Run();

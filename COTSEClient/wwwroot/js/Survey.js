@@ -19,8 +19,10 @@ var chart_data_format = (chart_type, label, labels = [], chart_datas = [], backg
 };
 
 var sentiment_chart = (data, chart_type = "polarArea") => {
-    let labels = Object.keys(data).slice(2);
-    let values = Object.values(data).slice(2);
+    let labels = Object.keys(data)
+    let values = Object.values(data)
+    console.log(labels)
+    console.log(values)
     var canva = $("#sentiment_chart")[0];
     var canva_label = "sentiment chart";
     var color_list = random_rpg_list(labels);
@@ -92,5 +94,6 @@ var changeSentimentChart = () => {
 $(() => {
     if (sentiment_data != null) {
         sentiment_chart(sentiment_data);
+        console.log(sentiment_data)
     }
 });

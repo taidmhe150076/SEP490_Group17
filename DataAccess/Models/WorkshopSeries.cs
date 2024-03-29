@@ -19,5 +19,9 @@ public partial class WorkshopSeries
 
     public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();
 
+    public virtual ICollection<SurveyUrl> SurveyUrls { get; set; } = new List<SurveyUrl>();
+
+    public virtual ICollection<WorkshopSurveyUrl> WorkshopSurveyUrls { get; set; } = new List<WorkshopSurveyUrl>();
+
     public virtual ICollection<Workshop> Workshops { get; set; } = new List<Workshop>();
 }

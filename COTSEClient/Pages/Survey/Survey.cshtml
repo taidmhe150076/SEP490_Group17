@@ -7,43 +7,38 @@
 <!-- library script -->
 
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-@Html.ValidationSummary(false, "")
-
+@if (!Html.ViewData.ModelState.IsValid || Html.ViewData.ModelState.ContainsKey(string.Empty))
+{
+    <div class="alert alert-danger" role="alert" id="errorMessage">
+        @Html.ValidationSummary(false, "")
+    </div>
+}
 <style>
     .test {
-        height: -moz-available; /* WebKit-based browsers will ignore this. */
-        height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-        height: fill-available;
-        height: calc(100vh - 200px);
-        border: 1px solid black;
     }
 </style>
 
-<div id="app" class="row test" style="height:100vh">
+<div id="app" class="row test">
     <div class="row py-2">
         <h4>
             Create Survey Report
         </h4>
     </div>
     <div>
-        @if (Model.feedbackResults == null)
+        @if (!Model.state_display)
         {
-            <form method="post" enctype="multipart/form-data">
-                <input type="file" name="fileSurvey" class="form-control-file" multiple/>
-
-                <input type="submit" name="submit" value="submit" />
+            <form method="post" enctype="multipart/form-data" asp-antiforgery="false">
+                <input type="file" name="fileSurveys" class="form-control-file" multiple />
+                <input type="submit" />
             </form>
         }
 
-        @if (Model.feedbackResults != null)
+        @if (Model.state_display)
         {
             <div class="row">
                 <div class="row">

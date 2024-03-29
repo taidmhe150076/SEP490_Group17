@@ -2,6 +2,8 @@ using BusinessLogic.IRepository;
 using BusinessLogic.Repository;
 using DataAccess.Common;
 using DataAccess.DTO;
+using DataAccess.Models;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -11,15 +13,17 @@ namespace COTSEClient.Pages.Survey
 {
     public class SurveyModel : PageModel
     {
-        private readonly string HUGGING_FACE_TOKEN = "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";
-        private readonly string API_URL = "https://api-inference.huggingface.co/models/wonrax/phobert-base-vietnamese-sentiment";
+        private Sep490G17DbContext _db_context;
+        private readonly IRepositorySurvey _repo;
+        private readonly IAntiforgery _antiforgery;
 
-        private IRepositorySurvey _repo = new RepositorySurvey();
 
-#pragma warning disable CS8618 
-        public SurveyModel()
+#pragma warning disable CS8618
+        public SurveyModel(IRepositorySurvey repo)
 #pragma warning restore CS8618 
         {
+            _repo = repo;
+            _repo.setStopList();
         }
 
         [BindProperty]
@@ -30,15 +34,18 @@ namespace COTSEClient.Pages.Survey
 
         public void OnGet()
         {
-
         }
+        [BindProperty]
+        public bool state_display { get; set; } = false;
 
         [BindProperty]
         public List<IFormFile> fileSurveys { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (fileSurveys.Count == 1) {
+
+            if (fileSurveys.Count == 1)
+            {
                 if (fileSurveys[0] == null)
                 {
                     ModelState.AddModelError("File", "File not imported");
@@ -57,11 +64,12 @@ namespace COTSEClient.Pages.Survey
                 try
                 {
                     var questions = _repo.GetSentimentAnswer(filePath);
-                    var json_data = await getFeedbackJsonString(questions);
+                    var json_data = await _repo.GetJsonSentiment(questions);
                     feedbackResults = _repo.Rate(questions, json_data);
                     feedbackCount.Add("Positive", feedbackResults.Where(feedback => feedback.getResult() == "Positive").Count());
                     feedbackCount.Add("Negative", feedbackResults.Where(feedback => feedback.getResult() == "Negative").Count());
                     feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.getResult() == "Neutral").Count());
+                    state_display = true;
                     //feedbackCount.Add("Very bad", feedbackResults.Where(feedback => feedback.startRating() == 1).Count());
                     //feedbackCount.Add("Bad", feedbackResults.Where(feedback => feedback.startRating() == 2).Count());
                     //feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.startRating() == 3).Count());
@@ -75,42 +83,40 @@ namespace COTSEClient.Pages.Survey
 
             }
 
-            if (fileSurveys == null || fileSurveys.Count == 0) {
+            else if (fileSurveys == null || fileSurveys.Count == 0)
+            {
                 ModelState.AddModelError("ERR_FILES_LOAD", SurveyErrorMessage.ERR_FILES_LOAD);
                 return Page();
             }
-            var list_file_name = fileSurveys.Select(x => x.FileName).ToList();
-            bool all_validate = _repo.validateFilesName(list_file_name).All(kv => kv.Item2);
-            if (!all_validate)
+            else
             {
-                string error_message = SurveyErrorMessage.ERR_FILENAMES_FORMAT;
+                var list_file_name = fileSurveys.Select(x => x.FileName).ToList();
+                var validate_data = _repo.validateFilesName(list_file_name);
+                bool all_validate = validate_data.All(kv => kv.Item2 == SurveyConstant.VALID_NAME_FORMAT);
+                if (!all_validate)
+                {
+                    string error_message = SurveyErrorMessage.ERR_FILENAMES_FORMAT;
+                    var wrong_files_format = validate_data.Where(kv => kv.Item2 != SurveyConstant.VALID_NAME_FORMAT).Select(kv => kv.Item1).ToList();
 
-                ModelState.AddModelError("","");
+                    var test = validate_data.Where(kv => kv.Item2 != SurveyConstant.VALID_NAME_FORMAT).ToList();
+                    foreach (var t in test)
+                    {
+                        await Console.Out.WriteLineAsync($"key:{t.Item1}");
+                        await Console.Out.WriteLineAsync($"value:{t.Item2}");
+                    }
+                    var message_list = "(";
+                    foreach (var wrong_file_format in wrong_files_format)
+                    {
+                        message_list += wrong_file_format + ",";
+                    }
+                    message_list += ")";
+                    string output = error_message.Replace("{files}", message_list);
+                    ModelState.AddModelError("ERR_FILENAMES_FORMAT", output);
+                    return Page();
+                }
             }
             return Page();
         }
 
-
-        //get json feedback
-        private async Task<string> getFeedbackJsonString(List<string> sentiment_data_list)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                var json_string = JsonConvert.SerializeObject(sentiment_data_list);
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {HUGGING_FACE_TOKEN}");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                var content = new StringContent(json_string, Encoding.UTF8, "application/json");
-                HttpResponseMessage resp = await client.PostAsync(API_URL, content);
-                if (resp.IsSuccessStatusCode)
-                {
-                    string json_data = await resp.Content.ReadAsStringAsync();
-                    return json_data;
-                }
-                else
-                {
-                    throw new Exception(resp.Content.ToString());
-                }
-            }
-        }
     }
 }
