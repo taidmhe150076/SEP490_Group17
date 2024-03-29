@@ -5,7 +5,6 @@ namespace BusinessLogic.IRepository
 {
     public interface IRepositorySurvey
     {
-        void setStopList();
         SurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id);
         List<string> GetSentimentAnswer(string file_path);
         bool validateFileName(string filePath);

@@ -20,19 +20,7 @@ namespace BusinessLogic.Repository
             "csv",
             "xlsx",
         };
-        private List<string> listStopWord;
         private Dictionary<string, string> QAbyUser = new Dictionary<string, string>();
-
-        public void setStopList()
-        {
-            listStopWord = new List<string>();
-            string stopWordPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "stopword", "vietnamese-stopwords.txt");
-            var list_stop_word = File.ReadAllLines(stopWordPath);
-            foreach (var line in list_stop_word)
-            {
-                listStopWord.Add(line);
-            }
-        }
 
         //constructor
         public RepositorySurvey(Sep490G17DbContext context)
@@ -180,7 +168,6 @@ namespace BusinessLogic.Repository
                 unchecked_answer.Add(sentiment_string);
             }
             var clean_1 = validateSurveyPhase1(unchecked_answer);
-            Console.WriteLine(clean_1.Count.ToString());
             foreach (var d in clean_1)
             {
                 Console.WriteLine(d.ToString());
