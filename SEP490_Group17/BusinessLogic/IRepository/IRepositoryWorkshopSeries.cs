@@ -12,5 +12,9 @@ namespace BusinessLogic.IRepository
         public int InsertWorkshopSeries(WorkshopSeries workshopSeries);
 
         public List<WorkshopSeries> GetAllWorkshopSeries();
+
+        public List<WorkshopSeries> SearchWorkshopSeriesByName(string workshopseriesName);
+
+        public List<WorkshopSeries> GetWorkshopSeriesByDate(DateTime startDate , DateTime endDate);
     }
 }

@@ -31,6 +31,20 @@ namespace BusinessLogic.Repository
             
         }
 
+        public List<WorkshopSeries> GetWorkshopSeriesByDate(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var list = _context.WorkshopSeries.Where(ws => ws.StartDate >= startDate && ws.EndDate <= endDate).ToList();
+                return list;
+
+            }
+            catch (Exception) 
+            {
+                throw;
+            }
+        }
+
         public int InsertWorkshopSeries(WorkshopSeries workshopSeries)
         {
 			try
@@ -43,6 +57,19 @@ namespace BusinessLogic.Repository
 
 				throw;
 			}
+        }
+
+        public List<WorkshopSeries> SearchWorkshopSeriesByName(string workshopseriesName)
+        {
+            try
+            {
+                var searchResults = _context.WorkshopSeries.Where(ws => ws.WorkshopSeriesName.Contains(workshopseriesName)).ToList();
+                return searchResults;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
