@@ -39,8 +39,6 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<SurveyAnswerDetail> SurveyAnswerDetails { get; set; }
 
-    public virtual DbSet<SurveyUrl> SurveyUrls { get; set; }
-
     public virtual DbSet<Test> Tests { get; set; }
 
     public virtual DbSet<TestQuestion> TestQuestions { get; set; }
@@ -227,29 +225,6 @@ public partial class Sep490G17DbContext : DbContext
                 .HasConstraintName("FK_SurveyAnswerDetail_WorkShopSurveyQuestion");
         });
 
-        modelBuilder.Entity<SurveyUrl>(entity =>
-        {
-            entity.ToTable("SurveyUrl");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.SurveyUrl1)
-                .HasMaxLength(500)
-                .IsUnicode(false)
-                .HasColumnName("survey_url");
-            entity.Property(e => e.WorkshopId).HasColumnName("workshop_id");
-            entity.Property(e => e.WorkshopSeriesId).HasColumnName("workshop_series_id");
-
-            entity.HasOne(d => d.Workshop).WithMany(p => p.SurveyUrls)
-                .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK_SurveyUrl_Workshop");
-
-            entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.SurveyUrls)
-                .HasForeignKey(d => d.WorkshopSeriesId)
-                .HasConstraintName("FK_SurveyUrl_WorkshopSeries");
-        });
-
         modelBuilder.Entity<Test>(entity =>
         {
             entity.ToTable("Test");
@@ -428,6 +403,9 @@ public partial class Sep490G17DbContext : DbContext
             entity.ToTable("WorkshopSurveyUrl");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.SurveyKey)
+                .HasMaxLength(1000)
+                .HasColumnName("survey_key");
             entity.Property(e => e.SurveyUrl)
                 .HasMaxLength(200)
                 .IsUnicode(false)

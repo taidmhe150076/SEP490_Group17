@@ -25,8 +25,6 @@ public partial class Workshop
 
     public virtual StatusWorkShop? Status { get; set; }
 
-    public virtual ICollection<SurveyUrl> SurveyUrls { get; set; } = new List<SurveyUrl>();
-
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
     public virtual ICollection<WorkShopSurveyQuestion> WorkShopSurveyQuestions { get; set; } = new List<WorkShopSurveyQuestion>();

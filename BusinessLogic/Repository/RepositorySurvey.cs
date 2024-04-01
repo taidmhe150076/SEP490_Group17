@@ -1,10 +1,14 @@
 ﻿using BusinessLogic.IRepository;
+using COTSEClient.DTO;
 using DataAccess.Common;
+using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Sheets.v4;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Newtonsoft.Json;
+using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -20,17 +24,99 @@ namespace BusinessLogic.Repository
             "csv",
             "xlsx",
         };
+
         private Dictionary<string, string> QAbyUser = new Dictionary<string, string>();
+        private int _saveMode = 0;
+        private readonly string googleClientId = Environment.GetEnvironmentVariable("googleClientId");
+        private readonly string googleClientSecret = Environment.GetEnvironmentVariable("googleClientSecret");
+        private readonly string huggingFaceToken = Environment.GetEnvironmentVariable("huggingfaceToken");
+
+
+        public string HuggingFaceToken => huggingFaceToken;
+
+        public string GoogleClientId => googleClientId;
+
+        public string GoogleClientSecret => googleClientSecret;
+
 
         //constructor
         public RepositorySurvey(Sep490G17DbContext context)
         {
-            _context = context;
+            _context = context;//
         }
 
+        //get survey in workshop series
+        public List<WorkshopSeriesWorkshop> seriesSurvey()
+        {
+            var result = new List<WorkshopSeriesWorkshop>();
+            var seriesContainSurvey = _context.WorkshopSeries
+                .Join(_context.WorkshopSurveyUrls,
+                series => series.Id,
+                survey => survey.WorkshopSeriesId,
+                (series, survey) => series)
+                .Distinct().ToList();
+            foreach (var series in seriesContainSurvey) {
+                var workshop_list = _context.Workshops
+                    .Where(ws =>ws.WorkshopSeriesId==series.Id)
+                    .Join(_context.WorkshopSurveyUrls, ws => ws.Id, survey => survey.WorkshopId, (ws, survey)=> ws)
+                    .Select(s => new WorkshopDTO {
+                         Id = s.Id,
+                         DatePresent = s.DatePresent,
+                         WorkshopName = s.WorkshopName,
+                         KeyPresenter = s.KeyPresenter != null ? s.KeyPresenter.Replace(s.KeyPresenter, new string('*', s.KeyPresenter.Count())): "",
+                    }).ToList();
+                var wss = new WorkshopSeriesWorkshop {
+                    Id = series.Id,
+                    WorkshopSeriesName = series.WorkshopSeriesName,
+                    StartDate = series.StartDate,
+                    workshops = workshop_list
+                };
+                result.Add(wss);
+            }
+            return result;
+        }
 
+        //add file to temp folder (dev)
+        public string GetsaveFileToTemp(string fileName, int? saveMode)
+        {
+            string error_message = string.Empty;
+            if (saveMode == null)
+            {
+                saveMode = _saveMode;
+            }
+
+            var file_extension = Path.GetExtension(fileName);
+
+            if (!file_types.Contains(file_extension)) {
+                error_message = SurveyErrorMessage.ERR_FILES_LOAD.Replace("{file_type}", file_extension);
+                throw new NotSupportedException(error_message);
+            }
+
+            // save to temp folder in project
+            string save_dir = String.Empty;
+            if (saveMode == 0)
+            {
+                save_dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", fileName);
+            }
+            // save to temp folder in computer
+            else if (saveMode == 1)
+            {
+                save_dir = Path.Combine(Path.GetTempPath(), "Costse_web_client", fileName);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(SurveyErrorMessage.ERR_OUT_OF_RANGE);
+            }
+
+            return save_dir;
+        }
+
+        public void getSurvey(string wss_id) {
+              
+        }
         // add workshopseries to workshop
-        public int addSurvey(string wss_id, string ws_id, string url) {
+        public int addSurvey(string wss_id, string ws_id, string url)
+        {
             try
             {
                 var wss = _context.WorkshopSeries.SingleOrDefault(wss_detail => wss_detail.Id == int.Parse(wss_id));
@@ -45,15 +131,16 @@ namespace BusinessLogic.Repository
                 }
 
                 //check if the folder path already exist
-                var survey = _context.SurveyUrls.SingleOrDefault(s_detail => s_detail.SurveyUrl1 == url);
-                if (survey == null) {
-                    var survey_url = new SurveyUrl()
+                var survey = _context.WorkshopSurveyUrls.SingleOrDefault(s_detail => s_detail.SurveyKey == url);
+                if (survey == null)
+                {
+                    var survey_url = new WorkshopSurveyUrl()
                     {
                         Workshop = ws,
                         WorkshopSeries = wss,
-                        SurveyUrl1 = url,
+                        SurveyKey = url,
                     };
-                    _context.SurveyUrls.Add(survey_url);
+                    _context.WorkshopSurveyUrls.Add(survey_url);
                     var state = _context.SaveChanges();
                     if (state == 0)
                     {
@@ -66,12 +153,14 @@ namespace BusinessLogic.Repository
                     return 1;
                 }
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 throw new Exception();
             }
         }
 
-        public List<SurveyUrl> listSurvey(string wss_id, string ws_id) {
+        public List<SurveyUrl> listSurvey(string wss_id, string ws_id)
+        {
             return null;
         }
         // return a list of file name with mode of correction
@@ -118,9 +207,9 @@ namespace BusinessLogic.Repository
 
 
         // get single survey by workshop name
-        public SurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id)
+        public WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id)
         {
-            var survey = _context.SurveyUrls.SingleOrDefault(s => s.WorkshopSeriesId == int.Parse(workshop_series_id) && s.WorkshopId == int.Parse(workshop_id));
+            var survey = _context.WorkshopSurveyUrls.SingleOrDefault(s => s.WorkshopSeriesId == int.Parse(workshop_series_id) && s.WorkshopId == int.Parse(workshop_id));
             if (survey == null)
             {
                 throw new Exception(SurveyErrorMessage.ERR_WS_URL);
@@ -131,7 +220,8 @@ namespace BusinessLogic.Repository
         //get goole api data
         public Task GoogleSheetApi()
         {
-            throw new NotImplementedException();
+            Login();
+            return null;
         }
 
         // get hugging face api
@@ -140,7 +230,7 @@ namespace BusinessLogic.Repository
             var json_input = JsonConvert.SerializeObject(sentiment_data_list);
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {SurveyConstant.HUGGING_FACE_TOKEN}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {HuggingFaceToken} ");
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
                 var json_content = new StringContent(json_input, Encoding.UTF8, "application/json");
                 HttpResponseMessage resp = await client.PostAsync(SurveyConstant.HUGGINGFACE_API_URL, json_content);
@@ -168,10 +258,6 @@ namespace BusinessLogic.Repository
                 unchecked_answer.Add(sentiment_string);
             }
             var clean_1 = validateSurveyPhase1(unchecked_answer);
-            foreach (var d in clean_1)
-            {
-                Console.WriteLine(d.ToString());
-            }
             return clean_1;
         }
 
@@ -242,8 +328,8 @@ namespace BusinessLogic.Repository
             string[] scopes = new[] { SheetsService.Scope.Spreadsheets };
             ClientSecrets secret = new ClientSecrets()
             {
-                ClientId = SurveyConstant.googleClientId,
-                ClientSecret = SurveyConstant.googleClientSecret
+                ClientId = GoogleClientId,
+                ClientSecret = GoogleClientSecret,
             };
             try
             {
@@ -252,7 +338,6 @@ namespace BusinessLogic.Repository
             }
             catch (Exception)
             {
-                Console.WriteLine(SurveyErrorMessage.ERR_GOOGLE_API_CALL);
                 throw new Exception(SurveyErrorMessage.ERR_GOOGLE_API_CALL);
             }
         }
@@ -290,19 +375,18 @@ namespace BusinessLogic.Repository
                 {
                     if (i + 1 < list_character.Length)
                     {
-                        Console.WriteLine("i ran here at:" + i.ToString());
                         if (remove_special_character_question[i] == remove_special_character_question[i + 1])
                         {
                             char_is_duplicate = true;
                             break;
                         }
                     }
+
                     // check for duplicate characters in the current string
                     for (int j = 0; j < list_character[i].Length; j++)
                     {
                         if (j + 1 < list_character[i].Length)
                         {
-                            Console.WriteLine("i ran here at sadge:" + j.ToString());
                             if (list_character[i][j] == list_character[i][j + 1])
                             {
                                 char_is_duplicate = true;
@@ -403,7 +487,5 @@ namespace BusinessLogic.Repository
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

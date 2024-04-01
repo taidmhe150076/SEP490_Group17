@@ -1,6 +1,7 @@
 using BusinessLogic.IRepository;
 using BusinessLogic.Repository;
 using DataAccess.Common;
+using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Antiforgery;
@@ -13,17 +14,16 @@ namespace COTSEClient.Pages.Survey
 {
     public class SurveyModel : PageModel
     {
-        private Sep490G17DbContext _db_context;
         private readonly IRepositorySurvey _repo;
-        private readonly IAntiforgery _antiforgery;
+        private readonly IRepositoryAWS _aws_repo;
 
 
 #pragma warning disable CS8618
-        public SurveyModel(IRepositorySurvey repo)
+        public SurveyModel(IRepositorySurvey repo, IRepositoryAWS aws_repo)
 #pragma warning restore CS8618 
         {
             _repo = repo;
-            _repo.setStopList();
+            _aws_repo = aws_repo;
         }
 
         [BindProperty]
@@ -43,7 +43,6 @@ namespace COTSEClient.Pages.Survey
 
         public async Task<IActionResult> OnPostAsync()
         {
-
             if (fileSurveys.Count == 1)
             {
                 if (fileSurveys[0] == null)
@@ -63,6 +62,7 @@ namespace COTSEClient.Pages.Survey
                 };
                 try
                 {
+                    var lol = await _aws_repo.UploadDataToS3(filePath, fileSurveys[0].FileName);
                     var questions = _repo.GetSentimentAnswer(filePath);
                     var json_data = await _repo.GetJsonSentiment(questions);
                     feedbackResults = _repo.Rate(questions, json_data);

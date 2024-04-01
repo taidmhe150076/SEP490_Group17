@@ -9,21 +9,21 @@ namespace COTSEClient.Pages.Survey
     public class SurveyByWorkshopModel : PageModel
     {
         private readonly IRepositorySurvey _repo;
-
+        
         public SurveyByWorkshopModel(IRepositorySurvey repo)
         {
             _repo = repo;
         }
-        public void OnGet(string workshop_series_id, string workshop_id)
+        public async Task OnGetAsync(string workshop_series_id, string workshop_id)
         {
+
+            await _repo.GoogleSheetApi();
             try
             {
-                string url = _repo.getSurveyByWorkshop("1", "3").SurveyUrl1;
-                var is_https = url.Split(":")[0] == "https";
-                if (is_https) {
-                    _repo.GoogleSheetApi();
-                }
-                Console.WriteLine(url);
+                var survey = _repo.getSurveyByWorkshop("1", "3");
+                string s3_object = survey.SurveyKey; // get data from file_path
+                string google_url = survey.SurveyUrl; // get data from google
+
             }
             catch (Exception e) {
                 ModelState.AddModelError("ERR_WS_URL", e.Message);

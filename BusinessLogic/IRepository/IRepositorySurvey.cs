@@ -5,7 +5,12 @@ namespace BusinessLogic.IRepository
 {
     public interface IRepositorySurvey
     {
-        SurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id);
+        // wss
+        List<WorkshopSeriesWorkshop> seriesSurvey();
+        
+        // survey
+        string GetsaveFileToTemp(string fileName, int? saveMode);
+        WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id);
         List<string> GetSentimentAnswer(string file_path);
         bool validateFileName(string filePath);
         public List<FeedbackResult> Rate(List<string> questions, string json_data);

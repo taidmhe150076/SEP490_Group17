@@ -1,0 +1,86 @@
+﻿@page "/WorkshopSeriesSurvey"
+@model COTSEClient.Pages.Survey.ListWorkshopSeriesSurveyModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, AuthoringTagHelpers
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div style="height:80%" class="my-2 pb-5">
+    <section class="section">
+        <div class="container">
+
+            <div class="row pt-5">
+                <h5>List of Workshop series with Survey</h5>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="candidate-list">
+
+                        @foreach (var data in Model.seriesHasSurvey)
+                        {
+                            <div class="candidate-list-box card mt-4">
+                                <div class="p-4 card-body">
+                                    <div class="align-items-center row">
+                                        <div class="col-auto">
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="candidate-list-content mt-3 mt-lg-0">
+                                                <h5 class="fs-19 mb-0">
+                                                    <a class="primary-link" onclick="openTable(table_@data.Id)">@data.WorkshopSeriesName </a>
+                                                </h5>
+                                                @if (data.StartDate == null)
+                                                {
+                                                    <p class="text-muted mb-2">Start date: N/A</p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted mb-2">Start date: @data.StartDate</p>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1"><span class="badge bg-soft-secondary fs-14 mt-1">Design</span><span class="badge bg-soft-secondary fs-14 mt-1">Developer</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table d-none" id="table_@data.Id">
+                                <thead>
+                                    <tr>
+                                        <th>Workshop name</th>
+                                        <th>Date Present</th>
+                                        <th>Presenter</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ws in data.workshops)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="/workshopSurveys/@data.Id/@ws.Id">laist way Link survey report other way</a>
+                                            </td>
+                                            <td>@ws.DatePresent</td>
+                                            <td>@ws.KeyPresenter</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    var openTable = (data) => {
+        var fdata = $(`#${data.id}`)
+        fdata.toggleClass("d-none");
+    }
+</script>

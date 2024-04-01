@@ -23,6 +23,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login";
         options.AccessDeniedPath = "/AccessDenied";
     });
+// Add additional scope
+AdditionalServiceCollection.AdditionalScope(builder);
+
 // Add scope repository
 AddServiceCollectionDI.AddScopeServiceCollectionDI(builder.Services);
 
@@ -50,6 +53,5 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
 
 app.Run();
