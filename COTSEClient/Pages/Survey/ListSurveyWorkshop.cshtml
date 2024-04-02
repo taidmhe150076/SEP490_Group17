@@ -11,12 +11,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div style="height:80%" class="my-2 pb-5">
-    <section class="section">
-        <div class="container">
+    <section class="py-5">
+        <div class="container px-5 mb-5">
 
-            <div class="row pt-5">
-                <div class="col-md-10">
-                    <h3>List surveys</h3><br />
+            <div class="row gx-5 justify-content-center">
+                <div class="text-center mb-5">
+                    <h3 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">List surveys</span></h3><br />
                     <h5>Total collected survey: @Model._survey.Count()</h5>
                 </div>
                 <div class="col-md-2">
@@ -24,8 +24,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg-12">
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-11 col-xl-9 col-xxl-8">
                     <div class="candidate-list">
 
                         @foreach (var data in Model._survey)
