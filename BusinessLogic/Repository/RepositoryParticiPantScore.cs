@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.IRepository;
 using COTSEClient.Models;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,19 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
+
+        public List<ParticiPantScore> GetParticiPantScoreByTestId(int testId)
+        {
+            try
+            {
+                return _context.ParticiPantScores.Include(x => x.Participant).Include(x => x.Test).Where(x => x.TestId == testId).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public int InsertParticiPantScore(ParticiPantScore particiPantScore)
         {
             try
@@ -25,7 +39,6 @@ namespace BusinessLogic.Repository
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

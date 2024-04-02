@@ -137,13 +137,15 @@
                             <td>@item.DateStart</td>
                             <td>@item.ExpiredTime</td>
                             <td>
-
                                 <div>
                                     <div class="eye-icon" onclick="showQRPopup('@item.QrTest')" data-bs-toggle="modal" data-bs-target="#qrPopup" style="cursor: pointer;">
                                         <img src="~/Image/eye_icon.png" alt="Eye Icon" width="30" height="30">
                                     </div>
                                 </div>
 
+                            </td>
+                            <td>
+                                <a asp-page="ListParticiPantScores" asp-route-testId="@item.Id">View Score Details</a>
                             </td>
                         </tr>
                     }
@@ -174,7 +176,7 @@
 
     <script>
         function showQRPopup(itemId) {
-            console.log(itemId +'alo')
+            console.log(itemId + 'alo')
             var qrCodeSrc = itemId;
             var popupQRCodeImage = document.getElementById("popupQRCodeImage");
             var popupCountdown = document.getElementById("popupCountdown");
