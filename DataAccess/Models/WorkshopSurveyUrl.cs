@@ -15,6 +15,10 @@ public partial class WorkshopSurveyUrl
 
     public string? SurveyKey { get; set; }
 
+    public DateTime? AddedDate { get; set; }
+
+    public string? SurveyName { get; set; }
+
     public virtual Workshop? Workshop { get; set; }
 
     public virtual WorkshopSeries? WorkshopSeries { get; set; }

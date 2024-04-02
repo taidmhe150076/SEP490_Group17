@@ -4,11 +4,7 @@ using DataAccess.Common;
 using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Sheets.v4;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Newtonsoft.Json;
-using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -16,8 +12,6 @@ namespace BusinessLogic.Repository
 {
     public class RepositorySurvey : IRepositorySurvey
     {
-
-
         // Repo constant
         private readonly Sep490G17DbContext _context;
         private List<string> file_types = new List<string>() {
@@ -25,19 +19,7 @@ namespace BusinessLogic.Repository
             "xlsx",
         };
 
-        private Dictionary<string, string> QAbyUser = new Dictionary<string, string>();
-        private int _saveMode = 0;
-        private readonly string googleClientId = Environment.GetEnvironmentVariable("googleClientId");
-        private readonly string googleClientSecret = Environment.GetEnvironmentVariable("googleClientSecret");
-        private readonly string huggingFaceToken = Environment.GetEnvironmentVariable("huggingfaceToken");
-
-
-        public string HuggingFaceToken => huggingFaceToken;
-
-        public string GoogleClientId => googleClientId;
-
-        public string GoogleClientSecret => googleClientSecret;
-
+        private readonly string? huggingFaceToken = Environment.GetEnvironmentVariable("huggingfaceToken");
 
         //constructor
         public RepositorySurvey(Sep490G17DbContext context)
@@ -45,27 +27,46 @@ namespace BusinessLogic.Repository
             _context = context;//
         }
 
+
+        // get surveyDTO 
+        public List<SurveyDTO> getListSurvey(int wss_id, int ws_id)
+        {
+            var survey_list = _context.WorkshopSurveyUrls
+                .Where(survey => survey.WorkshopSeriesId == wss_id && survey.WorkshopId == ws_id)
+                .Select(survey => new SurveyDTO
+                {
+                    Id = survey.Id,
+                    wssId = wss_id,
+                    wsId = wss_id,
+                    survey_name = survey.SurveyName,
+                    survey_url = survey.SurveyUrl != null ? survey.SurveyUrl : survey.SurveyKey,
+                    added_date = survey.AddedDate
+                })
+                .ToList();
+            return survey_list;
+        }
+        
         //get survey in workshop series
         public List<WorkshopSeriesWorkshop> seriesSurvey()
         {
             var result = new List<WorkshopSeriesWorkshop>();
             var seriesContainSurvey = _context.WorkshopSeries
-                .Join(_context.WorkshopSurveyUrls,
-                series => series.Id,
-                survey => survey.WorkshopSeriesId,
-                (series, survey) => series)
+                .Join(_context.WorkshopSurveyUrls, series => series.Id, survey => survey.WorkshopSeriesId, (series, survey) => series)
                 .Distinct().ToList();
-            foreach (var series in seriesContainSurvey) {
+            foreach (var series in seriesContainSurvey)
+            {
                 var workshop_list = _context.Workshops
-                    .Where(ws =>ws.WorkshopSeriesId==series.Id)
-                    .Join(_context.WorkshopSurveyUrls, ws => ws.Id, survey => survey.WorkshopId, (ws, survey)=> ws)
-                    .Select(s => new WorkshopDTO {
-                         Id = s.Id,
-                         DatePresent = s.DatePresent,
-                         WorkshopName = s.WorkshopName,
-                         KeyPresenter = s.KeyPresenter != null ? s.KeyPresenter.Replace(s.KeyPresenter, new string('*', s.KeyPresenter.Count())): "",
+                    .Where(ws => ws.WorkshopSeriesId == series.Id)
+                    .Join(_context.WorkshopSurveyUrls, ws => ws.Id, survey => survey.WorkshopId, (ws, survey) => ws)
+                    .Select(s => new WorkshopDTO
+                    {
+                        Id = s.Id,
+                        DatePresent = s.DatePresent,
+                        WorkshopName = s.WorkshopName,
+                        KeyPresenter = s.KeyPresenter != null ? s.KeyPresenter.Replace(s.KeyPresenter, new string('*', s.KeyPresenter.Count())) : "",
                     }).ToList();
-                var wss = new WorkshopSeriesWorkshop {
+                var wss = new WorkshopSeriesWorkshop
+                {
                     Id = series.Id,
                     WorkshopSeriesName = series.WorkshopSeriesName,
                     StartDate = series.StartDate,
@@ -80,14 +81,11 @@ namespace BusinessLogic.Repository
         public string GetsaveFileToTemp(string fileName, int? saveMode)
         {
             string error_message = string.Empty;
-            if (saveMode == null)
-            {
-                saveMode = _saveMode;
-            }
 
             var file_extension = Path.GetExtension(fileName);
 
-            if (!file_types.Contains(file_extension)) {
+            if (!file_types.Contains(file_extension))
+            {
                 error_message = SurveyErrorMessage.ERR_FILES_LOAD.Replace("{file_type}", file_extension);
                 throw new NotSupportedException(error_message);
             }
@@ -111,8 +109,9 @@ namespace BusinessLogic.Repository
             return save_dir;
         }
 
-        public void getSurvey(string wss_id) {
-              
+        public void getSurvey(string wss_id)
+        {
+
         }
         // add workshopseries to workshop
         public int addSurvey(string wss_id, string ws_id, string url)
@@ -163,6 +162,7 @@ namespace BusinessLogic.Repository
         {
             return null;
         }
+        
         // return a list of file name with mode of correction
         public List<(string, int)> validateFilesName(List<string> filesName)
         {
@@ -217,12 +217,7 @@ namespace BusinessLogic.Repository
             return survey;
         }
 
-        //get goole api data
-        public Task GoogleSheetApi()
-        {
-            Login();
-            return null;
-        }
+        
 
         // get hugging face api
         public async Task<string> GetJsonSentiment(List<string> sentiment_data_list)
@@ -230,7 +225,7 @@ namespace BusinessLogic.Repository
             var json_input = JsonConvert.SerializeObject(sentiment_data_list);
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {HuggingFaceToken} ");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {huggingFaceToken} ");
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
                 var json_content = new StringContent(json_input, Encoding.UTF8, "application/json");
                 HttpResponseMessage resp = await client.PostAsync(SurveyConstant.HUGGINGFACE_API_URL, json_content);
@@ -323,24 +318,6 @@ namespace BusinessLogic.Repository
         }
 
         // support function
-        private UserCredential Login()
-        {
-            string[] scopes = new[] { SheetsService.Scope.Spreadsheets };
-            ClientSecrets secret = new ClientSecrets()
-            {
-                ClientId = GoogleClientId,
-                ClientSecret = GoogleClientSecret,
-            };
-            try
-            {
-                Console.WriteLine("login successful");
-                return GoogleWebAuthorizationBroker.AuthorizeAsync(secret, scopes, "user", CancellationToken.None).Result;
-            }
-            catch (Exception)
-            {
-                throw new Exception(SurveyErrorMessage.ERR_GOOGLE_API_CALL);
-            }
-        }
 
         private string replace_special_character(string s)
         {

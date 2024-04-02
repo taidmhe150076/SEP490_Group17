@@ -14,22 +14,18 @@ namespace COTSEClient.Pages.Survey
         {
             _repo = repo;
         }
-        public async Task OnGetAsync(string workshop_series_id, string workshop_id)
+
+        // Define properties for binding
+        public string surveyId { get; set; }
+        public string wssId { get; set; }
+        public string wsId { get; set; }
+
+        public async Task OnGetAsync(int wssId, int wsId, int survey_id)
         {
 
-            await _repo.GoogleSheetApi();
-            try
-            {
-                var survey = _repo.getSurveyByWorkshop("1", "3");
-                string s3_object = survey.SurveyKey; // get data from file_path
-                string google_url = survey.SurveyUrl; // get data from google
-
-            }
-            catch (Exception e) {
-                ModelState.AddModelError("ERR_WS_URL", e.Message);
-            }
-            
         }
+
+
 
     }
 }

@@ -1,15 +1,12 @@
 using COTSEClient.Helper;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages().AddRazorPagesOptions(opts =>
-{
-    opts.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
-});
+builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<Sep490G17DbContext>(options =>
 {
@@ -17,12 +14,14 @@ builder.Services.AddDbContext<Sep490G17DbContext>(options =>
 });
 
 builder.Services.AddCors();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login";
         options.AccessDeniedPath = "/AccessDenied";
     });
+
 // Add additional scope
 AdditionalServiceCollection.AdditionalScope(builder);
 

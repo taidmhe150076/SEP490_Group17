@@ -403,9 +403,15 @@ public partial class Sep490G17DbContext : DbContext
             entity.ToTable("WorkshopSurveyUrl");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AddedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("added_date");
             entity.Property(e => e.SurveyKey)
                 .HasMaxLength(1000)
                 .HasColumnName("survey_key");
+            entity.Property(e => e.SurveyName)
+                .HasMaxLength(1000)
+                .HasColumnName("survey_name");
             entity.Property(e => e.SurveyUrl)
                 .HasMaxLength(200)
                 .IsUnicode(false)
