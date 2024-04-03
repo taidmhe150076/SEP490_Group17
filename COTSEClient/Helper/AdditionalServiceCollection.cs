@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using BusinessLogic.Validator;
 
 namespace COTSEClient.Helper
 {
@@ -9,7 +10,7 @@ namespace COTSEClient.Helper
             builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
             builder.Services.AddAWSService<IAmazonS3>();
 
-
+            builder.Services.AddScoped<SurveyValidator>();
         }
     }
 }

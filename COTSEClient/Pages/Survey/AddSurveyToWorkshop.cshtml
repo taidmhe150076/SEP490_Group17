@@ -7,12 +7,11 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <link rel="stylesheet" href="~/css/AddSurvey.css" />
 <div class="app pt-5 my-2" style="height:80vh">
-
     <!-- Sing in  Form -->
-    @if (!Html.ViewData.ModelState.IsValid || Html.ViewData.ModelState.ContainsKey(string.Empty))
+    @if (TempData["err_mess"] != null)
     {
-        <div class="alert alert-danger" role="alert" id="errorMessage">
-            @Html.ValidationSummary(false, "")
+        <div class="alert alert-danger">
+            @TempData["err_mess"]
         </div>
     }
     <section class="sign-in">

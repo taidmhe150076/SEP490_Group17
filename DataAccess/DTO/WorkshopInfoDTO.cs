@@ -8,9 +8,9 @@ namespace DataAccess.DTO
 {
     public class WorkshopInfoDTO
     {
-        public int wssId { get; set; }
+        public int? wssId { get; set; }
         public string? SeriesName { get; set; }
-        public int wsId { get; set; }
+        public int? wsId { get; set; }
         public string? WorkshopName { get; set; }
         public string? url { get; set; }
     }

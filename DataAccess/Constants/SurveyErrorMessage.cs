@@ -8,7 +8,7 @@ namespace DataAccess.Constants
 {
     public class SurveyErrorMessage
     {
-
+        // error_file_name
         public const string ERR_OUT_OF_RANGE = "input out of rannge!!";
         public const string ERR_FILENAMES_FORMAT = "files '{files}' not in the correct format";
         public const string ERR_LOAD_FILE = "file '{file_type}' is not supported!";
@@ -22,10 +22,17 @@ namespace DataAccess.Constants
         public const string ERR_WS_NOT_FOUND = "workshop not found!";
         public const string ERR_WSS_NOT_FOUND = "series not found!";
         public const string ERR_ADD_WS = "failure while adding survey";
-
+        // service error message
         public const string ERR_WS_URL = "surveys not found";
         public const string ERR_HF_API = "service not reach";
         public const string ERR_GOOGLE_API_CALL = "credential failure!";
 
+
+        // survey error message
+        public const string ERR_SURVEY_SUCCESS = "add successful";
+        public const string ERR_SURVEY_FAIL = "survey can not be added!";
+
+        //db connection
+        public const string ERR_SURVEY_CONNECTION = "service not reach";
     }
 }

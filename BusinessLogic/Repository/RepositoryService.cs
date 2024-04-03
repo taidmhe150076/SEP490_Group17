@@ -39,7 +39,7 @@ namespace BusinessLogic.Repository
             }
         }
 
-        public async Task<string> UploadDataToS3(string tmp_path, string file_name)
+        public async Task<int> UploadDataToS3(string tmp_path, string file_name)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace BusinessLogic.Repository
                 req.Key = file_name;
                 req.FilePath = tmp_path;
                 await _client.PutObjectAsync(req);
-                return "success";
+                return COTSEConstants.DB_STATUS_SUCCESS;
             }
             catch (Exception e)
             {

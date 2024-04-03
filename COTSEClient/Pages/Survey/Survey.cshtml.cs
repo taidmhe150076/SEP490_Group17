@@ -1,5 +1,6 @@
 using BusinessLogic.IRepository;
 using BusinessLogic.Repository;
+using BusinessLogic.Validator;
 using DataAccess.Common;
 using DataAccess.Constants;
 using DataAccess.DTO;
@@ -16,14 +17,13 @@ namespace COTSEClient.Pages.Survey
     {
         private readonly IRepositorySurvey _repo;
         private readonly IRepositoryAWS _aws_repo;
+        private readonly SurveyValidator _validator;
 
-
-#pragma warning disable CS8618
         public SurveyModel(IRepositorySurvey repo, IRepositoryAWS aws_repo)
-#pragma warning restore CS8618 
         {
             _repo = repo;
             _aws_repo = aws_repo;
+            _validator = new SurveyValidator();
         }
 
         [BindProperty]
@@ -50,7 +50,7 @@ namespace COTSEClient.Pages.Survey
                     ModelState.AddModelError("File", "File not imported");
                     return Page();
                 }
-                if (!_repo.validateFileName(fileSurveys[0].FileName))
+                if (!_validator.validateFileName(fileSurveys[0].FileName))
                 {
                     ModelState.AddModelError("File", "wrong file format");
                     return Page();
@@ -91,7 +91,7 @@ namespace COTSEClient.Pages.Survey
             else
             {
                 var list_file_name = fileSurveys.Select(x => x.FileName).ToList();
-                var validate_data = _repo.validateFilesName(list_file_name);
+                var validate_data = _validator.validateFilesName(list_file_name);
                 bool all_validate = validate_data.All(kv => kv.Item2 == SurveyConstant.VALID_NAME_FORMAT);
                 if (!all_validate)
                 {

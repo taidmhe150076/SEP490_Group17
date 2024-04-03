@@ -6,6 +6,7 @@ using DataAccess.DTO;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -15,10 +16,8 @@ namespace BusinessLogic.Repository
     {
         // Repo constant
         private readonly Sep490G17DbContext _context;
-        private List<string> file_types = new List<string>() {
-            "csv",
-            "xlsx",
-        };
+        private IRepositoryAWS _aws_repo;
+
 
         private readonly string? huggingFaceToken = Environment.GetEnvironmentVariable("huggingfaceToken");
 
@@ -26,6 +25,7 @@ namespace BusinessLogic.Repository
         public RepositorySurvey(Sep490G17DbContext context)
         {
             _context = context;//
+            _aws_repo = new RepositoryAWS();
         }
 
 
@@ -49,23 +49,97 @@ namespace BusinessLogic.Repository
 
 
         // get workshop information
-        public async Task<WorkshopInfoDTO> getWorkshopInformation(int wss_id, int ws_id) {
-            var selected_ws = await _context.WorkshopSeries
+        public WorkshopInfoDTO getWorkshopInformation(int wss_id, int ws_id)
+        {
+            var selected_ws = _context.WorkshopSeries
                 .Join(_context.Workshops,
                 series => series.Id,
                 ws => ws.WorkshopSeriesId,
-                (series, ws) => new WorkshopInfoDTO {
+                (series, ws) => new WorkshopInfoDTO
+                {
                     wssId = series.Id,
                     wsId = ws.Id,
                     SeriesName = series.WorkshopSeriesName,
                     WorkshopName = ws.WorkshopName
-                }).SingleOrDefaultAsync(ws_info => ws_info.wssId == wss_id && ws_info.wsId == ws_id);
-            if (selected_ws != null) {
+                }).SingleOrDefault(ws_info => ws_info.wssId == wss_id && ws_info.wsId == ws_id);
+            if (selected_ws != null)
+            {
                 return selected_ws;
             }
             else
             {
                 throw new Exception("cant find ws");
+            }
+        }
+
+
+        public async Task<int> addSurvey(WorkshopInfoDTO workshopinfo, int mode)
+        {
+            if (_context.WorkshopSurveyUrls == null)
+            {
+                return COTSEConstants.DB_STATUS_FAIL;
+            }
+            if (int.Parse(workshopinfo.wsId.ToString()) == null && int.Parse(workshopinfo.wssId.ToString()) == null)
+            {
+                return COTSEConstants.DB_STATUS_FAIL;
+            }
+            WorkshopSurveyUrl? new_survey = new WorkshopSurveyUrl
+            {
+                WorkshopSeriesId = workshopinfo.wssId,
+                WorkshopId = workshopinfo.wsId,
+                SurveyName = "new " + workshopinfo.WorkshopName + " survey",
+                AddedDate = DateTime.Now,
+            };
+
+            if (mode == COTSEConstants.MODE_ADD_URL)
+            {
+                new_survey.SurveyUrl = workshopinfo.url;
+                var exist_url_survey = _context.WorkshopSurveyUrls.SingleOrDefaultAsync(survey => survey.SurveyUrl == new_survey.SurveyUrl);
+                if (exist_url_survey != null)
+                {
+                    return 999;
+                }
+                else
+                {
+                    await _context.WorkshopSurveyUrls.AddAsync(new_survey);
+                    int state = await _context.SaveChangesAsync();
+                    if (state == 0)
+                    {
+                        return COTSEConstants.DB_STATUS_FAIL;
+                    }
+                    else
+                    {
+                        return COTSEConstants.DB_STATUS_SUCCESS;
+                    }
+                }
+            }
+            else if (mode == COTSEConstants.MODE_ADD_FILE)
+            {
+                new_survey.SurveyKey = workshopinfo.url;
+                var like_survey_url = await _context.WorkshopSurveyUrls.Where(survey => survey.SurveyKey.Contains(new_survey.SurveyKey)).CountAsync();
+                if (like_survey_url > 0)
+                {
+                    new_survey.SurveyKey = "new " + workshopinfo.WorkshopName + " survey " + $"({like_survey_url})";
+                }
+                string filePath = "";
+                int aws_status = await _aws_repo.UploadDataToS3(filePath, new_survey.SurveyKey);
+                if (aws_status != COTSEConstants.DB_STATUS_SUCCESS) {
+                    return COTSEConstants.DB_STATUS_FAIL;
+                }
+                await _context.WorkshopSurveyUrls.AddAsync(new_survey);
+                int state = await _context.SaveChangesAsync();
+                if (state == 0)
+                {
+                    return COTSEConstants.DB_STATUS_FAIL;
+                }
+                else
+                {
+                    return COTSEConstants.DB_STATUS_SUCCESS;
+                }
+            }
+            else
+            {
+                return COTSEConstants.DB_STATUS_FAIL;
             }
         }
         //get survey in workshop series
@@ -99,42 +173,12 @@ namespace BusinessLogic.Repository
             return result;
         }
 
-        //add file to temp folder (dev)
-        public string GetsaveFileToTemp(string fileName, int? saveMode)
-        {
-            string error_message = string.Empty;
-
-            var file_extension = Path.GetExtension(fileName);
-
-            if (!file_types.Contains(file_extension))
-            {
-                error_message = SurveyErrorMessage.ERR_FILES_LOAD.Replace("{file_type}", file_extension);
-                throw new NotSupportedException(error_message);
-            }
-
-            // save to temp folder in project
-            string save_dir = String.Empty;
-            if (saveMode == 0)
-            {
-                save_dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", fileName);
-            }
-            // save to temp folder in computer
-            else if (saveMode == 1)
-            {
-                save_dir = Path.Combine(Path.GetTempPath(), "Costse_web_client", fileName);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(SurveyErrorMessage.ERR_OUT_OF_RANGE);
-            }
-
-            return save_dir;
-        }
 
         public void getSurvey(string wss_id)
         {
 
         }
+
         // add workshopseries to workshop
         public int addSurvey(string wss_id, string ws_id, string url)
         {
@@ -184,48 +228,6 @@ namespace BusinessLogic.Repository
         {
             return null;
         }
-        
-        // return a list of file name with mode of correction
-        public List<(string, int)> validateFilesName(List<string> filesName)
-        {
-            var output = new List<(string, int)>();
-            foreach (string file_name in filesName)
-            {
-                int valid_point = validate_file_name(file_name);
-                output.Add((file_name, valid_point));
-            }
-            return output;
-        }
-
-        private int validate_file_name(string file)
-        {
-            var file_part = file.Split('.');
-            if (!file_types.Contains(file_part[^1]))
-            {
-                return SurveyConstant.INVALID_FILE_EXE;
-            }
-            else
-            {
-                var file_name = file_part[0];
-                var file_name_part = file_name.Split("_");
-                // workshopSeriesName_workshopSeriesName
-                string series_name = file_name_part[0];
-                var valid_wss = _context.WorkshopSeries.SingleOrDefault(wss => wss.WorkshopSeriesName == series_name);
-                if (valid_wss == null)
-                {
-                    return SurveyConstant.INVALID_WORKSHOP_SERIES;
-                }
-                string workshop_name = file_name_part[1];
-                var valid_ws = _context.Workshops.Where(ws => ws.WorkshopSeriesId == valid_wss.Id)
-                    .AsEnumerable()
-                    .Where(ws => replace_special_character(ws.WorkshopName) == workshop_name).FirstOrDefault();
-                if (valid_ws == null)
-                {
-                    return SurveyConstant.INVALID_WORKSHOP;
-                }
-            }
-            return SurveyConstant.VALID_NAME_FORMAT;
-        }
 
 
         // get single survey by workshop name
@@ -239,7 +241,7 @@ namespace BusinessLogic.Repository
             return survey;
         }
 
-        
+
 
         // get hugging face api
         public async Task<string> GetJsonSentiment(List<string> sentiment_data_list)
@@ -324,19 +326,6 @@ namespace BusinessLogic.Repository
             }
 
             return sentiment_result;
-        }
-
-        public bool validateFileName(string filePath)
-        {
-            string file_type = filePath.Split(".")[^1];
-            string file_name = filePath.Split(".")[0];
-            if (!file_types.Contains(file_type))
-            {
-                return false;
-            }
-            var file_name_part = file_name.Split("_");
-            //file name must contain the workshop name file name must contain workshop date
-            return true;
         }
 
         // support function
