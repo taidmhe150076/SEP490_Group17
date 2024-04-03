@@ -8,6 +8,7 @@
     ViewData["Title"] = "All Workshop Series";
 
     var searchInput = Model.SearchInput;
+    var curentDate = Model.CurentDate;
 }
 <style>
     .search-container {
@@ -27,6 +28,7 @@
     <title>Các chuỗi hội thảo</title>
 
 </head>
+
 <body>
     <main>
         <section class="py-5">
@@ -36,9 +38,9 @@
                 </div>
                 <form method="get">
                     <div class="search-container">
-                        <input type="text" name="searchInput" value="@searchInput" placeholder="Nhập từ khóa tìm kiếm">
-                        
-                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        <input type="text" id="searchInput" name="searchInput" value="@searchInput" onchange="OnSearch()" placeholder="Nhập từ khóa tìm kiếm">
+                        <input type="date" name="curentDate" value="@curentDate">
+                        <button type="submit" class="btn btn-primary" >Tìm kiếm</button>
                     </div>
                 </form>
                
@@ -77,12 +79,9 @@
                                 {
                                     <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)">Previous</a>
                                 }
-
                             }
-
                             @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
                             {
-
                                 if (searchInput != null)
                                 {
                                     <a href="?pageIndex=@i&searchInput=@searchInput" class="@((i == Model.WorkshopSeriesPage.PageIndex))">@i</a>
@@ -92,7 +91,6 @@
                                     <a href="?pageIndex=@i" class="@((i == Model.WorkshopSeriesPage.PageIndex))">@i</a>
                                 }
                             }
-
                             @if (Model.WorkshopSeriesPage.HasNextPage)
                             {
                                 if (searchInput != null)
@@ -106,7 +104,6 @@
                             }
                         </div>
                     }
-                   
                 }
                 else
                 {
@@ -129,11 +126,18 @@
 </body>
 </html>
 
+<script>
+    function OnSearch() {
+        var searchTerm = document.getElementById("searchInput").value;
+
+        console.log("Search term:", searchTerm);
+
+    }
+</script>
 
 
 
-
-@* <div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
+<div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -155,4 +159,4 @@
             </div>
         </div>
     </div>
-</div> *@
+</div>

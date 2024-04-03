@@ -13,6 +13,8 @@ namespace COTSEClient.Pages.Department
 
         [BindProperty(SupportsGet = true)]
         public string SearchInput { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CurentDate { get; set; }
 
      
         public PageList<WorkshopSeries> WorkshopSeriesPage { get; set; }
@@ -22,7 +24,7 @@ namespace COTSEClient.Pages.Department
             _repositoryWorkshopSeries = repositoryWorkshopSeries;
         }
 
-        public void OnGet(DateTime startDate, DateTime endDate , string searchInput, int pageIndex = 1, int pageSize = 3)
+        public void OnGet(DateTime curentDate , string searchInput, int pageIndex = 1, int pageSize = 3)
         {
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
@@ -32,15 +34,11 @@ namespace COTSEClient.Pages.Department
                 source = source.Where(s => s.WorkshopSeriesName.Contains(searchInput, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (startDate != default)
+            if (curentDate != DateTime.MinValue)
             {
-                source = source.Where(s => s.StartDate >= startDate);
+                source = source.Where(s => s.StartDate <= curentDate && s.EndDate >= curentDate);
             }
-
-            if (endDate != default)
-            {
-                source = source.Where(s => s.EndDate <= endDate);
-            }
+         
 
             WorkshopSeriesPage = PageList<WorkshopSeries>.Create(source, pageIndex, pageSize);
 
