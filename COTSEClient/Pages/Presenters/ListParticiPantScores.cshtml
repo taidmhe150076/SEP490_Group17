@@ -26,11 +26,6 @@
         </table>
     </div>
 </div>
-<div class="row p-1">
-    <div class="col-6 text-end">
-        <input type="button" id="sendButton" value="Send Message" />
-    </div>
-</div>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -59,12 +54,5 @@
         console.log("Start nè ");
     }).catch(function (err) {
         return console.error(err.toString());
-    });
-
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        connection.invoke("UpdateParticiPantScoresAndSendToClient", 2027).catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
     });
 </script>

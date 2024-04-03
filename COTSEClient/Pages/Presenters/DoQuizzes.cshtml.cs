@@ -57,8 +57,8 @@ namespace COTSEClient.Pages.Quizzes
         {
             try
             {
-                float score = 0;
-                float sountScore = 0;
+                double score = 0;
+                int countScore = 0;
                 WorkshopQuestions = _repositoryWorkshopQuestions.GetWorkshopQuestionsByWsId(WorkShopId);
 
                 foreach (var item in WorkshopQuestions)
@@ -70,12 +70,13 @@ namespace COTSEClient.Pages.Quizzes
                             var isCorrectAnswer = item.AnswerQuestions.FirstOrDefault(x => x.IsCorrectAnswer == true);
                             if (isCorrectAnswer != null && !string.IsNullOrEmpty(answer.Answer) && answer.Answer.Equals(isCorrectAnswer.AnswerText))
                             {
-                                sountScore++;
+                                countScore++;
                             }
                         }
                     }
                 }
-                score = ((WorkshopQuestions.Count() + 1) / 10) * sountScore;
+                score = (countScore / (double)WorkshopQuestions.Count()) * 10;
+                score = (double)Math.Round(score, 2);
 
                 ParticipantAnswer participantAnswer = new ParticipantAnswer
                 {
