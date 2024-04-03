@@ -3,31 +3,84 @@
 @{
     Layout = "_Layout";
 }
-<div class="container">
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Level</th>
-                    <th scope="col">TestName</th>
-                    <th scope="col">ParticipantName</th>
-                    <th scope="col">Score</th>
-                </tr>
-            </thead>
-            <tbody id="table">
-                @foreach (var item in Model.ListParticiPantScore)
-                {
-                    <tr>
-                        <td style="width:100px;height:100px;"></td>
-                        <td>@item.Test.TestName</td>
-                        <td>@item.Participant.ParticipantsEmail</td>
-                        <td>@item.Score</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Theo dõi quá trình làm bài</title>
+    <style>
+        .table {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+            .table th,
+            .table td {
+                padding: 6px;
+                text-align: left;
+            }
+
+            .table thead th {
+                background-color: #f8f9fa;
+                color: #212529;
+                border-color: #dee2e6;
+            }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.075);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="py-5">
+            <div class="row gx-5 justify-content-center">
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Kết quả bài kiểm tra</span></h1>
+                </div>
+                <div class="col-lg-11 col-xl-9 col-xxl-8">
+                    <div class="card overflow-hidden shadow rounded-4 border-0 mb-5">
+                        <div class="card-body p-0">
+                            <div class="d-flex align-items-center">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th scope="col">Bậc</th>
+                                            <th scope="col">Tên bài kiểm tra</th>
+                                            <th scope="col">Tên người tham gia</th>
+                                            <th scope="col">Điểm</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table">
+                                        @{
+                                            var count = 0;
+                                            foreach (var item in Model.ListParticiPantScore)
+                                            {
+                                                count++;
+                                                <tr>
+                                                    <td>@count</td>
+                                                    <td>@item.Test.TestName</td>
+                                                    <td>@item.Participant.ParticipantsEmail</td>
+                                                    <td>@item.Score</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -41,42 +94,42 @@
         var count = 1;
         particiPantScores.forEach(element => {
             var html = `
-                        <tr>
-                            <td>${count++}</td>
-                            <td>${element.TestName}</td>
-                            <td>${element.ParticipantName}</td>
-                            <td>${element.Score}</td>
-                        </tr>
-                        `;
+                <tr>
+                    <td>${count++}</td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
             if (count == 2) {
                 html = `
-                        <tr>
-                                <td style="width:100px;height:100px;"><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top1.png"></td>
-                            <td>${element.TestName}</td>
-                            <td>${element.ParticipantName}</td>
-                            <td>${element.Score}</td>
-                        </tr>
-                        `;
+                <tr>
+                    <td><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top1.png"></td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
             }
             if (count == 3) {
                 html = `
-                            <tr>
-                                    <td style="width:100px;height:100px;"><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top2.png"></td>
-                                <td>${element.TestName}</td>
-                                <td>${element.ParticipantName}</td>
-                                <td>${element.Score}</td>
-                            </tr>
-                            `;
+                <tr>
+                    <td><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top2.png"></td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
             }
             if (count == 4) {
                 html = `
-                        <tr>
-                                <td style="width:100px;height:100px;"><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top3.png"></td>
-                            <td>${element.TestName}</td>
-                            <td>${element.ParticipantName}</td>
-                            <td>${element.Score}</td>
-                        </tr>
-                        `;
+                <tr>
+                    <td><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top3.png"></td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
             }
             console.log(html);
             $("#table").append(html);
