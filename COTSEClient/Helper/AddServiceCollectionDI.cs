@@ -1,5 +1,8 @@
 ﻿using BusinessLogic.IRepository;
 using BusinessLogic.Repository;
+using COTSEClient.Hubs;
+using COTSEClient.Pages.Quizzes;
+using Microsoft.AspNetCore.SignalR;
 
 namespace COTSEClient.Helper
 {

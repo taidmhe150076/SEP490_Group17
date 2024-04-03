@@ -1,8 +1,12 @@
-using BusinessLogic.IRepository;
+﻿using BusinessLogic.IRepository;
 using BusinessLogic.Repository;
+using COTSEClient.Hubs;
+using DataAccess.DTO;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
+using System.Text.Json;
 
 namespace COTSEClient.Pages.Quizzes
 {
@@ -11,9 +15,15 @@ namespace COTSEClient.Pages.Quizzes
         private readonly IRepositoryWorkshopQuestions _repositoryWorkshopQuestions;
         private readonly IRepositoryParticipantAnswer _repositoryParticipantAnswer;
         private readonly IRepositoryParticiPantScore _repositoryParticiPantScore;
-        public DoQuizzesModel(IRepositoryWorkshopQuestions repositoryWorkshopQuestions)
+        private readonly IHubContext<ParticiPantScoresHub> _hubContext;
+
+
+        public DoQuizzesModel(IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryParticipantAnswer repositoryParticipantAnswer, IRepositoryParticiPantScore repositoryParticiPantScore, IHubContext<ParticiPantScoresHub> hubContext)
         {
             _repositoryWorkshopQuestions = repositoryWorkshopQuestions;
+            _repositoryParticipantAnswer = repositoryParticipantAnswer;
+            _repositoryParticiPantScore = repositoryParticiPantScore;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -43,7 +53,7 @@ namespace COTSEClient.Pages.Quizzes
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             try
             {
@@ -80,7 +90,19 @@ namespace COTSEClient.Pages.Quizzes
                         ParticipantId = participantAnswer.Id,
                         TestId = TestCurrentId,
                     };
-                    _repositoryParticiPantScore.InsertParticiPantScore(newParticiPantScore);
+                    var resultInsertScore = _repositoryParticiPantScore.InsertParticiPantScore(newParticiPantScore);
+                    if (resultInsertScore > 0)
+                    {
+                        List<ParticiPantScore> ParticiPantScore = _repositoryParticiPantScore.GetParticiPantScoreByTestId(newParticiPantScore.TestId);
+                        var result = ParticiPantScore.Select(x => new ParticiPantScoreDTO
+                        {
+                            TestName = x.Test.TestName,
+                            ParticipantName = x.Participant?.ParticipantsEmail,
+                            Score = x.Score
+                        }).OrderByDescending(x => x.Score).ToList();
+                        var resultjson = JsonSerializer.Serialize<List<ParticiPantScoreDTO>>(result);
+                        _hubContext.Clients.All.SendAsync("Message", resultjson);
+                    }
                 }
                 return Page();
             }

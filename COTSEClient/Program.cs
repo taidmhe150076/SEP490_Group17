@@ -1,4 +1,5 @@
 using COTSEClient.Helper;
+using COTSEClient.Hubs;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<Sep490G17DbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddSignalR();
 builder.Services.AddCors();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -52,5 +54,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapHub<ParticiPantScoresHub>("/particiPantScoresHub");
 
 app.Run();
