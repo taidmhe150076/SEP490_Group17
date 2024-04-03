@@ -55,12 +55,12 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
 
-                    <TextBox Margin="31,86,0,40" IsReadOnly="True" ></TextBox>
+                    <TextBox x:Name="txtFilePath" Margin="31,86,0,40" IsReadOnly="True" ></TextBox>
 
                 </Grid>
                 <Grid Grid.Column="1">
 
-                    <Button  Content="Open file" Height="Auto"  Margin="24,87,24,41"  ></Button>
+                    <Button  Content="Open file" Height="Auto"  Margin="24,87,24,41" Click="Button_Click"  ></Button>
 
                 </Grid>
 
@@ -76,7 +76,7 @@
                 <Grid Grid.Column="0" Margin="22,0,10,0" Background="Orange">
                     <TextBlock Text="UserGuide" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Foreground="Black" Margin="0,2,0,0" />
 
-                    <ListView Margin="0,34,0,0" >
+                    <ListView x:Name="userGuide" Margin="0,34,0,0" >
 
                     </ListView>
 
@@ -86,8 +86,8 @@
                 <Grid Grid.Column="1" Margin="21,0,25,0"  Background="Orange">
                     <TextBlock Text="Tool list available" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Foreground="Black" Margin="0,2,0,0" />
 
-                    <ListView Margin="0,34,0,0" >
-
+                    <ListView x:Name="listTool" Margin="0,34,0,0" >
+                      
                     </ListView>
                 </Grid>
 
@@ -99,7 +99,7 @@
              HorizontalAlignment="Center"
              Height="35"
               Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}">
-            <Button Margin="0,5,10,5" Content="Exit" HorizontalAlignment="Right" Width="94">
+            <Button Margin="0,5,10,5" Content="Exit" HorizontalAlignment="Right" Width="94" Click="Button_Click_1">
 
             </Button>
 
