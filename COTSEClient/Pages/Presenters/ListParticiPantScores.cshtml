@@ -1,0 +1,70 @@
+﻿@page
+@model COTSEClient.Pages.Presenters.ListParticiPantScoresModel
+@{
+    Layout = "_Layout";
+}
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">TestName</th>
+                    <th scope="col">ParticipantName</th>
+                    <th scope="col">Score</th>
+                </tr>
+            </thead>
+            <tbody id="table">
+                @foreach (var item in Model.ListParticiPantScore)
+                {
+                    <tr>
+                        <td>@item.Test.TestName</td>
+                        <td>@item.Participant.ParticipantsEmail</td>
+                        <td>@item.Score</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row p-1">
+    <div class="col-6 text-end">
+        <input type="button" id="sendButton" value="Send Message" />
+    </div>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/particiPantScoresHub").build();
+
+    connection.on("Message", function (ParticiPantScores) {
+        console.log(ParticiPantScores);
+        var particiPantScores = JSON.parse(ParticiPantScores);
+        console.log(particiPantScores);
+        $("#table").empty();
+
+        particiPantScores.forEach(element => {
+            var html = `
+            <tr>
+                <td>${element.TestName}</td>
+                <td>${element.ParticipantName}</td>
+                <td>${element.Score}</td>
+            </tr>
+            `;
+            $("#table").append(html); 
+        });
+    });
+
+    connection.start().then(function () {
+        console.log("Start nè ");
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    document.getElementById("sendButton").addEventListener("click", function (event) {
+        connection.invoke("UpdateParticiPantScoresAndSendToClient", 2027).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    });
+</script>

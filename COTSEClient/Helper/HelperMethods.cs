@@ -11,7 +11,8 @@ namespace COTSEClient.Helper
     {
         public static string GenerateQRCode(string content)
         {
-            QRCodeLogo qrCodeLogo = new QRCodeLogo("C:\\Users\\DoanManhTai\\Documents\\SEP490_Group17\\COTSEClient\\wwwroot\\Image\\LogoTeam.png");
+            var filePath = "wwwroot/Image/LogoTeam.png";
+            QRCodeLogo qrCodeLogo = new QRCodeLogo(filePath);
             GeneratedBarcode myQRCodeWithLogo = IronBarCode.QRCodeWriter.CreateQrCodeWithLogo(content, qrCodeLogo);
             myQRCodeWithLogo.ResizeTo(250, 250).SetMargins(10).ChangeBarCodeColor(Color.Black);
             return myQRCodeWithLogo.ToDataUrl();
