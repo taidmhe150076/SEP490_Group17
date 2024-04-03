@@ -43,8 +43,8 @@
                                 }
                             </div>
                         </div>
-                        <input type="text" asp-for="@Model.AnswerParticipantList[i].QuestionId" id="@Model.WorkshopQuestions[i].Id" value="@Model.WorkshopQuestions[i].Id" />
-                        <input type="text" asp-for="@Model.AnswerParticipantList[i].Answer" id="AnswerParticipant_@Model.WorkshopQuestions[i].Id" />
+                        <input type="hidden" asp-for="@Model.AnswerParticipantList[i].QuestionId" id="@Model.WorkshopQuestions[i].Id" value="@Model.WorkshopQuestions[i].Id" />
+                        <input type="hidden" asp-for="@Model.AnswerParticipantList[i].Answer" id="AnswerParticipant_@Model.WorkshopQuestions[i].Id" />
                     }
 
                     <input type="hidden" asp-for="@Model.TestCurrentId" />
@@ -55,33 +55,6 @@
             }
         </div>
     </div>
-    @*
-    <script>
-    function handleRadioClick(radio) {
-    console.log("Clicked");
-    var selectedAnswerId = radio.value;
-    var selectedAnswerName = radio.name;
-    document.getElementById('AnswerParticipant_' + selectedAnswerName).value = selectedAnswerId;
-    console.log(selectedAnswerName);
-    console.log(selectedAnswerId);
-
-    var allRadios = document.querySelectorAll('input[type="radio"]');
-    var currentQuestion = radio.closest('.card');
-    var radiosInCurrentQuestion = currentQuestion.querySelectorAll('input[type="radio"]');
-
-    allRadios.forEach(function (radio) {
-    if (!radio.closest('.card').isSameNode(currentQuestion)) {
-    radio.disabled = true;
-    }
-    });
-
-    radiosInCurrentQuestion.forEach(function (radioInQuestion) {
-    if (radioInQuestion !== radio) {
-    radioInQuestion.disabled = true;
-    }
-    });
-    };
-    </script>*@
     <script>
         function handleRadioClick(radio) {
             console.log("Clicked");

@@ -8,6 +8,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th scope="col">Level</th>
                     <th scope="col">TestName</th>
                     <th scope="col">ParticipantName</th>
                     <th scope="col">Score</th>
@@ -17,6 +18,7 @@
                 @foreach (var item in Model.ListParticiPantScore)
                 {
                     <tr>
+                        <td style="width:100px;height:100px;"></td>
                         <td>@item.Test.TestName</td>
                         <td>@item.Participant.ParticipantsEmail</td>
                         <td>@item.Score</td>
@@ -31,22 +33,53 @@
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
     var connection = new signalR.HubConnectionBuilder().withUrl("/particiPantScoresHub").build();
-
     connection.on("Message", function (ParticiPantScores) {
         console.log(ParticiPantScores);
         var particiPantScores = JSON.parse(ParticiPantScores);
         console.log(particiPantScores);
         $("#table").empty();
-
+        var count = 1;
         particiPantScores.forEach(element => {
             var html = `
-            <tr>
-                <td>${element.TestName}</td>
-                <td>${element.ParticipantName}</td>
-                <td>${element.Score}</td>
-            </tr>
-            `;
-            $("#table").append(html); 
+                        <tr>
+                            <td>${count++}</td>
+                            <td>${element.TestName}</td>
+                            <td>${element.ParticipantName}</td>
+                            <td>${element.Score}</td>
+                        </tr>
+                        `;
+            if (count == 2) {
+                html = `
+                        <tr>
+                                <td style="width:100px;height:100px;"><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top1.png"></td>
+                            <td>${element.TestName}</td>
+                            <td>${element.ParticipantName}</td>
+                            <td>${element.Score}</td>
+                        </tr>
+                        `;
+            }
+            if (count == 3) {
+                html = `
+                            <tr>
+                                    <td style="width:100px;height:100px;"><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top2.png"></td>
+                                <td>${element.TestName}</td>
+                                <td>${element.ParticipantName}</td>
+                                <td>${element.Score}</td>
+                            </tr>
+                            `;
+            }
+            if (count == 4) {
+                html = `
+                        <tr>
+                                <td style="width:100px;height:100px;"><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top3.png"></td>
+                            <td>${element.TestName}</td>
+                            <td>${element.ParticipantName}</td>
+                            <td>${element.Score}</td>
+                        </tr>
+                        `;
+            }
+            console.log(html);
+            $("#table").append(html);
         });
     });
 
