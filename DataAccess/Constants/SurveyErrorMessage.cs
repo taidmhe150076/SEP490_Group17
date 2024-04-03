@@ -13,7 +13,7 @@ namespace DataAccess.Constants
         public const string ERR_FILENAMES_FORMAT = "files '{files}' not in the correct format";
         public const string ERR_LOAD_FILE = "file '{file_type}' is not supported!";
         public const string ERR_FILES_LOAD = "load files invalid!!";
-
+        public const string ERR_ILLEGAL_CALL = "illigal call!";
         // uncommon
         public const string ERR_1 = "";
         public const string ERR_FILE_NAME = "file '{file_name}' is not in the right format";
@@ -26,5 +26,6 @@ namespace DataAccess.Constants
         public const string ERR_WS_URL = "surveys not found";
         public const string ERR_HF_API = "service not reach";
         public const string ERR_GOOGLE_API_CALL = "credential failure!";
+
     }
 }

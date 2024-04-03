@@ -5,6 +5,9 @@
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
+@section Title {All Survey}
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -14,7 +17,7 @@
     <section class="py-5">
         <div class="container px-5 mb-5">
             <div class="text-center mb-5">
-                <h5 class ="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">List of Workshop series with Survey</span></h5>
+                <h5 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">List of Workshop series with Survey</span></h5>
             </div>
             <div class="row gx-5 justify-content-center">
                 <div class="col-lg-11 col-xl-9 col-xxl-8">
@@ -51,7 +54,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">Workshop name</th>
-                                        <th scope ="col">Date Present</th>
+                                        <th scope="col">Date Present</th>
                                         <th scope="col">Presenter</th>
                                     </tr>
                                 </thead>

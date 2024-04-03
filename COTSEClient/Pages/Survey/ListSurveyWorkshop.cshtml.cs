@@ -22,13 +22,21 @@ namespace COTSEClient.Pages.Survey
         [BindProperty]
         public List<SurveyDTO> _survey { get; set; } = null!;
 
-        public void OnGet(int wssId, int wsId)
+        [BindProperty(SupportsGet = true)]
+        public int wssId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public int wsId { get; set; }
+
+        public int surveyId { get; set; }
+
+        public void OnGet()
         {
             _survey = _repo.getListSurvey(wssId, wsId);
         }
 
-        public IActionResult OnPost(int surveyId, int wssId, int wsId) {
-
+        public IActionResult OnPost()
+        {
             return Redirect($"~/Surveys/series-{wssId}/workshop-{wsId}/survey-{surveyId}");
         }
     }

@@ -4,6 +4,7 @@ using DataAccess.Common;
 using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,7 +29,7 @@ namespace BusinessLogic.Repository
         }
 
 
-        // get surveyDTO 
+        // get survey infomation 
         public List<SurveyDTO> getListSurvey(int wss_id, int ws_id)
         {
             var survey_list = _context.WorkshopSurveyUrls
@@ -45,17 +46,38 @@ namespace BusinessLogic.Repository
                 .ToList();
             return survey_list;
         }
-        
+
+
+        // get workshop information
+        public async Task<WorkshopInfoDTO> getWorkshopInformation(int wss_id, int ws_id) {
+            var selected_ws = await _context.WorkshopSeries
+                .Join(_context.Workshops,
+                series => series.Id,
+                ws => ws.WorkshopSeriesId,
+                (series, ws) => new WorkshopInfoDTO {
+                    wssId = series.Id,
+                    wsId = ws.Id,
+                    SeriesName = series.WorkshopSeriesName,
+                    WorkshopName = ws.WorkshopName
+                }).SingleOrDefaultAsync(ws_info => ws_info.wssId == wss_id && ws_info.wsId == ws_id);
+            if (selected_ws != null) {
+                return selected_ws;
+            }
+            else
+            {
+                throw new Exception("cant find ws");
+            }
+        }
         //get survey in workshop series
-        public List<WorkshopSeriesWorkshop> seriesSurvey()
+        public async Task<List<WorkshopSeriesWorkshop>> seriesSurvey()
         {
             var result = new List<WorkshopSeriesWorkshop>();
-            var seriesContainSurvey = _context.WorkshopSeries
+            var seriesContainSurvey = await _context.WorkshopSeries
                 .Join(_context.WorkshopSurveyUrls, series => series.Id, survey => survey.WorkshopSeriesId, (series, survey) => series)
-                .Distinct().ToList();
+                .Distinct().ToListAsync();
             foreach (var series in seriesContainSurvey)
             {
-                var workshop_list = _context.Workshops
+                var workshop_list = await _context.Workshops
                     .Where(ws => ws.WorkshopSeriesId == series.Id)
                     .Join(_context.WorkshopSurveyUrls, ws => ws.Id, survey => survey.WorkshopId, (ws, survey) => ws)
                     .Select(s => new WorkshopDTO
@@ -64,7 +86,7 @@ namespace BusinessLogic.Repository
                         DatePresent = s.DatePresent,
                         WorkshopName = s.WorkshopName,
                         KeyPresenter = s.KeyPresenter != null ? s.KeyPresenter.Replace(s.KeyPresenter, new string('*', s.KeyPresenter.Count())) : "",
-                    }).ToList();
+                    }).ToListAsync();
                 var wss = new WorkshopSeriesWorkshop
                 {
                     Id = series.Id,

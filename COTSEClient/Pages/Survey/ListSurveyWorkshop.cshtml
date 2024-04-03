@@ -4,11 +4,11 @@
 @model COTSEClient.Pages.Survey.ListSurveyWorkshopModel
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
-}
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>}
 
 <div style="height:80%" class="my-2 pb-5">
     <section class="py-5">
@@ -20,7 +20,7 @@
                     <h5>Total collected survey: @Model._survey.Count()</h5>
                 </div>
                 <div class="col-md-2">
-                    <a class="btn btn-outline-primary" asp-page="/AllDepartments" asp-route-wssId="1" asp-route-wsId="2">Add Survey</a>
+                    <a class="btn btn-outline-primary" href="../../Workshop/AddSurvey?wssId=@Model.wssId&wsId=@Model.wsId">Add Survey</a>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                                         <div class="col-lg-5">
                                             <div class="candidate-list-content mt-3 mt-lg-0">
                                                 <form asp-page="/Surveys/series-@data.wssId/workshop-@data.wsId" method="post" id="form_@data.Id">
-                                                    @Html.AntiForgeryToken();
+                                                    @Html.AntiForgeryToken()
                                                     @Html.Hidden("surveyId", data.Id)
                                                     @Html.Hidden("wssId", data.wssId)
                                                     @Html.Hidden("wsId", data.wsId)

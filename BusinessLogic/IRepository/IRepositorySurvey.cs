@@ -6,9 +6,9 @@ namespace BusinessLogic.IRepository
     public interface IRepositorySurvey
     {
         // wss
-        List<WorkshopSeriesWorkshop> seriesSurvey();
+        Task<List<WorkshopSeriesWorkshop>> seriesSurvey();
         List<SurveyDTO> getListSurvey(int wss_id, int ws_id);
-
+        Task<WorkshopInfoDTO> getWorkshopInformation(int wss_id, int ws_id);
         // survey
         string GetsaveFileToTemp(string fileName, int? saveMode);
         WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id);

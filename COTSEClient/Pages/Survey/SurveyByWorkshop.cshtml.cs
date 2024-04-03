@@ -9,20 +9,23 @@ namespace COTSEClient.Pages.Survey
     public class SurveyByWorkshopModel : PageModel
     {
         private readonly IRepositorySurvey _repo;
-        
+
         public SurveyByWorkshopModel(IRepositorySurvey repo)
         {
             _repo = repo;
         }
 
         // Define properties for binding
+        [BindProperty(SupportsGet = true)]
         public string surveyId { get; set; }
+        [BindProperty(SupportsGet = true)]
         public string wssId { get; set; }
+        [BindProperty(SupportsGet = true)]
         public string wsId { get; set; }
 
-        public async Task OnGetAsync(int wssId, int wsId, int survey_id)
+        public async Task<IActionResult> OnGetAsync()
         {
-
+            return Page();
         }
 
 
