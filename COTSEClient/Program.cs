@@ -2,6 +2,7 @@ using COTSEClient.Helper;
 using COTSEClient.Hubs;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,12 +16,17 @@ builder.Services.AddDbContext<Sep490G17DbContext>(options =>
 
 builder.Services.AddSignalR();
 builder.Services.AddCors();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Login";
         options.AccessDeniedPath = "/AccessDenied";
     });
+
+// Add additional scope
+AdditionalServiceCollection.AdditionalScope(builder);
+
 // Add scope repository
 AddServiceCollectionDI.AddScopeServiceCollectionDI(builder.Services);
 

@@ -1,0 +1,64 @@
+﻿@page "/Workshop/AddSurvey"
+@model COTSEClient.Pages.Survey.AddSurveyToWorkshopModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<link rel="stylesheet" href="~/css/AddSurvey.css" />
+<div class="app pt-5 my-2" style="height:80vh">
+    <!-- Sing in  Form -->
+    @if (TempData["err_mess"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["err_mess"]
+        </div>
+    }
+    <section class="sign-in">
+        <div class="headerx pb-2">
+            <h1 class="ps-5 ms-2">Add new Survey</h1>
+        </div>
+        <div class="survey-container">
+            <div class="signin-content">
+                <div class="signin-form">
+                    <form method="POST" class="register-form" id="login-form" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <h5>SeriesName</h5>
+                            <select class="form-control">
+                                <option>@Model.data.SeriesName</option>
+                            </select>
+                            @Html.Hidden("wssId", Model.data.wssId)
+                        </div>
+                        <div class="form-group">
+                            <h5>Worshop</h5>
+                            <select class="form-control">
+                                <option>@Model.data.WorkshopName</option>
+                            </select>
+                            @Html.Hidden("wsId", Model.data.wsId)
+                        </div>
+
+                        <div class="form-group my-1" style="height:60px">
+                            <input type="checkbox" class="btn-check" id="url_checked" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" style="width:150px; text-align:left" for="url_checked" id="checked_label">Google Sheet URL</label><br>
+                        </div>
+
+                        <div class="form-group" id="url-control">
+                            <input class="form-control" type="text" name="url" id="url" placeholder="Google Sheet URL" />
+                        </div>
+                        <div class="form-group d-none" id="key-control">
+                            <label for="your_pass"><i class="zmdi zmdi-lock"></i></label>
+                            <input type="file" class="form-control" name="key" id="key" placeholder="select folder" />
+                        </div>
+                        <div class="form-group form-button">
+                            <input type="submit" id="submit" class="form-submit" value="Add Survey" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script src="~/js/Survey/addSurvey.js">
+
+</script>

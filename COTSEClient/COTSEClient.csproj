@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\temp\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

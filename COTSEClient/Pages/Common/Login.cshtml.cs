@@ -29,7 +29,6 @@ namespace COTSEClient.Pages.Common
             {
                 return Page();
             }
-
             string hashPassword = HelperMethods.GenerateSecretKey(Password, 32);
             var user = _context.Accounts.FirstOrDefault(x => x.UserName == Username && x.Password == hashPassword);
 
