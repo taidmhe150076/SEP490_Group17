@@ -48,15 +48,16 @@ namespace BusinessLogic.Repository
                 req.Key = file_name;
                 req.FilePath = tmp_path;
                 await _client.PutObjectAsync(req);
+                File.Delete(tmp_path);
                 return COTSEConstants.DB_STATUS_SUCCESS;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new Exception("not working please help");
             }
         }
 
-        public async Task GetS3Object(string key) {
+        public async Task<bool> GetS3Object(string key) {
             try
             {
                 GetObjectRequest request = new GetObjectRequest {
@@ -69,10 +70,10 @@ namespace BusinessLogic.Repository
                         await WriteToTemp(key, responseStream);
                     }
                 }
-
+                return true;
             }
             catch (Exception) {
-                throw new Exception("xDDD");
+                return false;
             }
         }
 

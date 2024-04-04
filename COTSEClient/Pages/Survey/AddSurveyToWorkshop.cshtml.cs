@@ -40,6 +40,7 @@ namespace COTSEClient.Pages.Survey
 
         public async Task<IActionResult> OnPostAsync()
         {
+            int result = -1;
             bool url_selected = false;
             if (url != null && key != null)
             {
@@ -61,6 +62,7 @@ namespace COTSEClient.Pages.Survey
                     {
                         WorkshopInfoDTO new_survey = data;
                         new_survey.url = url;
+                        result = await _repo.addSurvey(new_survey, COTSEConstants.MODE_ADD_URL, "");
                     }
                 }
                 else
@@ -79,10 +81,29 @@ namespace COTSEClient.Pages.Survey
                         };
                         WorkshopInfoDTO new_survey = data;
                         new_survey.url = key.FileName;
-                        await Console.Out.WriteLineAsync(filePath);
+                        result = await _repo.addSurvey(new_survey, COTSEConstants.MODE_ADD_FILE, filePath);
+                        
                     }
                 }
-                return Redirect($"/Surveys/series-{wssId}/workshop-{wsId}");
+
+                if (result == COTSEConstants.DB_STATUS_FAIL)
+                {
+                    TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
+                    return Redirect($"/Workshop/AddSurvey?wssId={wssId}&wsId={wsId}");
+                }
+                else if (result == COTSEConstants.DB_STATUS_SUCCESS)
+                {
+                    return Redirect($"/Surveys/series-{wssId}/workshop-{wsId}");
+                }
+                else if (result == COTSEConstants.DB_STATUS_EXIST)
+                {
+                    TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
+                    return Redirect($"/Workshop/AddSurvey?wssId={wssId}&wsId={wsId}");
+                }
+                else {
+                    TempData["err_mess"] = SurveyErrorMessage.ERR_ILLEGAL_CALL;
+                    return Redirect($"/Workshop/AddSurvey?wssId={wssId}&wsId={wsId}");
+                }
             }
         }
     }

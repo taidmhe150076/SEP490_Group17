@@ -28,8 +28,12 @@ namespace COTSEClient.Pages.Survey
         [BindProperty(SupportsGet = true)]
         public int wsId { get; set; }
 
+        [BindProperty(SupportsGet =true)]
         public int surveyId { get; set; }
 
+        [BindProperty]
+        public string key { get; set; }
+        
         public void OnGet()
         {
             _survey = _repo.getListSurvey(wssId, wsId);
@@ -37,7 +41,7 @@ namespace COTSEClient.Pages.Survey
 
         public IActionResult OnPost()
         {
-            return Redirect($"~/Surveys/series-{wssId}/workshop-{wsId}/survey-{surveyId}");
+            return Redirect($"~/Surveys/series-{wssId}/workshop-{wsId}/survey-{surveyId}/{key}");
         }
     }
 }

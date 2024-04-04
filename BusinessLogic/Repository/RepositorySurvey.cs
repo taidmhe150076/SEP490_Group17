@@ -6,7 +6,7 @@ using DataAccess.DTO;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Security.Policy;
+using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -17,6 +17,7 @@ namespace BusinessLogic.Repository
         // Repo constant
         private readonly Sep490G17DbContext _context;
         private IRepositoryAWS _aws_repo;
+        private readonly int key_length = 10;
 
 
         private readonly string? huggingFaceToken = Environment.GetEnvironmentVariable("huggingfaceToken");
@@ -48,6 +49,58 @@ namespace BusinessLogic.Repository
         }
 
 
+        public async Task<string> getWorkshopData(int wssId, int wsId, string key)
+        {
+
+            try
+            {
+                int state = -1;
+                WorkshopSurveyUrl? current_ws = null;
+                var data = await _context.WorkshopSurveyUrls.Where(survey => survey.WorkshopId == wsId && survey.WorkshopSeriesId == wssId).ToListAsync();
+                if (data.Any(survey => survey.SurveyUrl == key))
+                {
+                    current_ws = data.SingleOrDefault(survey => survey.SurveyUrl == key);
+                    state = COTSEConstants.MODE_ADD_URL;
+                }
+                else
+                {
+                    current_ws = data.SingleOrDefault(survey => survey.SurveyKey == key);
+                    state = COTSEConstants.MODE_ADD_FILE;
+                }
+                if (state == -1)
+                {
+                    throw new Exception();
+                }
+                else if (state == COTSEConstants.MODE_ADD_URL)
+                {
+                    throw new Exception("not support yet");
+                }
+                else if (state == COTSEConstants.MODE_ADD_FILE)
+                {
+                    var s3_key = current_ws?.SurveyKey;
+                    var temp_data = await _aws_repo.GetS3Object(s3_key);
+                    if (temp_data)
+                    {
+                        return s3_key;
+                    }
+                    else  {
+                        throw new Exception("key not found");
+                    }
+                }
+                else
+                {
+
+                    throw new Exception();
+                }
+
+
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
         // get workshop information
         public WorkshopInfoDTO getWorkshopInformation(int wss_id, int ws_id)
         {
@@ -73,87 +126,69 @@ namespace BusinessLogic.Repository
         }
 
 
-        public async Task<int> addSurvey(WorkshopInfoDTO workshopinfo, int mode)
+        public async Task<int> addSurvey(WorkshopInfoDTO workshopinfo, int mode, string? filePath)
         {
-            if (_context.WorkshopSurveyUrls == null)
+            if (!int.TryParse(workshopinfo.wsId.ToString(), out int wsId) || !int.TryParse(workshopinfo.wssId.ToString(), out int wssId))
             {
                 return COTSEConstants.DB_STATUS_FAIL;
             }
-            if (int.Parse(workshopinfo.wsId.ToString()) == null && int.Parse(workshopinfo.wssId.ToString()) == null)
+
+            WorkshopSurveyUrl newSurvey = new WorkshopSurveyUrl
             {
-                return COTSEConstants.DB_STATUS_FAIL;
-            }
-            WorkshopSurveyUrl? new_survey = new WorkshopSurveyUrl
-            {
-                WorkshopSeriesId = workshopinfo.wssId,
-                WorkshopId = workshopinfo.wsId,
-                SurveyName = "new " + workshopinfo.WorkshopName + " survey",
-                AddedDate = DateTime.Now,
+                WorkshopSeriesId = wssId,
+                WorkshopId = wsId,
+                AddedDate = DateTime.Now
             };
 
             if (mode == COTSEConstants.MODE_ADD_URL)
             {
-                new_survey.SurveyUrl = workshopinfo.url;
-                var exist_url_survey = _context.WorkshopSurveyUrls.SingleOrDefaultAsync(survey => survey.SurveyUrl == new_survey.SurveyUrl);
-                if (exist_url_survey != null)
+                newSurvey.SurveyUrl = workshopinfo.url;
+                var existingSurveyUrl = await _context.WorkshopSurveyUrls.SingleOrDefaultAsync(survey => survey.SurveyUrl == newSurvey.SurveyUrl);
+                if (existingSurveyUrl != null)
                 {
-                    return 999;
+                    return COTSEConstants.DB_STATUS_EXIST;
                 }
                 else
                 {
-                    await _context.WorkshopSurveyUrls.AddAsync(new_survey);
-                    int state = await _context.SaveChangesAsync();
-                    if (state == 0)
-                    {
-                        return COTSEConstants.DB_STATUS_FAIL;
-                    }
-                    else
-                    {
-                        return COTSEConstants.DB_STATUS_SUCCESS;
-                    }
+                    newSurvey.SurveyName = "Google Form survey";
                 }
             }
             else if (mode == COTSEConstants.MODE_ADD_FILE)
             {
-                new_survey.SurveyKey = workshopinfo.url;
-                var like_survey_url = await _context.WorkshopSurveyUrls.Where(survey => survey.SurveyKey.Contains(new_survey.SurveyKey)).CountAsync();
-                if (like_survey_url > 0)
-                {
-                    new_survey.SurveyKey = "new " + workshopinfo.WorkshopName + " survey " + $"({like_survey_url})";
-                }
-                string filePath = "";
-                int aws_status = await _aws_repo.UploadDataToS3(filePath, new_survey.SurveyKey);
-                if (aws_status != COTSEConstants.DB_STATUS_SUCCESS) {
-                    return COTSEConstants.DB_STATUS_FAIL;
-                }
-                await _context.WorkshopSurveyUrls.AddAsync(new_survey);
-                int state = await _context.SaveChangesAsync();
-                if (state == 0)
+                newSurvey.SurveyKey = workshopinfo.url;
+                string surveyName = workshopinfo.url.Split(".")[0];
+                int similarSurveyCount = await _context.WorkshopSurveyUrls.Where(survey => survey.SurveyName.Contains(surveyName)).CountAsync();
+                newSurvey.SurveyName = similarSurveyCount > 0 ? $"{surveyName}-{similarSurveyCount}" : surveyName;
+                newSurvey.SurveyKey = $"{await GenerateUniqueSurveyKey(key_length)}.{workshopinfo.url.Split(".")[^1]}";
+                int awsStatus = await _aws_repo.UploadDataToS3(filePath, $"{newSurvey.SurveyKey}");
+                if (awsStatus != COTSEConstants.DB_STATUS_SUCCESS)
                 {
                     return COTSEConstants.DB_STATUS_FAIL;
-                }
-                else
-                {
-                    return COTSEConstants.DB_STATUS_SUCCESS;
                 }
             }
             else
             {
                 return COTSEConstants.DB_STATUS_FAIL;
             }
+
+            _context.WorkshopSurveyUrls.Add(newSurvey);
+            int state = await _context.SaveChangesAsync();
+            return state == 0 ? COTSEConstants.DB_STATUS_FAIL : COTSEConstants.DB_STATUS_SUCCESS;
         }
+
+
         //get survey in workshop series
         public async Task<List<WorkshopSeriesWorkshop>> seriesSurvey()
         {
             var result = new List<WorkshopSeriesWorkshop>();
             var seriesContainSurvey = await _context.WorkshopSeries
-                .Join(_context.WorkshopSurveyUrls, series => series.Id, survey => survey.WorkshopSeriesId, (series, survey) => series)
+                //.Join(_context.WorkshopSurveyUrls, series => series.Id, survey => survey.WorkshopSeriesId, (series, survey) => series)
                 .Distinct().ToListAsync();
             foreach (var series in seriesContainSurvey)
             {
                 var workshop_list = await _context.Workshops
                     .Where(ws => ws.WorkshopSeriesId == series.Id)
-                    .Join(_context.WorkshopSurveyUrls, ws => ws.Id, survey => survey.WorkshopId, (ws, survey) => ws)
+                    //.Join(_context.WorkshopSurveyUrls, ws => ws.Id, survey => survey.WorkshopId, (ws, survey) => ws)
                     .Select(s => new WorkshopDTO
                     {
                         Id = s.Id,
@@ -179,50 +214,6 @@ namespace BusinessLogic.Repository
 
         }
 
-        // add workshopseries to workshop
-        public int addSurvey(string wss_id, string ws_id, string url)
-        {
-            try
-            {
-                var wss = _context.WorkshopSeries.SingleOrDefault(wss_detail => wss_detail.Id == int.Parse(wss_id));
-                if (wss == null)
-                {
-                    throw new ArgumentException(SurveyErrorMessage.ERR_WSS_NOT_FOUND);
-                }
-                var ws = _context.Workshops.SingleOrDefault(ws_detail => ws_detail.Id == int.Parse(ws_id) && ws_detail.WorkshopSeries == wss);
-                if (ws == null)
-                {
-                    throw new ArgumentException(SurveyErrorMessage.ERR_WS_NOT_FOUND);
-                }
-
-                //check if the folder path already exist
-                var survey = _context.WorkshopSurveyUrls.SingleOrDefault(s_detail => s_detail.SurveyKey == url);
-                if (survey == null)
-                {
-                    var survey_url = new WorkshopSurveyUrl()
-                    {
-                        Workshop = ws,
-                        WorkshopSeries = wss,
-                        SurveyKey = url,
-                    };
-                    _context.WorkshopSurveyUrls.Add(survey_url);
-                    var state = _context.SaveChanges();
-                    if (state == 0)
-                    {
-                        throw new Exception(SurveyErrorMessage.ERR_ADD_WS);
-                    }
-                    return state;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            catch (Exception)
-            {
-                throw new Exception();
-            }
-        }
 
         public List<SurveyUrl> listSurvey(string wss_id, string ws_id)
         {
@@ -474,6 +465,31 @@ namespace BusinessLogic.Repository
         private List<SurveyAnswer> ReadExcelFile(string file_path)
         {
             throw new NotImplementedException();
+        }
+
+
+        // support method
+        private string randomKey(int length)
+        {
+            string randomString = "";
+            Random r = new Random();
+            for (int i = 0; i < length; i++)
+            {
+                int n = r.Next(10);
+                randomString += n;
+            }
+            return randomString;
+
+        }
+
+        private async Task<string> GenerateUniqueSurveyKey(int keyLength)
+        {
+            string surveyKey = randomKey(keyLength);
+            while (await _context.WorkshopSurveyUrls.AnyAsync(obj => obj.SurveyKey == surveyKey))
+            {
+                surveyKey = randomKey(keyLength);
+            }
+            return surveyKey;
         }
     }
 }

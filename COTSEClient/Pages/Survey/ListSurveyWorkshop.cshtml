@@ -42,6 +42,7 @@
                                                     @Html.Hidden("surveyId", data.Id)
                                                     @Html.Hidden("wssId", data.wssId)
                                                     @Html.Hidden("wsId", data.wsId)
+                                                    @Html.Hidden("key", data.survey_url)
                                                     <a href="javascript:void(0)" onclick="submitForm('@data.Id')">
                                                         @data.survey_name
                                                     </a>

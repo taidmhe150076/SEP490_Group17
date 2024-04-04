@@ -20,5 +20,6 @@ namespace DataAccess.Constants
         public const int MODE_ADD_FILE = 0;
         public const int DB_STATUS_FAIL = -1;
         public const int DB_STATUS_SUCCESS = 1;
+        public const int DB_STATUS_EXIST = 999;
     }
 }

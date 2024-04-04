@@ -3,7 +3,7 @@
     public interface IRepositoryAWS
     {
         Task<int> UploadDataToS3(string tmp_path, string file_name);
-        Task GetS3Object(string key);
+        Task<bool> GetS3Object(string key);
     }
 
     public interface IRepositoryGoogle
