@@ -102,7 +102,7 @@ namespace COTSEClient.Pages.Quizzes
                             Score = x.Score
                         }).OrderByDescending(x => x.Score).ToList();
                         var resultjson = JsonSerializer.Serialize<List<ParticiPantScoreDTO>>(result);
-                        _hubContext.Clients.All.SendAsync("Message", resultjson);
+                         await _hubContext.Clients.All.SendAsync("Message", resultjson);
                     }
                 }
                 return Page();
