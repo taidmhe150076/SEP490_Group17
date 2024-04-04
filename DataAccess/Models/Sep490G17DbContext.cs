@@ -59,9 +59,11 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<WorkshopSeries> WorkshopSeries { get; set; }
 
+    public virtual DbSet<WorkshopSurveyUrl> WorkshopSurveyUrls { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-LJLCRRI;database=SEP490_G17_DB;uid=sa;pwd=123;TrustServerCertificate=true;");
+        => optionsBuilder.UseSqlServer("server = (local); database = SEP490_G17_DB ; uid=sa;pwd=1;Trusted_Connection=True;Encrypt=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -394,6 +396,36 @@ public partial class Sep490G17DbContext : DbContext
             entity.HasOne(d => d.Department).WithMany(p => p.WorkshopSeries)
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_WorkshopSeries_Department");
+        });
+
+        modelBuilder.Entity<WorkshopSurveyUrl>(entity =>
+        {
+            entity.ToTable("WorkshopSurveyUrl");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AddedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("added_date");
+            entity.Property(e => e.SurveyKey)
+                .HasMaxLength(1000)
+                .HasColumnName("survey_key");
+            entity.Property(e => e.SurveyName)
+                .HasMaxLength(1000)
+                .HasColumnName("survey_name");
+            entity.Property(e => e.SurveyUrl)
+                .HasMaxLength(200)
+                .IsUnicode(false)
+                .HasColumnName("survey_url");
+            entity.Property(e => e.WorkshopId).HasColumnName("workshop_id");
+            entity.Property(e => e.WorkshopSeriesId).HasColumnName("workshop_series_id");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.WorkshopSurveyUrls)
+                .HasForeignKey(d => d.WorkshopId)
+                .HasConstraintName("FK_WorkshopSurveyUrl_Workshop");
+
+            entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.WorkshopSurveyUrls)
+                .HasForeignKey(d => d.WorkshopSeriesId)
+                .HasConstraintName("FK_WorkshopSurveyUrl_WorkshopSeries");
         });
 
         OnModelCreatingPartial(modelBuilder);

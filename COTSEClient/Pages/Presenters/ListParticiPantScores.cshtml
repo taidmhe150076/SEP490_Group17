@@ -81,27 +81,57 @@
     </main>
 </body>
 </html>
-
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
     var connection = new signalR.HubConnectionBuilder().withUrl("/particiPantScoresHub").build();
-
     connection.on("Message", function (ParticiPantScores) {
         console.log(ParticiPantScores);
         var particiPantScores = JSON.parse(ParticiPantScores);
         console.log(particiPantScores);
         $("#table").empty();
-
+        var count = 1;
         particiPantScores.forEach(element => {
             var html = `
-                                                            <tr>
-                                                                <td>${element.TestName}</td>
-                                                                <td>${element.ParticipantName}</td>
-                                                                <td>${element.Score}</td>
-                                                            </tr>
-                                                            `;
+                <tr>
+                    <td>${count++}</td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
+            if (count == 2) {
+                html = `
+                <tr>
+                    <td><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top1.png"></td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
+            }
+            if (count == 3) {
+                html = `
+                <tr>
+                    <td><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top2.png"></td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
+            }
+            if (count == 4) {
+                html = `
+                <tr>
+                    <td><img style="width:100px;height:100px;" src="https://localhost:7149/Image/top3.png"></td>
+                    <td>${element.TestName}</td>
+                    <td>${element.ParticipantName}</td>
+                    <td>${element.Score}</td>
+                </tr>
+                `;
+            }
+            console.log(html);
             $("#table").append(html);
         });
     });
@@ -110,12 +140,5 @@
         console.log("Start nè ");
     }).catch(function (err) {
         return console.error(err.toString());
-    });
-
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        connection.invoke("UpdateParticiPantScoresAndSendToClient", 2027).catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
     });
 </script>

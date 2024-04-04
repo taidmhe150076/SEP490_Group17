@@ -102,7 +102,7 @@
             var workshopSeriesId = document.getElementById('workshopSeriesId_' + itemId).value;
             console.log("Date value for item " + itemId + ": " + dateValue);
 
-            this.href = `NewSeries?idWorkshop=${itemId}&email=${emailValue}&date=${dateValue}&seriesWorkshopId=${workshopSeriesId}`;
+            this.href = `NewWorkshop?idWorkshop=${itemId}&email=${emailValue}&date=${dateValue}&seriesWorkshopId=${workshopSeriesId}`;
             location.href = this.href;
         }
     </script>

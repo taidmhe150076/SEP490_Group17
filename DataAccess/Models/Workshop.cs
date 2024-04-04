@@ -32,4 +32,6 @@ public partial class Workshop
     public virtual ICollection<WorkshopQuestion> WorkshopQuestions { get; set; } = new List<WorkshopQuestion>();
 
     public virtual WorkshopSeries? WorkshopSeries { get; set; }
+
+    public virtual ICollection<WorkshopSurveyUrl> WorkshopSurveyUrls { get; set; } = new List<WorkshopSurveyUrl>();
 }
