@@ -15,14 +15,16 @@ namespace COTSEClient.Pages.Quizzes
         private readonly IRepositoryWorkshopQuestions _repositoryWorkshopQuestions;
         private readonly IRepositoryParticipantAnswer _repositoryParticipantAnswer;
         private readonly IRepositoryParticiPantScore _repositoryParticiPantScore;
+        private readonly IRepositoryAnswerParticipants _repositoryAnswerParticipants;
         private readonly IHubContext<ParticiPantScoresHub> _hubContext;
 
 
-        public DoQuizzesModel(IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryParticipantAnswer repositoryParticipantAnswer, IRepositoryParticiPantScore repositoryParticiPantScore, IHubContext<ParticiPantScoresHub> hubContext)
+        public DoQuizzesModel(IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryParticipantAnswer repositoryParticipantAnswer, IRepositoryParticiPantScore repositoryParticiPantScore, IHubContext<ParticiPantScoresHub> hubContext, IRepositoryAnswerParticipants repositoryAnswerParticipants)
         {
             _repositoryWorkshopQuestions = repositoryWorkshopQuestions;
             _repositoryParticipantAnswer = repositoryParticipantAnswer;
             _repositoryParticiPantScore = repositoryParticiPantScore;
+            _repositoryAnswerParticipants = repositoryAnswerParticipants;
             _hubContext = hubContext;
         }
 
@@ -68,7 +70,7 @@ namespace COTSEClient.Pages.Quizzes
                         if (item.Id == answer.QuestionId)
                         {
                             var isCorrectAnswer = item.AnswerQuestions.FirstOrDefault(x => x.IsCorrectAnswer == true);
-                            if (isCorrectAnswer != null && !string.IsNullOrEmpty(answer.Answer) && answer.Answer.Equals(isCorrectAnswer.AnswerText))
+                            if (isCorrectAnswer != null && answer.AnswerId != 0 && answer.AnswerId == isCorrectAnswer.Id)
                             {
                                 countScore++;
                             }
@@ -92,6 +94,17 @@ namespace COTSEClient.Pages.Quizzes
                         TestId = TestCurrentId,
                     };
                     var resultInsertScore = _repositoryParticiPantScore.InsertParticiPantScore(newParticiPantScore);
+
+                    //var resultList = AnswerParticipantList.Select(x => new AnswerParticipant()
+                    //{
+                    //    QuestionId = x.QuestionId,
+                    //    TestId = TestCurrentId,
+                    //    AnswerId = x.AnswerId != 0 ? x.AnswerId : 0,
+                    //    ParticipantId = participantAnswer.Id,
+                    //    SubmissionTime = DateTime.Now,
+                    //}).ToList();
+
+                    //_repositoryAnswerParticipants.InsertRangeAnswerOfParticipants(resultList);
                     if (resultInsertScore > 0)
                     {
                         List<ParticiPantScore> ParticiPantScore = _repositoryParticiPantScore.GetParticiPantScoreByTestId(newParticiPantScore.TestId);
@@ -102,7 +115,7 @@ namespace COTSEClient.Pages.Quizzes
                             Score = x.Score
                         }).OrderByDescending(x => x.Score).ToList();
                         var resultjson = JsonSerializer.Serialize<List<ParticiPantScoreDTO>>(result);
-                         await _hubContext.Clients.All.SendAsync("Message", resultjson);
+                        await _hubContext.Clients.All.SendAsync("Message", resultjson);
                     }
                 }
                 return Page();
