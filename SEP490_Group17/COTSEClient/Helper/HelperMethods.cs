@@ -32,7 +32,7 @@ namespace COTSEClient.Helper
                 return stringBuilder.ToString();
             }
         }
-        public static void SendMail(string body, string subject, string mailFrom, string passMail,string mailTo)
+        public static void SendMail(string body, string subject, string mailFrom, string passMail, string mailTo)
         {
             using (var client = new SmtpClient("smtp.office365.com"))
             {
@@ -50,6 +50,18 @@ namespace COTSEClient.Helper
                 mailMessage.To.Add(mailTo);
                 client.Send(mailMessage);
             }
+        }
+        public static string ConvertImageToBase64(FileInfo fileInfo)
+        {
+            if (!fileInfo.Exists)
+            {
+                throw new FileNotFoundException("File not found.", fileInfo.FullName);
+            }
+
+            byte[] imageBytes = File.ReadAllBytes(fileInfo.FullName);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            return base64String;
         }
     }
 }

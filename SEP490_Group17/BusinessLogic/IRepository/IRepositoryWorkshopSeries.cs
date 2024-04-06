@@ -10,7 +10,7 @@ namespace BusinessLogic.IRepository
     public interface IRepositoryWorkshopSeries
     {
         public int InsertWorkshopSeries(WorkshopSeries workshopSeries);
-
+        public WorkshopSeries CreateWorkshopSeries(WorkshopSeries workshopSeries);
         public List<WorkshopSeries> GetAllWorkshopSeries();
 
         public List<WorkshopSeries> SearchWorkshopSeriesByName(string workshopseriesName);

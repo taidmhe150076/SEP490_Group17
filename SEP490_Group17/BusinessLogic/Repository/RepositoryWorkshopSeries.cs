@@ -59,6 +59,21 @@ namespace BusinessLogic.Repository
 			}
         }
 
+        public WorkshopSeries CreateWorkshopSeries(WorkshopSeries workshopSeries)
+        {
+            try
+            {
+                _context.WorkshopSeries.Add(workshopSeries);
+                _context.SaveChanges();
+
+                return workshopSeries;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public List<WorkshopSeries> SearchWorkshopSeriesByName(string workshopseriesName)
         {
             try

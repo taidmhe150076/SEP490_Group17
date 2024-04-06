@@ -1,6 +1,7 @@
 ﻿@page "/AllSeries"
 @using COTSEClient.Models
 @model COTSEClient.Pages.Department.AllSeriesWorkshopModel
+@using DataAccess.Models;
 @{
     Layout = "_Layout";
 }
@@ -60,7 +61,7 @@
                                                 <p>End Date: @series.EndDate</p>
                                                 <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
                                             </div>
-                                                <img class="img-fluid" src="@series.Image"/>
+                                            <img class="img-fluid" src="data:image/png;base64,@series.Image" />
                                      </div>
                                 </div>
                             </div>
@@ -145,14 +146,31 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post" id="createSeriesForm">
+                <form asp-page-handler="CreateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="seriesName" class="form-label">Tên Chuỗi Hội Thảo:</label>
-                        <input type="text" class="form-control" id="seriesName" name="seriesName" placeholder="Nhập tên chuỗi hội thảo">
+                        <label asp-for="WorkshopSeries.WorkshopSeriesName" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.WorkshopSeriesName" class="form-control" placeholder="Nhập tên chuỗi hội thảo">
+                        <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="startDate" class="form-label">Ngày Bắt Đầu:</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate">
+                        <label asp-for="WorkshopSeries.Description" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.Description" class="form-control" placeholder="Nhập mô tả">
+                        <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="WorkshopSeries.StartDate" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.StartDate" class="form-control" type="date">
+                        <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="WorkshopSeries.EndDate" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.EndDate" class="form-control" type="date">
+                        <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="imageFile" class="form-label"></label>
+                        <input asp-for="imageFile" class="form-control" type="file">
+                        <span asp-validation-for="imageFile" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Tạo mới</button>
                 </form>

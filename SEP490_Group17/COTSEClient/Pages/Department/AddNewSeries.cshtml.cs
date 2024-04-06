@@ -15,6 +15,7 @@ namespace COTSEClient.Pages.Department
 {
     public class AddNewSeriesModel : PageModel
     {
+        private readonly Sep490G17DbContext _context = new Sep490G17DbContext();
         public readonly IConfiguration _configuration;
         public readonly IRepositoryWorkshops _repositoryWorkshops;
         public readonly IRepositoryWorkshopSeries _repositoryWorkshopsSeries;
@@ -37,6 +38,8 @@ namespace COTSEClient.Pages.Department
         [BindProperty]
         public IFormFile Upload { get; set; }
         [BindProperty]
+        public string NameSersies { get; set; }
+        [BindProperty]
         public List<Workshop>? WorkShopList { get; set; }
         [BindProperty]
         public List<WorkshopDTO>? OrtherWorkShopList { get; set; }
@@ -44,6 +47,10 @@ namespace COTSEClient.Pages.Department
         public int? SeriesWorkshopId { get; set; }
         public void OnGet(int? seriesWorkshopId, int? idWorkshop, string? email, DateTime? date)
         {
+            if (seriesWorkshopId != null)
+            {
+                NameSersies = _context.WorkshopSeries.FirstOrDefault(x => x.Id == seriesWorkshopId).WorkshopSeriesName;
+            }
             if (idWorkshop != null && email != null && date != null)
             {
                 Presenter presenter = new Presenter

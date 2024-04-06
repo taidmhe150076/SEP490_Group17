@@ -1,4 +1,4 @@
-using BusinessLogic.IRepository;
+﻿using BusinessLogic.IRepository;
 using COTSEClient.Helper;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +16,12 @@ namespace COTSEClient.Pages.Department
         [BindProperty(SupportsGet = true)]
         public DateTime? CurentDate { get; set; }
 
-     
+        [BindProperty]
+        public  IFormFile imageFile { get;set; }
+
+        [BindProperty]
+        public WorkshopSeries WorkshopSeries { get; set; }
+  
         public PageList<WorkshopSeries> WorkshopSeriesPage { get; set; }
      
         public AllSeriesWorkshopModel(IRepositoryWorkshopSeries repositoryWorkshopSeries)
@@ -24,7 +29,17 @@ namespace COTSEClient.Pages.Department
             _repositoryWorkshopSeries = repositoryWorkshopSeries;
         }
 
-        public void OnGet(DateTime curentDate , string searchInput, int pageIndex = 1, int pageSize = 3)
+        public void OnGet( int pageIndex = 1, int pageSize = 3)
+        {
+
+            var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
+
+             WorkshopSeriesPage = PageList<WorkshopSeries>.Create(source, pageIndex, pageSize);
+
+
+        }
+
+        public void OnPost( string searchInput, int pageIndex = 1, int pageSize = 3)
         {
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
@@ -34,22 +49,36 @@ namespace COTSEClient.Pages.Department
                 source = source.Where(s => s.WorkshopSeriesName.Contains(searchInput, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (curentDate != DateTime.MinValue)
-            {
-                source = source.Where(s => s.StartDate <= curentDate && s.EndDate >= curentDate);
-            }
-         
-
             WorkshopSeriesPage = PageList<WorkshopSeries>.Create(source, pageIndex, pageSize);
-
 
         }
 
-        public void OnPostAsync()
+        public IActionResult OnPostCreateWorkshopSeries(WorkshopSeries workshopSeries )
         {
-           
 
-          
+            try
+            {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        imageFile.CopyTo(memoryStream);
+                 
+                        workshopSeries.Image = Convert.ToBase64String(memoryStream.ToArray());
+                    }
+                }
+
+                WorkshopSeries createdWorkshopSeries = _repositoryWorkshopSeries.CreateWorkshopSeries(workshopSeries);
+
+                return RedirectToPage("AddNewSeries", new { seriesWorkshopId = createdWorkshopSeries.Id });
+
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return Page();
+
         }
     }
 }
