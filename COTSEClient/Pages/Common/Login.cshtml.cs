@@ -1,11 +1,11 @@
 using COTSEClient.Helper;
-using DataAccess.Model;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data;
 using System.Security.Claims;
+using DataAccess.Models;
 
 namespace COTSEClient.Pages.Common
 {
