@@ -53,5 +53,17 @@ namespace COTSEClient.Helper
                 client.Send(mailMessage);
             }
         }
+        public static string ConvertImageToBase64(FileInfo fileInfo)
+        {
+            if (!fileInfo.Exists)
+            {
+                throw new FileNotFoundException("File not found.", fileInfo.FullName);
+            }
+
+            byte[] imageBytes = File.ReadAllBytes(fileInfo.FullName);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            return base64String;
+        }
     }
 }
