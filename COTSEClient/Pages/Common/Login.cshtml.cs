@@ -64,7 +64,7 @@ namespace COTSEClient.Pages.Common
 
             if (role.Contains("Admin"))
             {
-                return Redirect("/Home");
+                return Redirect("/Users");
             }
             else if (role.Contains("Host"))
             {
