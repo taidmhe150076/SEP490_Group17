@@ -14,27 +14,15 @@
                 </div>
                 <div class="row gx-5 justify-content-center">
                     <div class="col-lg-10 col-xl-8 col-xxl-7">
-                        <!-- Project Cards -->
-                        <div class="row row-cols-1 row-cols-md-2 g-4">
-                            <!-- Project Card 1-->
-                            <div class="col">
-                                <div class="card overflow-hidden shadow rounded-4 border-0 h-100">
-                                    <div class="card-body p-3">
-                                        <h2 class="fw-bolder">Hội thảo 1</h2>
-                                        <p class="card-text">Tiêu đề hội thảo 1</p>
-                                        <a class="btn btn-primary" href="#">Xem chi tiết</a>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Project Card 2-->
+                     <!-- Project Card 2-->
                             <div class="col">
                                 <div class="card overflow-hidden shadow rounded-4 border-0 h-100">
                                     <div class="card-body p-3">
                                         <h2 class="fw-bolder">Hội thảo 2</h2>
                                         <p class="card-text">Tiêu đề hội thảo 2</p>
-                                        <a class="btn btn-primary" href="#">Xem chi tiết</a>
-
+                                        <section >
+                                        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailWorkshopModal">Xem chi tiết</a>                                
+                                        </section>
                                     </div>
                                 </div>
                             </div>
@@ -56,3 +44,44 @@
     </main>
 </body>
 </html>
+
+<div class="modal fade" id="detailWorkshopModal" tabindex="-1" aria-labelledby="detailWorkshopModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailWorkshopModalLabel">Tạo Chuỗi Hội Thảo Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+          @*       <form asp-page-handler="CreateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label asp-for="WorkshopSeries.WorkshopSeriesName" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.WorkshopSeriesName" class="form-control" placeholder="Nhập tên chuỗi hội thảo">
+                        <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="WorkshopSeries.Description" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.Description" class="form-control" placeholder="Nhập mô tả">
+                        <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="WorkshopSeries.StartDate" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.StartDate" class="form-control" type="date">
+                        <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="WorkshopSeries.EndDate" class="form-label"></label>
+                        <input asp-for="WorkshopSeries.EndDate" class="form-control" type="date">
+                        <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="imageFile" class="form-label"></label>
+                        <input asp-for="imageFile" class="form-control" type="file">
+                        <span asp-validation-for="imageFile" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form> *@
+            </div>
+        </div>
+    </div>
+</div>

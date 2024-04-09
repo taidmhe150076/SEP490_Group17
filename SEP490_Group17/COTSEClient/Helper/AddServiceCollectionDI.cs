@@ -17,6 +17,8 @@ namespace COTSEClient.Helper
             services.AddScoped<IRepositoryPresenter, RepositoryPresenter>();
             services.AddScoped<IRepositoryTestType, RepositoryTestType>();
             services.AddScoped<IRepositoryAnswerQuestion, RepositoryAnswerQuestion>();
+            services.AddScoped<IRepositorySlideWorkshop, RepositorySlideWorkshop>();
+
         }
     }
 }

@@ -23,6 +23,8 @@ public partial class Workshop
 
     public virtual Presenter? Presenter { get; set; }
 
+    public virtual ICollection<SlideWorkShop> SlideWorkShops { get; set; } = new List<SlideWorkShop>();
+
     public virtual StatusWorkShop? Status { get; set; }
 
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
@@ -32,4 +34,6 @@ public partial class Workshop
     public virtual ICollection<WorkshopQuestion> WorkshopQuestions { get; set; } = new List<WorkshopQuestion>();
 
     public virtual WorkshopSeries? WorkshopSeries { get; set; }
+
+    public virtual ICollection<WorkshopSurveyUrl> WorkshopSurveyUrls { get; set; } = new List<WorkshopSurveyUrl>();
 }

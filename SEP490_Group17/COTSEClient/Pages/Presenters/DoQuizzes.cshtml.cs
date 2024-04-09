@@ -55,14 +55,14 @@ namespace COTSEClient.Pages.Quizzes
                 {
                     foreach (var answer in AnswerParticipantList)
                     {
-                        if (item.Id == answer.QuestionId)
-                        {
-                            var isCorrectAnswer = item.AnswerQuestions.FirstOrDefault(x => x.IsCorrectAnswer == true);
-                            if (isCorrectAnswer != null && !string.IsNullOrEmpty(answer.Answer) && answer.Answer.Equals(isCorrectAnswer.AnswerText))
-                            {
-                                sountScore++;
-                            }
-                        }
+                        //if (item.Id == answer.QuestionId)
+                        //{
+                        //    var isCorrectAnswer = item.AnswerQuestions.FirstOrDefault(x => x.IsCorrectAnswer == true);
+                        //    if (isCorrectAnswer != null && !string.IsNullOrEmpty(answer.Answer) && answer.Answer.Equals(isCorrectAnswer.AnswerText))
+                        //    {
+                        //        sountScore++;
+                        //    }
+                        //}
                     }
                 }
                 score = ((WorkshopQuestions.Count() + 1) / 10) * sountScore;

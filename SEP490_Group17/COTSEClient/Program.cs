@@ -1,5 +1,6 @@
 using COTSEClient.Helper;
 using DataAccess.Models;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<Sep490G17DbContext>(options =>
 });
 
 builder.Services.AddCors();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
