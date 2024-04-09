@@ -1,11 +1,11 @@
 using COTSEClient.Helper;
-using DataAccess.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Data;
 using System.Security.Claims;
+using DataAccess.Models;
 
 namespace COTSEClient.Pages.Common
 {
@@ -32,7 +32,7 @@ namespace COTSEClient.Pages.Common
             string hashPassword = HelperMethods.GenerateSecretKey(Password, 32);
             var user = _context.SystemUsers.FirstOrDefault(x => x.Email == Username && x.Password == hashPassword);
 
-            if (user == null)
+            if (user == null || user.IsActive == false)
             {
                 ModelState.AddModelError(string.Empty, "invalid username or password.");
                 ViewData["Error Message"] = "Invalid username or password";
@@ -64,7 +64,7 @@ namespace COTSEClient.Pages.Common
 
             if (role.Contains("Admin"))
             {
-                return Redirect("/Home");
+                return Redirect("/Users");
             }
             else if (role.Contains("Host"))
             {

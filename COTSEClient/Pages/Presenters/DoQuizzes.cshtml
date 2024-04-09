@@ -11,6 +11,8 @@
     <title>Question Test</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/css/quizzteamplate.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -35,44 +37,44 @@
                                 @foreach (var answer in @Model.WorkshopQuestions[i].AnswerQuestions)
                                 {
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="question_@Model.WorkshopQuestions[i].Id" id="answer_@answer.AnswerText" value="@answer.AnswerText" onclick="handleRadioClick(this)">
+                                        <input class="form-check-input" type="radio" name="@Model.WorkshopQuestions[i].Id" id="@answer.Id" value="@answer.AnswerText" onclick="handleRadioClick(this)">
                                         <label class="form-check-label" for="answer_@answer.AnswerText">@answer.AnswerText</label>
                                     </div>
                                 }
                             </div>
                         </div>
+                        <input type="hidden" asp-for="@Model.AnswerParticipantList[i].QuestionId" id="@Model.WorkshopQuestions[i].Id" value="@Model.WorkshopQuestions[i].Id" />
+                        <input type="hidden" asp-for="@Model.AnswerParticipantList[i].AnswerId" id="AnswerParticipant_@Model.WorkshopQuestions[i].Id" />
                     }
+
                     <input type="hidden" asp-for="@Model.TestCurrentId" />
                     <input type="hidden" asp-for="@Model.WorkShopId" />
+
+                    <input type="submit" value="submit" />
                 </form>
             }
         </div>
     </div>
-
     <script>
-            console.log("Clicked");
-            var selectedAnswerId = radio.value;
+        function handleRadioClick(radio) {
+            console.log("Clicked" + radio.id);
+            var selectedAnswerId = radio.id;
             var selectedAnswerName = radio.name;
-            document.getElementById('AnswerParticipant_' + selectedAnswerName).value = selectedAnswerId;
-            console.log(selectedAnswerName);
             console.log(selectedAnswerId);
+            console.log(selectedAnswerName);
+
+            document.getElementById('AnswerParticipant_' + selectedAnswerName).value = selectedAnswerId;
 
             var allRadios = document.querySelectorAll('input[type="radio"]');
-            var currentQuestion = radio.closest('.card');
+            var currentQuestion = radio.closest('#quizQn');
             var radiosInCurrentQuestion = currentQuestion.querySelectorAll('input[type="radio"]');
 
             allRadios.forEach(function (radio) {
-                if (!radio.closest('.card').isSameNode(currentQuestion)) {
+                if (!radio.closest('#quizQn').isSameNode(currentQuestion)) {
                     radio.disabled = true;
                 }
             });
-
-            radiosInCurrentQuestion.forEach(function (radioInQuestion) {
-                if (radioInQuestion !== radio) {
-                    radioInQuestion.disabled = true;
-                }
-            });
-        
+        }
     </script>
 </body>
 </html>

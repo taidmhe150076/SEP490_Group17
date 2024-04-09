@@ -16,7 +16,7 @@ namespace COTSEClient.Pages.Presenters
         public List<ParticiPantScore> ListParticiPantScore { get; set; }
         public IActionResult OnGet(int testId)
         {
-            ListParticiPantScore = _repositoryParticiPantScore.GetParticiPantScoreByTestId(testId);
+            ListParticiPantScore = _repositoryParticiPantScore.GetParticiPantScoreByTestId(testId).OrderByDescending(x => x.Score).ToList();
             return Page();
         }
     }

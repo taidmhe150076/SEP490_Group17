@@ -22,7 +22,8 @@ namespace COTSEClient.Helper
             services.AddScoped<IRepositoryAnswerQuestion, RepositoryAnswerQuestion>();
             services.AddScoped<IRepositorySurvey, RepositorySurvey>();
             services.AddScoped<IRepositoryGoogle, RepositoryGoogle>();
-
+            services.AddScoped<IRepositoryAnswerParticipants, RepositoryAnswerParticipants>();
+            services.AddScoped<IRepositoryUser, RepositoryUser>();
         }
     }
 }
