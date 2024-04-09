@@ -11,6 +11,7 @@
     <title>User Table</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-UEEvrhj7GD7rNRMU7rKBAaz+4zg+1B9zHvY7mLprGXAv1NX8Mp9jjgQQwZc7a9/y" crossorigin="anonymous">
+    <link href="~/css/stylemessage.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
@@ -68,30 +69,30 @@
                                         <div class="modal-body">
                                             <!-- Form for editing user -->
                                             <form asp-page-handler="UpdateUser" method="post" enctype="multipart/form-data">
-                                                <input type="hidden" name="userId" value="@item.Id" />
+                                                <input type="hidden" asp-for="@Model.User.Id" value="@item.Id" />
                                                 <div class="mb-3">
                                                     <label class="form-label">Email</label>
-                                                    <input class="form-control" value="@item.Email">
+                                                    <input asp-for="@Model.User.Email" class="form-control" value="@item.Email">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">ValidDate</label>
-                                                    <input class="form-control" value="@item.ValidDate" type="date">
+                                                    <input asp-for="@Model.User.ValidDate" class="form-control" value="@item.ValidDate" type="date">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Department</label>
-                                                    <select class="form-select">
+                                                    <select asp-for="@Model.User.Departmentld" class="form-select">
                                                         @foreach (var department in Model.Departments)
                                                         {
-                                                            <option value="@department.Id">@department.DepartmentName</option>
+                                                            <option selected="@item.Departmentld" value="@department.Id">@department.DepartmentName</option>
                                                         }
                                                     </select>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Role</label>
-                                                    <select class="form-select">
+                                                    <select asp-for="@Model.User.Roleld" class="form-select">
                                                         @foreach (var role in Model.Roles)
                                                         {
-                                                            <option value="@role.Id">@role.RoleName</option>
+                                                            <option selected="@item.Roleld" value="@role.Id">@role.RoleName</option>
                                                         }
                                                     </select>
                                                 </div>
@@ -169,5 +170,51 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-XI6XjqXgS/ie3SmZFrsGfUqPNa+Qblm4foTwpfGZ3tHJL/Nc5X2kq2L8yUpT2fsB" crossorigin="anonymous"></script>
+
+    @{
+        if (Model.Msg != null)
+        {
+            if (Model.Msg.Contains("Success"))
+            {
+                <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-success-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/success-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-success-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="checkbox" id="alert-error-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-error-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/error-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-error-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+
+    <script>
+        setTimeout(function () {
+            document.querySelector('.alert-box-wrap').style.display = 'none';
+        }, 1000);
+    </script>
 </body>
 </html>

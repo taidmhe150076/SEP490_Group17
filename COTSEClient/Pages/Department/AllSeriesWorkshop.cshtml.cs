@@ -55,7 +55,6 @@ namespace COTSEClient.Pages.Department
 
         public IActionResult OnPostCreateWorkshopSeries(WorkshopSeries workshopSeries )
         {
-
             try
             {
                 if (imageFile != null && imageFile.Length > 0)

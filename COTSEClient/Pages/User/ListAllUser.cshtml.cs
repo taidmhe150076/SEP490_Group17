@@ -4,6 +4,7 @@ using DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace COTSEClient.Pages.User
 {
@@ -28,7 +29,10 @@ namespace COTSEClient.Pages.User
         [BindProperty]
         public DateOnly ValidDate { get; set; }
         [BindProperty]
-        public SystemUser User { get; set; }    
+        public SystemUser User { get; set; }
+        [BindProperty]
+        public string Msg { get; set; }
+
         public ListAllUserModel(Sep490G17DbContext context,IRepositoryUser repositoryUser)
         {
             _repositoryUser = repositoryUser;
@@ -36,6 +40,8 @@ namespace COTSEClient.Pages.User
         }
         public IActionResult OnGet(string departmentName)
         {
+            Msg = TempData["Msg"] as string;
+
             ListUsers = _repositoryUser.getAllUser();
             if(!string.IsNullOrEmpty(departmentName))
             {
@@ -43,8 +49,6 @@ namespace COTSEClient.Pages.User
             }
             Departments = _context.Departments.ToList();
             Roles = _context.SystemRoles.ToList(); 
-            //var systemUser = _repositoryUser.getUserById(Id);
-            //User = systemUser;
             return Page();
         }
         public IActionResult OnPostCreateNewUser(DataAccess.Models.SystemUser user)
@@ -59,19 +63,33 @@ namespace COTSEClient.Pages.User
             if (checkExistEmail == null)
             {
                 _repositoryUser.addUser(user);
+                TempData["Msg"] = "Add Success!";
                 return RedirectToPage();
             }
             else
             {
                 ModelState.AddModelError(string.Empty, "Email is existed");
-                ViewData["Error Message"] = "Email is existed";
+                TempData["Msg"] = "Email is existed";
                 return RedirectToPage();
             }                  
         }
 
-        public IActionResult OnPostUpdateUser(SystemUser user)
-        {         
-            _repositoryUser.updateUser(user);
+        public IActionResult OnPostUpdateUser()
+        {
+            var checkExist = _repositoryUser.getUserById(User.Id);
+            if (checkExist == null)
+            {
+                TempData["Msg"] = "User Not Exists!";
+                return RedirectToPage();
+            }
+            checkExist.Email = User.Email;
+            checkExist.Password = User.Password;
+            checkExist.ValidDate = User.ValidDate;
+            checkExist.Departmentld = User.Departmentld;
+            checkExist.Roleld = User.Roleld;
+
+            _repositoryUser.updateUser(checkExist);
+            TempData["Msg"] = "Update Success!";
             return RedirectToPage();
         }
        
