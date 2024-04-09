@@ -200,40 +200,40 @@ namespace BusinessLogic.Repository
                 else
                 {
 
-//                    throw new Exception();
-//                }
+                    throw new Exception();
+                }
 
 
-//            }
-//            catch (Exception)
-//            {
-//                throw new Exception();
-//            }
-//        }
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
 
-//        // get workshop information
-//        public WorkshopInfoDTO getWorkshopInformation(int wss_id, int ws_id)
-//        {
-//            var selected_ws = _context.WorkshopSeries
-//                .Join(_context.Workshops,
-//                series => series.Id,
-//                ws => ws.WorkshopSeriesId,
-//                (series, ws) => new WorkshopInfoDTO
-//                {
-//                    wssId = series.Id,
-//                    wsId = ws.Id,
-//                    SeriesName = series.WorkshopSeriesName,
-//                    WorkshopName = ws.WorkshopName
-//                }).SingleOrDefault(ws_info => ws_info.wssId == wss_id && ws_info.wsId == ws_id);
-//            if (selected_ws != null)
-//            {
-//                return selected_ws;
-//            }
-//            else
-//            {
-//                throw new Exception("cant find ws");
-//            }
-//        }
+        // get workshop information
+        public WorkshopInfoDTO getWorkshopInformation(int wss_id, int ws_id)
+        {
+            var selected_ws = _context.WorkshopSeries
+                .Join(_context.Workshops,
+                series => series.Id,
+                ws => ws.WorkshopSeriesId,
+                (series, ws) => new WorkshopInfoDTO
+                {
+                    wssId = series.Id,
+                    wsId = ws.Id,
+                    SeriesName = series.WorkshopSeriesName,
+                    WorkshopName = ws.WorkshopName
+                }).SingleOrDefault(ws_info => ws_info.wssId == wss_id && ws_info.wsId == ws_id);
+            if (selected_ws != null)
+            {
+                return selected_ws;
+            }
+            else
+            {
+                throw new Exception("cant find ws");
+            }
+        }
 
         //get survey in workshop series
         public async Task<List<WorkshopSeriesWorkshopDTO>> seriesSurvey()
@@ -275,16 +275,16 @@ namespace BusinessLogic.Repository
             return allSeries;
         }
 
-//        // get single survey by workshop name
-//        public WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id)
-//        {
-//            var survey = _context.WorkshopSurveyUrls.SingleOrDefault(s => s.WorkshopSeriesId == int.Parse(workshop_series_id) && s.WorkshopId == int.Parse(workshop_id));
-//            if (survey == null)
-//            {
-//                throw new Exception(SurveyErrorMessage.ERR_WS_URL);
-//            }
-//            return survey;
-//        }
+        // get single survey by workshop name
+        public WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id)
+        {
+            var survey = _context.WorkshopSurveyUrls.SingleOrDefault(s => s.WorkshopSeriesId == int.Parse(workshop_series_id) && s.WorkshopId == int.Parse(workshop_id));
+            if (survey == null)
+            {
+                throw new Exception(SurveyErrorMessage.ERR_WS_URL);
+            }
+            return survey;
+        }
 
         public async Task<SurveyDTO> getSurey(int surveyId)
         {
@@ -385,7 +385,7 @@ namespace BusinessLogic.Repository
                                       group => group.Select(pair => pair.Value).ToList());
 
                     // Define possible answer options for "yes" or "no"
-                    var yesNoAnswers = new List<string> { "Có", "không"};
+                    var yesNoAnswers = new List<string> { "có", "không" };
 
                     var groupedYesNoQA = survey_content
                         .SelectMany(dto => dto.QA)
@@ -403,17 +403,17 @@ namespace BusinessLogic.Repository
                         // Initialize counts to 0 for all possible answers
                         foreach (var answer in rangeAnswers)
                         {
-                            answerCounts[answer.ToLower()] = 0;
+                            answerCounts[answer] = 0;
                         }
 
                         // Update counts based on groupedQA
-                        if (groupedRangeQA.ContainsKey(key.ToLower()))
+                        if (groupedRangeQA.ContainsKey(key))
                         {
                             foreach (var value in groupedRangeQA[key])
                             {
-                                if (!answerCounts.ContainsKey(value.ToLower()))
-                                    answerCounts[value.ToLower()] = 0;
-                                answerCounts[value.ToLower()]++;
+                                if (!answerCounts.ContainsKey(value))
+                                    answerCounts[value] = 0;
+                                answerCounts[value]++;
                             }
                         }
 
@@ -570,8 +570,8 @@ namespace BusinessLogic.Repository
                 }
             }
 
-//            return sentiment_result;
-//        }
+            return sentiment_result;
+        }
 
 
         // convert string file byte to byte
@@ -586,61 +586,61 @@ namespace BusinessLogic.Repository
             return filePath;
         }
 
-//        private List<string> validateSurveyPhase1(List<string> survey_question)
-//        {
-//            var clean_list = new List<string>();
-//            var no_stopword_string = new List<string>();
-//            foreach (string question in survey_question)
-//            {
-//                bool char_is_duplicate = false;
-//                string trimmed_question = question.Trim();
-//                string remove_special_character_question = Regex.Replace(trimmed_question, SurveyConstant.REGREX_SPECIAL_CHARACTER, " ");
-//                // check if the string only contain special character
-//                if (remove_special_character_question.Length == 0)
-//                {
-//                    continue;
-//                }
-//                // list of each character in the question
-//                var list_character = remove_special_character_question.Split(" ");
-//                // check for spam word next to each other
-//                for (int i = 0; i < list_character.Length; i++)
-//                {
-//                    if (i + 1 < list_character.Length)
-//                    {
-//                        if (remove_special_character_question[i] == remove_special_character_question[i + 1])
-//                        {
-//                            char_is_duplicate = true;
-//                            break;
-//                        }
-//                    }
+        private List<string> validateSurveyPhase1(List<string> survey_question)
+        {
+            var clean_list = new List<string>();
+            var no_stopword_string = new List<string>();
+            foreach (string question in survey_question)
+            {
+                bool char_is_duplicate = false;
+                string trimmed_question = question.Trim();
+                string remove_special_character_question = Regex.Replace(trimmed_question, SurveyConstant.REGREX_SPECIAL_CHARACTER, " ");
+                // check if the string only contain special character
+                if (remove_special_character_question.Length == 0)
+                {
+                    continue;
+                }
+                // list of each character in the question
+                var list_character = remove_special_character_question.Split(" ");
+                // check for spam word next to each other
+                for (int i = 0; i < list_character.Length; i++)
+                {
+                    if (i + 1 < list_character.Length)
+                    {
+                        if (remove_special_character_question[i] == remove_special_character_question[i + 1])
+                        {
+                            char_is_duplicate = true;
+                            break;
+                        }
+                    }
 
-//                    // check for duplicate characters in the current string
-//                    for (int j = 0; j < list_character[i].Length; j++)
-//                    {
-//                        if (j + 1 < list_character[i].Length)
-//                        {
-//                            if (list_character[i][j] == list_character[i][j + 1])
-//                            {
-//                                char_is_duplicate = true;
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
+                    // check for duplicate characters in the current string
+                    for (int j = 0; j < list_character[i].Length; j++)
+                    {
+                        if (j + 1 < list_character[i].Length)
+                        {
+                            if (list_character[i][j] == list_character[i][j + 1])
+                            {
+                                char_is_duplicate = true;
+                                break;
+                            }
+                        }
+                    }
+                }
 
-//                if (!char_is_duplicate)
-//                {
-//                    clean_list.Add(remove_special_character_question);
-//                }
+                if (!char_is_duplicate)
+                {
+                    clean_list.Add(remove_special_character_question);
+                }
 
-//            }
-//            return clean_list;
-//        }
+            }
+            return clean_list;
+        }
 
-//        private void validateSurveyPhase2(List<string> survey_question, List<FeedbackResult> sentiment_feedback)
-//        {
+        private void validateSurveyPhase2(List<string> survey_question, List<FeedbackResult> sentiment_feedback)
+        {
 
-//        }
+        }
 
         private List<SurveyContentDTO> getPaticipantFeedback(string file_path)
         {

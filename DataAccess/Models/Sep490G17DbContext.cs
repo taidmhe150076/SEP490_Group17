@@ -25,8 +25,6 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<Image> Images { get; set; }
 
-    public virtual DbSet<Image> Images { get; set; }
-
     public virtual DbSet<ParticiPantScore> ParticiPantScores { get; set; }
 
     public virtual DbSet<Participant> Participants { get; set; }
@@ -36,15 +34,10 @@ public partial class Sep490G17DbContext : DbContext
     public virtual DbSet<Presenter> Presenters { get; set; }
 
     public virtual DbSet<SlideWorkShop> SlideWorkShops { get; set; }
-    public virtual DbSet<SlideWorkShop> SlideWorkShops { get; set; }
 
     public virtual DbSet<StatusWorkShop> StatusWorkShops { get; set; }
 
     public virtual DbSet<SurveyAnswerDetail> SurveyAnswerDetails { get; set; }
-
-    public virtual DbSet<SystemRole> SystemRoles { get; set; }
-
-    public virtual DbSet<SystemUser> SystemUsers { get; set; }
 
     public virtual DbSet<SystemRole> SystemRoles { get; set; }
 
@@ -79,16 +72,11 @@ public partial class Sep490G17DbContext : DbContext
         modelBuilder.Entity<AnswerParticipant>(entity =>
         {
             entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId }).HasName("PK_AnswerParticipants_1");
-            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId }).HasName("PK_AnswerParticipants_1");
 
             entity.Property(e => e.QuestionId).HasColumnName("Question_id");
             entity.Property(e => e.SubmissionTime)
                 .HasColumnType("datetime")
                 .HasColumnName("submission_time");
-
-            entity.HasOne(d => d.Answer).WithMany(p => p.AnswerParticipants)
-                .HasForeignKey(d => d.AnswerId)
-                .HasConstraintName("FK_AnswerParticipants_AnswerQuestion");
 
             entity.HasOne(d => d.Answer).WithMany(p => p.AnswerParticipants)
                 .HasForeignKey(d => d.AnswerId)
@@ -153,14 +141,6 @@ public partial class Sep490G17DbContext : DbContext
             entity.Property(e => e.Image1).HasColumnName("Image");
         });
 
-        modelBuilder.Entity<Image>(entity =>
-        {
-            entity.ToTable("Image");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Image1).HasColumnName("Image");
-        });
-
         modelBuilder.Entity<ParticiPantScore>(entity =>
         {
             entity.HasKey(e => new { e.TestId, e.ParticipantId });
@@ -202,25 +182,11 @@ public partial class Sep490G17DbContext : DbContext
         });
 
         modelBuilder.Entity<SlideWorkShop>(entity =>
-        modelBuilder.Entity<SlideWorkShop>(entity =>
         {
             entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
-            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
 
             entity.ToTable("SlideWorkShop");
-            entity.ToTable("SlideWorkShop");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-            entity.HasOne(d => d.Image).WithMany(p => p.SlideWorkShops)
-                .HasForeignKey(d => d.ImageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SlideWorkShop_Image");
-
-            entity.HasOne(d => d.Workshop).WithMany(p => p.SlideWorkShops)
-                .HasForeignKey(d => d.WorkshopId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SlideWorkShop_Workshop");
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
             entity.HasOne(d => d.Image).WithMany(p => p.SlideWorkShops)
@@ -263,32 +229,6 @@ public partial class Sep490G17DbContext : DbContext
                 .HasForeignKey(d => d.WorkShopSurveyQuestionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SurveyAnswerDetail_WorkShopSurveyQuestion");
-        });
-
-        modelBuilder.Entity<SystemRole>(entity =>
-        {
-            entity.ToTable("SystemRole");
-
-            entity.Property(e => e.RoleName).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<SystemUser>(entity =>
-        {
-            entity.ToTable("SystemUser");
-
-            entity.Property(e => e.Dob).HasColumnName("DOB");
-            entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.FirstName).HasMaxLength(250);
-            entity.Property(e => e.LastName).HasMaxLength(250);
-            entity.Property(e => e.Password).HasMaxLength(255);
-
-            entity.HasOne(d => d.DepartmentldNavigation).WithMany(p => p.SystemUsers)
-                .HasForeignKey(d => d.Departmentld)
-                .HasConstraintName("FK_SystemUser_Department");
-
-            entity.HasOne(d => d.RoleldNavigation).WithMany(p => p.SystemUsers)
-                .HasForeignKey(d => d.Roleld)
-                .HasConstraintName("FK_SystemUser_SystemRole");
         });
 
         modelBuilder.Entity<SystemRole>(entity =>
@@ -443,7 +383,6 @@ public partial class Sep490G17DbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Workshop__3213E83FAFF7FF5C");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
