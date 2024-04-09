@@ -385,7 +385,7 @@ namespace BusinessLogic.Repository
                                       group => group.Select(pair => pair.Value).ToList());
 
                     // Define possible answer options for "yes" or "no"
-                    var yesNoAnswers = new List<string> { "có", "không"};
+                    var yesNoAnswers = new List<string> { "Có", "không"};
 
                     var groupedYesNoQA = survey_content
                         .SelectMany(dto => dto.QA)
@@ -403,17 +403,17 @@ namespace BusinessLogic.Repository
                         // Initialize counts to 0 for all possible answers
                         foreach (var answer in rangeAnswers)
                         {
-                            answerCounts[answer] = 0;
+                            answerCounts[answer.ToLower()] = 0;
                         }
 
                         // Update counts based on groupedQA
-                        if (groupedRangeQA.ContainsKey(key))
+                        if (groupedRangeQA.ContainsKey(key.ToLower()))
                         {
                             foreach (var value in groupedRangeQA[key])
                             {
-                                if (!answerCounts.ContainsKey(value))
-                                    answerCounts[value] = 0;
-                                answerCounts[value]++;
+                                if (!answerCounts.ContainsKey(value.ToLower()))
+                                    answerCounts[value.ToLower()] = 0;
+                                answerCounts[value.ToLower()]++;
                             }
                         }
 
