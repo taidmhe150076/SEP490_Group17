@@ -15,7 +15,7 @@ namespace COTSEClient.Pages.Survey
             _repo = repo;
         }
 
-        public List<WorkshopSeriesWorkshop> seriesHasSurvey { get; set; } = null!;
+        public List<WorkshopSeriesWorkshopDTO> seriesHasSurvey { get; set; } = null!;
         
         public async Task OnGetAsync()
         {

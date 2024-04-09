@@ -16,13 +16,11 @@ namespace COTSEClient.Pages.Survey
     public class SurveyModel : PageModel
     {
         private readonly IRepositorySurvey _repo;
-        private readonly IRepositoryAWS _aws_repo;
         private readonly SurveyValidator _validator;
 
-        public SurveyModel(IRepositorySurvey repo, IRepositoryAWS aws_repo)
+        public SurveyModel(IRepositorySurvey repo)
         {
             _repo = repo;
-            _aws_repo = aws_repo;
             _validator = new SurveyValidator();
         }
 
@@ -62,13 +60,8 @@ namespace COTSEClient.Pages.Survey
                 };
                 try
                 {
-                    var lol = await _aws_repo.UploadDataToS3(filePath, fileSurveys[0].FileName);
-                    var questions = _repo.GetSentimentAnswer(filePath);
-                    var json_data = await _repo.GetJsonSentiment(questions);
-                    feedbackResults = _repo.Rate(questions, json_data);
-                    feedbackCount.Add("Positive", feedbackResults.Where(feedback => feedback.getResult() == "Positive").Count());
-                    feedbackCount.Add("Negative", feedbackResults.Where(feedback => feedback.getResult() == "Negative").Count());
-                    feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.getResult() == "Neutral").Count());
+                    feedbackResults = await _repo.getSurveySentimentResult(1);
+                    feedbackCount = await _repo.CountFeedback(feedbackResults);
                     state_display = true;
                     //feedbackCount.Add("Very bad", feedbackResults.Where(feedback => feedback.startRating() == 1).Count());
                     //feedbackCount.Add("Bad", feedbackResults.Where(feedback => feedback.startRating() == 2).Count());

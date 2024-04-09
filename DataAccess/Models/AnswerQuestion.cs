@@ -13,5 +13,7 @@ public partial class AnswerQuestion
 
     public bool IsCorrectAnswer { get; set; }
 
+    public virtual ICollection<AnswerParticipant> AnswerParticipants { get; set; } = new List<AnswerParticipant>();
+
     public virtual WorkshopQuestion Question { get; set; } = null!;
 }

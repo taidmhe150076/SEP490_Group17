@@ -1,0 +1,122 @@
+﻿@page "/Surveys/All"
+@model COTSEClient.Pages.Survey.SurveyListModel
+@{
+    Layout = "_Layout";
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+
+<div class="container">
+    <h1>All workshop series</h1>
+    <!-- later add search and filter-->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Workshop Series</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var wss in Model.list_data)
+            {
+                <tr id="wss_@wss.Id">
+                    <td colspan="2">
+                        <table class="table ms-1 table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>@wss.WorkshopSeriesName</th>
+                                    <th> Date</th>
+                                    <th> Presenter</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ws in wss.workshops)
+                                {
+                                    <tr id="ws_@ws.Id" onclick="callMe('ws_@ws.Id')">
+                                        <td>@ws.WorkshopName</td>
+                                        <td>@ws.DatePresent?.ToString("dd/MM/yyyy")</td>
+                                        <td>@ws.KeyPresenter</td>
+                                    </tr>
+                                    <tr id="survey_ws_@ws.Id" class="d-none">
+                                        @if (ws.Survey == null || ws.Survey.Count == 0)
+                                        {
+                                            <td colspan="2">
+                                                <strong>
+                                                    workshop has no survey
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                <form method="get" asp-page="AddSurveyToWorkshop" id="form_@ws.Id">
+                                                    @Html.AntiForgeryToken()
+                                                    @Html.Hidden("wssId", wss.Id)
+                                                    @Html.Hidden("wsId", ws.Id)
+                                                    <button onclick="()=>{$('#form_@ws.Id').submit()" class="btn btn-primary"> Add Survey</button>
+                                                </form>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td colspan="3">
+
+                                                <table class="table ps-5 ms-2">
+                                                    <thead>
+                                                        <tr>
+                                                            <th><h3>Survey</h3></th>
+                                                            <th></th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><strong>Add new Survey</strong></td>
+                                                            <td></td>
+                                                            <td>
+                                                                <form method="get" asp-page="AddSurveyToWorkshop" id="form_@ws.Id">
+                                                                    @Html.AntiForgeryToken()
+                                                                    @Html.Hidden("wssId", wss.Id)
+                                                                    @Html.Hidden("wsId", ws.Id)
+                                                                    <button onclick="()=>{$('#form_@ws.Id').submit()" class="btn btn-primary"> Add Survey</button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                        @foreach (var survey in ws.Survey)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    @survey.survey_name
+                                                                </td>
+                                                                <td>
+                                                                </td>
+                                                                <td>
+                                                                    <a asp-page="SurveyByWorkshop" asp-route-wssId="@wss.Id" asp-route-wsId="@ws.Id" asp-route-survey_id="@survey.Id" class="btn btn-primary">View</a>
+
+                                                                    <a class="btn btn-danger"> Delete Survey</a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var callMe = (id) => {
+        let name = "#survey_" + id;
+        console.log(name)
+        if ($(name).hasClass("d-none")) {
+            $(name).removeClass("d-none")
+        } else {
+            $(name).addClass("d-none")
+        }
+    }
+</script>

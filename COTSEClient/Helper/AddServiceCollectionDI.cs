@@ -21,9 +21,9 @@ namespace COTSEClient.Helper
             services.AddScoped<IRepositoryTestType, RepositoryTestType>();
             services.AddScoped<IRepositoryAnswerQuestion, RepositoryAnswerQuestion>();
             services.AddScoped<IRepositorySurvey, RepositorySurvey>();
-            services.AddScoped<IRepositoryAWS, RepositoryAWS>();
             services.AddScoped<IRepositoryGoogle, RepositoryGoogle>();
-
+            services.AddScoped<IRepositoryAnswerParticipants, RepositoryAnswerParticipants>();
+            services.AddScoped<IRepositoryUser, RepositoryUser>();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace COTSEClient.Helper
     {
         public static string GenerateQRCode(string content)
         {
+            IronBarCode.License.LicenseKey = "IRONSUITE.TAIDMHE150076.FPT.EDU.VN.25431-5066BB8270-BEQTS2I-YB64YJEB4Z4R-PKD7IW4AUHBH-ZLOWGA3JMBWE-WYO5U5VE7N4W-5XX6JA7UQGYR-HB7A2S3XOLFX-CAGX2T-TY2BX5IQEY6MEA-DEPLOYMENT.TRIAL-CY3YQK.TRIAL.EXPIRES.04.MAY.2024";
             var filePath = "wwwroot/Image/LogoTeam.png";
             QRCodeLogo qrCodeLogo = new QRCodeLogo(filePath);
             GeneratedBarcode myQRCodeWithLogo = IronBarCode.QRCodeWriter.CreateQrCodeWithLogo(content, qrCodeLogo);
@@ -51,6 +52,18 @@ namespace COTSEClient.Helper
                 mailMessage.To.Add(mailTo);
                 client.Send(mailMessage);
             }
+        }
+        public static string ConvertImageToBase64(FileInfo fileInfo)
+        {
+            if (!fileInfo.Exists)
+            {
+                throw new FileNotFoundException("File not found.", fileInfo.FullName);
+            }
+
+            byte[] imageBytes = File.ReadAllBytes(fileInfo.FullName);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            return base64String;
         }
     }
 }
