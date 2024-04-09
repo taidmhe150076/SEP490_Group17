@@ -21,8 +21,6 @@ var chart_data_format = (chart_type, label, labels = [], chart_datas = [], backg
 var sentiment_chart = (data, chart_type = "polarArea") => {
     let labels = Object.keys(data)
     let values = Object.values(data)
-    console.log(labels)
-    console.log(values)
     var canva = $("#sentiment_chart")[0];
     var canva_label = "sentiment chart";
     var color_list = random_rpg_list(labels);
@@ -75,25 +73,42 @@ var delete_chart = (chartId) => {
 var random_rpg_list = (label) => {
     list_color = [];
     label.forEach(() => {
-        var r = Math.floor(Math.random() * 256); // Random value for red (0-255)
-        var g = Math.floor(Math.random() * 256); // Random value for green (0-255)
-        var b = Math.floor(Math.random() * 256); // Random value for blue (0-255)
-        list_color.push(`rgb(${r},${g},${b})`);
+        var r = Math.floor(Math.random() * 256) // Random value for red (0-255)
+        var g = Math.floor(Math.random() * 256) // Random value for green (0-255)
+        var b = Math.floor(Math.random() * 256) // Random value for blue (0-255)
+        list_color.push(`rgb(${r},${g},${b})`)
     });
     return list_color;
 };
 
 var changeSentimentChart = () => {
 
-    var chart = $("#sentiment_chart")[0];
-    delete_chart(chart.id);
-    var chart_type = $("#selectChart").val();
-    sentiment_chart(sentiment_data, chart_type);
+    var chart = $("#sentiment_chart")[0]
+    delete_chart(chart.id)
+    var chart_type = $("#selectChart").val()
+    sentiment_chart(sentiment_data, chart_type)
 };
+
+var generate_common_chart = () => {
+    dataList.forEach((item,index) => {
+        list_key = []
+        list_value = []
+        $.each(item.counts, function (key, value) {
+            list_key.push(key)
+            list_value.push(value)
+        });
+        var canva = $(`#question_${index}`)
+        var canva_label = `${item.question}`;
+        var color_list = random_rpg_list(list_key);
+        var chart_data = chart_data_format("bar", canva_label, list_key, list_value, color_list);
+        create_chart(canva, chart_data, options = {}, "bar");
+       
+    })
+}
 
 $(() => {
     if (sentiment_data != null) {
-        sentiment_chart(sentiment_data);
-        console.log(sentiment_data)
+        sentiment_chart(sentiment_data)
+        generate_common_chart()
     }
 });
