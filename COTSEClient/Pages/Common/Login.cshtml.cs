@@ -30,7 +30,7 @@ namespace COTSEClient.Pages.Common
                 return Page();
             }
             string hashPassword = HelperMethods.GenerateSecretKey(Password, 32);
-            var user = _context.Accounts.FirstOrDefault(x => x.UserName == Username && x.Password == hashPassword);
+            var user = _context.SystemUsers.FirstOrDefault(x => x.Email == Username && x.Password == hashPassword);
 
             if (user == null)
             {
@@ -39,7 +39,7 @@ namespace COTSEClient.Pages.Common
                 return Page();
             }
 
-            var role = _context.Accounts.Select(x => x.User.Role.Name).ToList();
+            var role = _context.SystemUsers.Select(x => x.RoleldNavigation.RoleName).ToList();
 
             var claims = new List<Claim>
             {

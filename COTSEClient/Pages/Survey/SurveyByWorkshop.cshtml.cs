@@ -18,22 +18,16 @@ namespace COTSEClient.Pages.Survey
 
         // Define properties for binding
         [BindProperty(SupportsGet = true)]
-        public int surveyId { get; set; }
-        [BindProperty(SupportsGet = true)]
         public int wssId { get; set; }
         [BindProperty(SupportsGet = true)]
         public int wsId { get; set; }
-
         [BindProperty(SupportsGet = true)]
-        public string path { get; set; }
+        public int survey_id { get; set; }
 
 
 
-        [BindProperty(SupportsGet = true)]
-        public string surveyURL { get; set; }
-
-
-
+        [BindProperty]
+        public SurveyDTO surveyInfo { get; set; } = null!;
         [BindProperty]
         public List<FeedbackResult> feedbackResults { get; set; } = null!;
 
@@ -41,29 +35,27 @@ namespace COTSEClient.Pages.Survey
         public Dictionary<string, int> feedbackCount { get; set; } = null!;
 
         [BindProperty]
+        public List<CommonQA> dataList { get; set; } = null!;
+
+        [BindProperty]
         public bool state_display { get; set; } = false;
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var key = await _repo.getWorkshopData(wssId, wsId, surveyURL);
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", key);
-            await Console.Out.WriteLineAsync(filePath);
             try
             {
-                feedbackCount = new Dictionary<string, int>();
-                var questions = _repo.GetSentimentAnswer(filePath);
-                var json_data = await _repo.GetJsonSentiment(questions);
-                feedbackResults = _repo.Rate(questions, json_data);
-                feedbackCount.Add("Positive", feedbackResults.Where(feedback => feedback.getResult() == "Positive").Count());
-                feedbackCount.Add("Negative", feedbackResults.Where(feedback => feedback.getResult() == "Negative").Count());
-                feedbackCount.Add("Neutral", feedbackResults.Where(feedback => feedback.getResult() == "Neutral").Count());
+                surveyInfo = await _repo.getSurey(survey_id);
+                feedbackResults = await _repo.getSurveySentimentResult(survey_id);
+                dataList = await _repo.getOtherData(survey_id);
+                feedbackCount = await _repo.CountFeedback(feedbackResults);
                 state_display = true;
+                return Page();
             }
             catch (Exception e)
             {
                 ModelState.AddModelError("File", e.Message);
+                return Page();
             }
-            return Page();
 
         }
 

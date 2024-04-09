@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DTO
 {
-    public class SurveyAnswer
+    public class SurveyContentDTO
     {
         public DateTime? timeStamp { get; set; } = null!;
         public string? AnswerBy { get; set; } = null!;

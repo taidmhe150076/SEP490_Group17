@@ -1,5 +1,4 @@
-﻿using BusinessLogic.IRepository;
-using DataAccess.Models;
+﻿using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

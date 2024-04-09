@@ -16,6 +16,8 @@ namespace DataAccess.Constants
 
 
         // survey
+        public const int CSV_INPUT = 0;
+        public const int EXCEL_INPUT = 1;
         public const int MODE_ADD_URL = 1;
         public const int MODE_ADD_FILE = 0;
         public const int DB_STATUS_FAIL = -1;

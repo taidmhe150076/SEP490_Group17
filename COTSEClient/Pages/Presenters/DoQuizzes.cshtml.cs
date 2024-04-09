@@ -68,10 +68,10 @@ namespace COTSEClient.Pages.Quizzes
                         if (item.Id == answer.QuestionId)
                         {
                             var isCorrectAnswer = item.AnswerQuestions.FirstOrDefault(x => x.IsCorrectAnswer == true);
-                            if (isCorrectAnswer != null && !string.IsNullOrEmpty(answer.Answer) && answer.Answer.Equals(isCorrectAnswer.AnswerText))
-                            {
-                                sountScore++;
-                            }
+                            //if (isCorrectAnswer != null && !string.IsNullOrEmpty(answer.Answer) && answer.Answer.Equals(isCorrectAnswer.AnswerText))
+                            //{
+                            //    sountScore++;
+                            //}
                         }
                     }
                 }

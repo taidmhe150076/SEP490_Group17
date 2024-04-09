@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DTO
 {
-    public class WorkshopSeriesWorkshop
+    public class WorkshopSeriesWorkshopDTO
     {
         public int Id { get; set; }
         public string? WorkshopSeriesName { get; set; }

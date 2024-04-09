@@ -11,13 +11,17 @@ public partial class WorkshopSurveyUrl
 
     public int? WorkshopId { get; set; }
 
-    public string? SurveyUrl { get; set; }
+    public string? SurveyName { get; set; }
 
-    public string? SurveyKey { get; set; }
+    public string? Url { get; set; }
+
+    public string? FileByte { get; set; }
+
+    public string? FileType { get; set; }
 
     public DateTime? AddedDate { get; set; }
 
-    public string? SurveyName { get; set; }
+    public int? AddedBy { get; set; }
 
     public virtual Workshop? Workshop { get; set; }
 

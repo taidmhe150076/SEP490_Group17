@@ -6,18 +6,22 @@ namespace BusinessLogic.IRepository
     public interface IRepositorySurvey
     {
         // wss
-        Task<List<WorkshopSeriesWorkshop>> seriesSurvey();
+        Task<List<WorkshopSeriesWorkshopDTO>> seriesSurvey();
         List<SurveyDTO> getListSurvey(int wssId, int wsId);
         WorkshopInfoDTO getWorkshopInformation(int wssId, int wsId);
-        Task<int> addSurvey(WorkshopInfoDTO workshopinfo, int mode, string? filePath);
         
         // survey
         WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id);
         Task<string> getWorkshopData(int wssId, int wsId, string key);
+        Task<int> createNewSurveyFile(WorkshopInfoDTO workshopInfo);
+        Task<int> createNewSurveyUrl(WorkshopInfoDTO ws_info);
+        Task<SurveyDTO> getSurey(int surveyId);
+        Task<List<CommonQA>> getOtherData(int surveyId);
+        // return file path
 
-        //analys
-        List<string> GetSentimentAnswer(string file_path);
-        public List<FeedbackResult> Rate(List<string> questions, string json_data);
-        Task<string> GetJsonSentiment(List<string> sentiment_data_list);
+
+        //analyze
+        Task<List<FeedbackResult>> getSurveySentimentResult(int surveyId);
+        Task<Dictionary<string, int>> CountFeedback(List<FeedbackResult> survey_sentiment);
     }
 }

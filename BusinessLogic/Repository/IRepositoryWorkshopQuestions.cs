@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogic.IRepository
+namespace BusinessLogic.Repository
 {
     public interface IRepositoryWorkshopQuestions
     {

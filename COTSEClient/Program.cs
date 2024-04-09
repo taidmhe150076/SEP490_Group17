@@ -24,9 +24,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/AccessDenied";
     });
 
-// Add additional scope
-AdditionalServiceCollection.AdditionalScope(builder);
-
 // Add scope repository
 AddServiceCollectionDI.AddScopeServiceCollectionDI(builder.Services);
 
