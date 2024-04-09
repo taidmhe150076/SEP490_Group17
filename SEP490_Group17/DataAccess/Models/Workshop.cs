@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DataAccess.Models;
 
@@ -7,6 +9,7 @@ public partial class Workshop
 {
     public int Id { get; set; }
 
+    
     public string? WorkshopName { get; set; }
 
     public DateTime? DatePresent { get; set; }

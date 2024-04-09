@@ -9,7 +9,7 @@ namespace COTSEClient.Pages.Department
 
         public string FilePath { get; set; }
 
-        public IActionResult OnGet(string filePath)
+        public IActionResult OnGet(string filePath , int workshopId)
         {
             try
             {
@@ -18,11 +18,10 @@ namespace COTSEClient.Pages.Department
 
                 if (!System.IO.File.Exists(filePath))
                 {
-                    return NotFound(); // Trả về 404 Not Found nếu không tìm thấy tệp
+                    return NotFound(); 
                 }
-
-                // Đọc tệp và trả về dưới dạng phản hồi
                 var stream = new FileStream(filePath, FileMode.Open);
+                
                 return File(stream, "application/pdf", "test.pdf");
             }
             catch (IOException ex)
@@ -31,7 +30,6 @@ namespace COTSEClient.Pages.Department
                 
             }
 
-           
             return Page();
         }
     }

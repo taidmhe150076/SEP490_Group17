@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using IronBarCode;
+using System.Text.RegularExpressions;
 
 namespace COTSEClient.Helper
 {
@@ -63,5 +64,15 @@ namespace COTSEClient.Helper
 
             return base64String;
         }
+
+        public static string RemoveSpecialCharacters(string inputString)
+        {
+            string pattern = @"[^\w]";
+
+            string result = Regex.Replace(inputString,pattern, "");
+            return result;
+        }
+
+
     }
 }

@@ -1,16 +1,112 @@
 ﻿@page "/AllImage"
 @model COTSEClient.Pages.Department.ListAllImageModel
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Image Gallery</title>
+        
+    <style>
+         
 
-<form asp-page-handler="SavetoPdf" method="post">
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<div class="image-container">
-    @foreach (var imageUrl in Model.ImageUrls)
-    {
-        <div class="image-item">
-            <img src="data:image/png;base64,@imageUrl" alt="Image" />
+        /* Style for image container */
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Style for individual image item */
+        .image-item {
+            width: calc(33.33% - 10px);
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+            .image-item img {
+                width: 100%;
+                height: auto;
+                display: block;
+                border-radius: 5px;
+            }
+
+        /* Style for button */
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+            .button-container button {
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+        h1 {
+            text-align: center; /* Căn giữa */
+            color: blue; /* Màu chữ */
+            font-weight: bold; /* Đậm */
+            font-size: 2rem; /* Kích thước chữ */
+            margin-bottom: 0; /* Loại bỏ khoảng trắng dưới */
+        }
+    </style>
+
+    <h1 class="display-5 fw-bolder mb-0">
+        <span>@Model.WorkShop.WorkshopName</span>
+    </h1>
+
+       
+    </head>
+    <body>
+        <form asp-page-handler="SavetoPdf" method="post">
+     
+        <div class="image-container">
+            <input type="hidden" asp-for="@Model.WorkShopId" />
+           
+            @foreach (var imageUrl in Model.ImageUrls)
+            {
+                <div class="image-item">
+                    <img src="data:image/png;base64,@imageUrl" alt="Image" />
+                </div>
+            }
         </div>
-    }
-</div>
-<button type="submit" class="btn btn-primary">Save to PDF</button>
+        <div class="button-container">
+            <button type="submit" class="btn btn-primary">Save to PDF</button>
+        </div>
+    </form>
+    </body>
+</html>
 
-</form>
+
+
+<a hidden id="filePdf" href="@Model.Url" download="@Model.WorkShop.WorkshopName Slide">Download PDF</a>
+
+
+<script>
+    console.log(@Json.Serialize(Model.Flag));
+    if (@Json.Serialize(Model.Flag) === true) {
+
+        console.log("DÃ VÀO");
+
+        var link = document.getElementById('filePdf');
+        console.log("DÃ VÀO:" + link);
+        link.click();
+    }
+</script>
