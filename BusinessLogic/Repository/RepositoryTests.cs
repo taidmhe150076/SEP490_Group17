@@ -71,5 +71,17 @@ namespace BusinessLogic.Repository
                 throw ex;
             }
         }
+
+        public string GetTestTypeByTestId(int testId)
+        {
+            try
+            {
+                return _context.Tests.Include(x => x.TestType).FirstOrDefault(x => x.Id == testId).TestType.TypeName;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

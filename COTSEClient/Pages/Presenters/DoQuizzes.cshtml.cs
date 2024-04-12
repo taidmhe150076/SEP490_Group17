@@ -16,15 +16,21 @@ namespace COTSEClient.Pages.Quizzes
         private readonly IRepositoryParticipantAnswer _repositoryParticipantAnswer;
         private readonly IRepositoryParticiPantScore _repositoryParticiPantScore;
         private readonly IRepositoryAnswerParticipants _repositoryAnswerParticipants;
+        private readonly IRepositoryTests _repositoryTests;
+        private readonly IRepositoryUrlForm _repositoryUrlForm;
+
+
         private readonly IHubContext<ParticiPantScoresHub> _hubContext;
 
 
-        public DoQuizzesModel(IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryParticipantAnswer repositoryParticipantAnswer, IRepositoryParticiPantScore repositoryParticiPantScore, IHubContext<ParticiPantScoresHub> hubContext, IRepositoryAnswerParticipants repositoryAnswerParticipants)
+        public DoQuizzesModel(IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryParticipantAnswer repositoryParticipantAnswer, IRepositoryParticiPantScore repositoryParticiPantScore, IHubContext<ParticiPantScoresHub> hubContext, IRepositoryAnswerParticipants repositoryAnswerParticipants, IRepositoryTests repositoryTests, IRepositoryUrlForm repositoryUrlForm)
         {
             _repositoryWorkshopQuestions = repositoryWorkshopQuestions;
             _repositoryParticipantAnswer = repositoryParticipantAnswer;
             _repositoryParticiPantScore = repositoryParticiPantScore;
             _repositoryAnswerParticipants = repositoryAnswerParticipants;
+            _repositoryTests = repositoryTests;
+            _repositoryUrlForm = repositoryUrlForm;
             _hubContext = hubContext;
         }
 
@@ -38,6 +44,15 @@ namespace COTSEClient.Pages.Quizzes
         public int TestCurrentId { get; set; }
         [BindProperty]
         public int WorkShopId { get; set; }
+
+        [BindProperty]
+        public bool Flag { get; set; } = false;
+        [BindProperty]
+        public double Score { get; set; }
+        [BindProperty]
+        public string TestType { get; set; }
+        [BindProperty]
+        public string UrlForm { get; set; }
         public IActionResult OnGet(int testId, int workShopId)
         {
             TestCurrentId = testId;
@@ -59,10 +74,15 @@ namespace COTSEClient.Pages.Quizzes
         {
             try
             {
+                if (WorkShopId == 0)
+                {
+                    throw new ArgumentException(nameof(WorkShopId));
+                }
                 double score = 0;
                 int countScore = 0;
                 WorkshopQuestions = _repositoryWorkshopQuestions.GetWorkshopQuestionsByWsId(WorkShopId);
-
+                TestType = _repositoryTests.GetTestTypeByTestId(TestCurrentId);
+                UrlForm = _repositoryUrlForm.GetUrlFormForParticipantsByWsId(WorkShopId);
                 foreach (var item in WorkshopQuestions)
                 {
                     foreach (var answer in AnswerParticipantList)
@@ -116,7 +136,10 @@ namespace COTSEClient.Pages.Quizzes
                         }).OrderByDescending(x => x.Score).ToList();
                         var resultjson = JsonSerializer.Serialize<List<ParticiPantScoreDTO>>(result);
                         await _hubContext.Clients.All.SendAsync("Message", resultjson);
+                        Flag = true;
+                        Score = score;
                     }
+                    
                 }
                 return Page();
             }
