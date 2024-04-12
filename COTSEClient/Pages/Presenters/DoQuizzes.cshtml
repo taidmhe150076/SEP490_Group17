@@ -13,6 +13,37 @@
     <link href="~/css/quizzteamplate.css" rel="stylesheet" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.js"></script>
+    <style>
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: #f8f9fa; 
+        }
+
+        .modal-header {
+            background-color: #6c757d; 
+            color: #fff;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .btn-close {
+            color: #fff;
+        }
+
+        .score-container {
+            text-align: center;
+        }
+
+        #createSeriesModalScore {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        #countdownMessage {
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
@@ -57,15 +88,20 @@
     </div>
 
     <div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title" id="createSeriesModalLabel">Điểm Bài Quiz Của Bạn</h3>
-                    <button type="button" id="closeModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h3 class="modal-title" id="createSeriesModalLabel">Kết quả bài làm</h3>
+                    <button type="button" id="closeModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    <h2 class="modal-title" id="createSeriesModalScore">10</h2>
-                    <div id="countdownMessage"></div>
+                    <div class="score-container">
+                        <h2 class="modal-title" id="createSeriesModalScore">10/10</h2>
+                        <div id="iconContainer"></div>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,14 +136,25 @@
         console.log(flag);
         console.log(score);
         console.log(type);
-        function showPopup() {
+        function showPopupScore() {
             var modal = new bootstrap.Modal(document.getElementById('createSeriesModal'));
             modal.show();
         }
 
         if (flag == true) {
-            document.getElementById('createSeriesModalScore').innerText = 'Điểm của Bạn:' + score;
-            showPopup();
+            var scoreElement = document.getElementById('createSeriesModalScore');
+            var iconContainer = document.getElementById('iconContainer');
+            scoreElement.innerText = 'Điểm của bạn\n' + score;
+
+            // Hiển thị biểu tượng tương ứng với điểm
+            if (score < 5) {
+                iconContainer.innerHTML = '<img src="https://localhost:7149/Image/SadEmotion.jpg" alt="Sad Icon">';
+            } else {
+                iconContainer.innerHTML = '<img src="https://localhost:7149/Image/HappyEmotion.jpg" alt="Happy Icon">';
+            }
+
+            showPopupScore();
+
             if (type === 'Post') {
                 document.getElementById('createSeriesModal').addEventListener('click', function (event) {
                     if (event.target === this) {
@@ -119,7 +166,7 @@
                         window.location.href = urlForm;
                     }
                 });
-                var countdown = 5; // Countdown in seconds
+                var countdown = 5; 
                 var countdownInterval = setInterval(function () {
                     countdown--;
                     if (countdown <= 0) {
