@@ -27,34 +27,58 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Các chuỗi hội thảo</title>
+    <style>
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
 
+            .search-container input[type="text"],
+            .search-container input[type="date"],
+            .search-container button[type="submit"] {
+                padding: 10px;
+                border: 1px solid #ced4da;
+                border-radius: 5px;
+            }
+
+            .search-container button[type="submit"] {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+                .search-container button[type="submit"]:hover {
+                    background-color: #0056b3;
+                }
+    </style>
 </head>
-
 <body>
     <main>
         <section class="py-5">
-            <div class="container px-5 mb-5">
+            <div class="container-fluid px-5 mb-5">
                 <div class="text-center mb-5">
                     <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Các chuỗi hội thảo</span></h1>
                 </div>
-                <form method="get">
+                <form method="post" class="d-flex justify-content-center mb-3">
                     <div class="search-container">
                         <input type="text" id="searchInput" name="searchInput" value="@searchInput" onchange="OnSearch()" placeholder="Nhập từ khóa tìm kiếm">
                         <input type="date" name="curentDate" value="@curentDate">
-                        <button type="submit" class="btn btn-primary" >Tìm kiếm</button>
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                     </div>
                 </form>
-               
-                @if (Model.WorkshopSeriesPage != null && Model.WorkshopSeriesPage.Count > 0)
-                {
-                    @foreach (var series in Model.WorkshopSeriesPage)
+                <div class="row">
+                    @if (Model.WorkshopSeriesPage != null && Model.WorkshopSeriesPage.Count > 0)
                     {
-                    <div class="row gx-5 justify-content-center">
-                        <div class="col-lg-11 col-xl-9 col-xxl-8">
-                            <div class="card overflow-hidden shadow rounded-4 border-0 mb-5">
-                                <div class="card-body p-0">
-                                     <div class="d-flex align-items-center">
-                                            <div class="p-5">
+                        @foreach (var series in Model.WorkshopSeriesPage)
+                        {
+                            <div class="col-lg-4 mb-4">
+                                <div class="card overflow-hidden shadow rounded-4 border-0">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="p-3">
                                                 <h2 class="fw-bolder">@series.WorkshopSeriesName</h2>
                                                 <p>@series.Description</p>
                                                 <p>Start Date: @series.StartDate</p>
@@ -62,57 +86,60 @@
                                                 <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
                                             </div>
                                             <img class="img-fluid" src="data:image/png;base64,@series.Image" />
-                                     </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        }
+                        <div class="col-lg-12 mt-4">
+                            <div class="pagination justify-content-center">
+                                @if (Model.WorkshopSeriesPage.HasPreviousPage || Model.WorkshopSeriesPage.HasNextPage)
+                                {
+                                    <ul class="pagination">
+                                        @if (Model.WorkshopSeriesPage.HasPreviousPage)
+                                        {
+                                            if (searchInput != null)
+                                            {
+                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)&searchInput=@searchInput">Previous</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)">Previous</a></li>
+                                            }
+                                        }
+                                        @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
+                                        {
+                                            if (searchInput != null)
+                                            {
+                                                <li class="page-item"><a class="page-link" href="?pageIndex=@i&searchInput=@searchInput">@i</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item"><a class="page-link" href="?pageIndex=@i">@i</a></li>
+                                            }
+                                        }
+                                        @if (Model.WorkshopSeriesPage.HasNextPage)
+                                        {
+                                            if (searchInput != null)
+                                            {
+                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)&searchText=@searchInput">Next</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)">Next</a></li>
+                                            }
+                                        }
+                                    </ul>
+                                }
+                            </div>
                         </div>
-                    </div>
                     }
-                   @if(Model.WorkshopSeriesPage.HasPreviousPage || Model.WorkshopSeriesPage.HasNextPage){
-                        <div class="pagination">
-                            @if (Model.WorkshopSeriesPage.HasPreviousPage)
-                            {
-                                if (searchInput != null)
-                                {
-                                    <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)&searchInput=@searchInput">Previous</a>
-                                }
-                                else
-                                {
-                                    <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)">Previous</a>
-                                }
-                            }
-                            @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
-                            {
-                                if (searchInput != null)
-                                {
-                                    <a href="?pageIndex=@i&searchInput=@searchInput" class="@((i == Model.WorkshopSeriesPage.PageIndex))">@i</a>
-                                }
-                                else
-                                {
-                                    <a href="?pageIndex=@i" class="@((i == Model.WorkshopSeriesPage.PageIndex))">@i</a>
-                                }
-                            }
-                            @if (Model.WorkshopSeriesPage.HasNextPage)
-                            {
-                                if (searchInput != null)
-                                {
-                                    <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)&searchText=@searchInput">Next</a>
-                                }
-                                else
-                                {
-                                    <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)">Next</a>
-                                }
-                            }
-                        </div>
+                    else
+                    {
+                        <p class="text-center">No Workshop Series available.</p>
                     }
-                }
-                else
-                {
-                    <p>No Workshop Series available.</p>
-                } 
+                </div>
             </div>
-
-
         </section>
         <section class="py-5 bg-gradient-primary-to-secondary text-white">
             <div class="container px-5 my-5">
@@ -122,7 +149,6 @@
                 </div>
             </div>
         </section>
-
     </main>
 </body>
 </html>
