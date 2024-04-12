@@ -20,12 +20,12 @@ namespace COTSEClient.Pages.Common
 
         [BindProperty]
         public string Username { get; set; }
-        [BindProperty] 
+        [BindProperty]
         public string Password { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
@@ -35,7 +35,7 @@ namespace COTSEClient.Pages.Common
             if (user == null || user.IsActive == false)
             {
                 ModelState.AddModelError(string.Empty, "invalid username or password.");
-                ViewData["Error Message"] = "Invalid username or password";
+                ViewData["ErrorMessage"] = "Invalid username or password";
                 return Page();
             }
 

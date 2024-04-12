@@ -23,7 +23,5 @@ public partial class WorkshopSurveyUrl
 
     public string? FileType { get; set; }
 
-    public virtual Workshop? Workshop { get; set; }
-
-    public virtual WorkshopSeries? WorkshopSeries { get; set; }
+    public virtual ICollection<UrlForm> UrlForms { get; set; } = new List<UrlForm>();
 }
