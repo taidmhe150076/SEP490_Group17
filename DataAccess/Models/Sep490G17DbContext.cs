@@ -49,6 +49,8 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<TestType> TestTypes { get; set; }
 
+    public virtual DbSet<UrlForm> UrlForms { get; set; }
+
     public virtual DbSet<WorkShopSurveyQuestion> WorkShopSurveyQuestions { get; set; }
 
     public virtual DbSet<WorkShopSurveyQuestionTextDetail> WorkShopSurveyQuestionTextDetails { get; set; }
@@ -303,6 +305,28 @@ public partial class Sep490G17DbContext : DbContext
             entity.Property(e => e.TypeName).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<UrlForm>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.WorkshopSurveyUrl, e.WorkshopId });
+
+            entity.ToTable("UrlForm");
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.UrlForm1)
+                .HasMaxLength(1000)
+                .HasColumnName("UrlForm");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.UrlForms)
+                .HasForeignKey(d => d.WorkshopId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UrlForm_Workshop");
+
+            entity.HasOne(d => d.WorkshopSurveyUrlNavigation).WithMany(p => p.UrlForms)
+                .HasForeignKey(d => d.WorkshopSurveyUrl)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UrlForm_WorkshopSurveyUrl");
+        });
+
         modelBuilder.Entity<WorkShopSurveyQuestion>(entity =>
         {
             entity.ToTable("WorkShopSurveyQuestion");
@@ -409,14 +433,6 @@ public partial class Sep490G17DbContext : DbContext
             entity.Property(e => e.Url)
                 .HasMaxLength(1000)
                 .HasColumnName("url");
-
-            entity.HasOne(d => d.Workshop).WithMany(p => p.WorkshopSurveyUrls)
-                .HasForeignKey(d => d.WorkshopId)
-                .HasConstraintName("FK_WorkshopSurveyUrl_Workshop");
-
-            entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.WorkshopSurveyUrls)
-                .HasForeignKey(d => d.WorkshopSeriesId)
-                .HasConstraintName("FK_WorkshopSurveyUrl_WorkshopSeries");
         });
 
         OnModelCreatingPartial(modelBuilder);
