@@ -44,7 +44,7 @@ namespace COTSEClient.Pages.Department
             Url = _configuration["BaseURL"];
         }
 
-        public IActionResult OnGet(int workShopId = 1214)
+        public IActionResult OnGet(int workShopId = 1212)
         {
 
             if (workShopId == 0)
@@ -98,7 +98,7 @@ namespace COTSEClient.Pages.Department
                     {
                         byte[] imageBytes = Convert.FromBase64String(imageUrl);
                         iTextSharp.text.Image pdfImage = iTextSharp.text.Image.GetInstance(imageBytes);
-                         pdfImage.ScaleToFit(doc.PageSize.Width, doc.PageSize.Height);
+                         pdfImage.ScaleToFit(doc.PageSize.Width ,doc.PageSize.Height);
                         doc.Add(pdfImage);
                     }
                     doc.Close();

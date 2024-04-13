@@ -37,7 +37,7 @@
                 <div class="text-center mb-5">
                     <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Các chuỗi hội thảo</span></h1>
                 </div>
-                <form method="get">
+                <form method="post">
                     <div class="search-container">
                         <input type="text" id="searchInput" name="searchInput" value="@searchInput" onchange="OnSearch()" placeholder="Nhập từ khóa tìm kiếm">
                         <button type="submit" class="btn btn-primary" >Tìm kiếm</button>
@@ -71,36 +71,20 @@
                         <div class="pagination">
                             @if (Model.WorkshopSeriesPage.HasPreviousPage)
                             {
-                                if (searchInput != null)
-                                {
-                                    <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)&searchInput=@searchInput">Previous</a>
-                                }
-                                else
-                                {
+                             
                                     <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)">Previous</a>
-                                }
+                                
                             }
                             @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
                             {
-                                if (searchInput != null)
-                                {
-                                    <a href="?pageIndex=@i&searchInput=@searchInput" class="@((i == Model.WorkshopSeriesPage.PageIndex))">@i</a>
-                                }
-                                else
-                                {
+                               
                                     <a href="?pageIndex=@i" class="@((i == Model.WorkshopSeriesPage.PageIndex))">@i</a>
-                                }
+                                
                             }
                             @if (Model.WorkshopSeriesPage.HasNextPage)
                             {
-                                if (searchInput != null)
-                                {
-                                    <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)&searchText=@searchInput">Next</a>
-                                }
-                                else
-                                {
                                     <a href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)">Next</a>
-                                }
+                           
                             }
                         </div>
                     }

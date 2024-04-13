@@ -29,17 +29,17 @@ namespace COTSEClient.Pages.Department
             _repositoryWorkshopSeries = repositoryWorkshopSeries;
         }
 
-        public void OnGet( int pageIndex = 1, int pageSize = 3)
+        public IActionResult OnGet( int pageIndex = 1, int pageSize = 3)
         {
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
 
              WorkshopSeriesPage = PageList<WorkshopSeries>.Create(source, pageIndex, pageSize);
 
-
+            return Page();
         }
 
-        public void OnPost( string searchInput, int pageIndex = 1, int pageSize = 3)
+        public IActionResult OnPost( string searchInput, int pageIndex = 1, int pageSize = 3)
         {
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
@@ -50,7 +50,9 @@ namespace COTSEClient.Pages.Department
             }
 
             WorkshopSeriesPage = PageList<WorkshopSeries>.Create(source, pageIndex, pageSize);
-
+           
+            return Page();
+        
         }
 
         public IActionResult OnPostCreateWorkshopSeries(WorkshopSeries workshopSeries )

@@ -16,6 +16,7 @@ namespace BusinessLogic.Repository
             _context = context;
         }
 
+        
         public List<WorkshopSeries> GetAllWorkshopSeries()
         {
             try
