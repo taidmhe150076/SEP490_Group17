@@ -139,7 +139,6 @@ namespace COTSEClient.Pages.Quizzes
                         Flag = true;
                         Score = score;
                     }
-                    
                 }
                 return Page();
             }
