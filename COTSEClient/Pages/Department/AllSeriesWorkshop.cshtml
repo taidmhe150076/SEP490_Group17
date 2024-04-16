@@ -5,28 +5,14 @@
 @{
     Layout = "_Layout";
 }
-@{
-    ViewData["Title"] = "All Workshop Series";
-
-    var searchInput = Model.SearchInput;
-    var curentDate = Model.CurentDate;
-}
-<style>
-    .search-container {
-        display: flex;
-        align-items: center;
-    }
-
-        .search-container .form-control {
-            margin-right: 10px;
-        }
-</style>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Các chuỗi hội thảo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         .search-container {
             display: flex;
@@ -36,18 +22,20 @@
         }
 
             .search-container input[type="text"],
-            .search-container input[type="date"],
-            .search-container button[type="submit"] {
+            .search-container input[type="date"] {
                 padding: 10px;
                 border: 1px solid #ced4da;
                 border-radius: 5px;
             }
 
             .search-container button[type="submit"] {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
                 background-color: #007bff;
                 color: white;
-                border: none;
                 cursor: pointer;
+                transition: background-color 0.3s ease;
             }
 
                 .search-container button[type="submit"]:hover {
@@ -64,83 +52,72 @@
                 </div>
                 <form method="post" class="d-flex justify-content-center mb-3">
                     <div class="search-container">
-                        <input type="text" id="searchInput" name="searchInput" value="@searchInput" onchange="OnSearch()" placeholder="Nhập từ khóa tìm kiếm">
-                        <input type="date" name="curentDate" value="@curentDate">
+                        <input type="text" id="searchInput" name="searchInput" value="@Model.SearchInput" onchange="OnSearch()" placeholder="Nhập từ khóa tìm kiếm">
+                        <input type="date" name="curentDate" value="@Model.CurentDate">
                         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                     </div>
                 </form>
                 <div class="row">
-                    @if (Model.WorkshopSeriesPage != null && Model.WorkshopSeriesPage.Count > 0)
-                    {
-                        @foreach (var series in Model.WorkshopSeriesPage)
-                        {
-                            <div class="col-lg-4 mb-4">
-                                <div class="card overflow-hidden shadow rounded-4 border-0">
-                                    <div class="card-body p-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="p-3">
-                                                <h2 class="fw-bolder">@series.WorkshopSeriesName</h2>
-                                                <p>@series.Description</p>
-                                                <p>Start Date: @series.StartDate</p>
-                                                <p>End Date: @series.EndDate</p>
-
-                                                <a class="btn btn-primary" href="/AllWorkshop?wsSeriesId=@series.Id">Xem chi tiết</a>
-                                                <a class="btn btn-primary" href="#">Cập nhật thông tin</a>
-
-                                            </div>
-                                            <img class="img-fluid" src="data:image/png;base64,@series.Image" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        <div class="col-lg-12 mt-4">
-                            <div class="pagination justify-content-center">
-                                @if (Model.WorkshopSeriesPage.HasPreviousPage || Model.WorkshopSeriesPage.HasNextPage)
+                    <div class="col-lg-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tên chuỗi hội thảo</th>
+                                    <th>Mô tả</th>
+                                    <th>Ngày bắt đầu</th>
+                                    <th>Ngày kết thúc</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var series in Model.WorkshopSeriesPage)
                                 {
-                                    <ul class="pagination">
-                                        @if (Model.WorkshopSeriesPage.HasPreviousPage)
-                                        {
-                                            if (searchInput != null)
-                                            {
-                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)&searchInput=@searchInput">Previous</a></li>
-                                            }
-                                            else
-                                            {
-                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)">Previous</a></li>
-                                            }
-                                        }
-                                        @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
-                                        {
-                                            if (searchInput != null)
-                                            {
-                                                <li class="page-item"><a class="page-link" href="?pageIndex=@i&searchInput=@searchInput">@i</a></li>
-                                            }
-                                            else
-                                            {
-                                                <li class="page-item"><a class="page-link" href="?pageIndex=@i">@i</a></li>
-                                            }
-                                        }
-                                        @if (Model.WorkshopSeriesPage.HasNextPage)
-                                        {
-                                            if (searchInput != null)
-                                            {
-                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)&searchText=@searchInput">Next</a></li>
-                                            }
-                                            else
-                                            {
-                                                <li class="page-item"><a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)">Next</a></li>
-                                            }
-                                        }
-                                    </ul>
+                                    <tr>
+                                        <td>@series.WorkshopSeriesName</td>
+                                        <td>@series.Description</td>
+                                        <td>@series.StartDate</td>
+                                        <td>@series.EndDate</td>
+                                        <td>
+                                            <a class="btn btn-primary" href="/AllWorkshop?wsSeriesId=@series.Id">Xem chi tiết</a>
+                                            <a class="btn btn-primary" href="#">Cập nhật thông tin</a>
+                                        </td>
+                                    </tr>
                                 }
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-center">No Workshop Series available.</p>
-                    }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                @if (Model.WorkshopSeriesPage.HasPreviousPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                }
+                                @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
+                                {
+                                    <li class="page-item @(i == Model.WorkshopSeriesPage.PageIndex ? "active" : "")">
+                                        <a class="page-link" href="?pageIndex=@i">@i</a>
+                                    </li>
+                                }
+                                @if (Model.WorkshopSeriesPage.HasNextPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </section>
@@ -153,57 +130,55 @@
             </div>
         </section>
     </main>
-</body>
-</html>
 
-<script>
-    function OnSearch() {
-        var searchTerm = document.getElementById("searchInput").value;
-
-        console.log("Search term:", searchTerm);
-
-    }
-</script>
-
-
-
-<div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createSeriesModalLabel">Tạo Chuỗi Hội Thảo Mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form asp-page-handler="CreateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label asp-for="WorkshopSeries.WorkshopSeriesName" class="form-label"></label>
-                        <input asp-for="WorkshopSeries.WorkshopSeriesName" class="form-control" placeholder="Nhập tên chuỗi hội thảo">
-                        <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="WorkshopSeries.Description" class="form-label"></label>
-                        <input asp-for="WorkshopSeries.Description" class="form-control" placeholder="Nhập mô tả">
-                        <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="WorkshopSeries.StartDate" class="form-label"></label>
-                        <input asp-for="WorkshopSeries.StartDate" class="form-control" type="date">
-                        <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="WorkshopSeries.EndDate" class="form-label"></label>
-                        <input asp-for="WorkshopSeries.EndDate" class="form-control" type="date">
-                        <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label asp-for="imageFile" class="form-label"></label>
-                        <input asp-for="imageFile" class="form-control" type="file">
-                        <span asp-validation-for="imageFile" class="text-danger"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Tạo mới</button>
-                </form>
+    <!-- Modal -->
+    <div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createSeriesModalLabel">Tạo Chuỗi Hội Thảo Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-page-handler="CreateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label asp-for="WorkshopSeries.WorkshopSeriesName" class="form-label">Tên chuỗi hội thảo</label>
+                            <input asp-for="WorkshopSeries.WorkshopSeriesName" class="form-control" placeholder="Nhập tên chuỗi hội thảo">
+                            <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="WorkshopSeries.Description" class="form-label">Mô tả</label>
+                            <input asp-for="WorkshopSeries.Description" class="form-control" placeholder="Nhập mô tả">
+                            <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="WorkshopSeries.StartDate" class="form-label">Ngày bắt đầu</label>
+                            <input asp-for="WorkshopSeries.StartDate" class="form-control" type="date">
+                            <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="WorkshopSeries.EndDate" class="form-label">Ngày kết thúc</label>
+                            <input asp-for="WorkshopSeries.EndDate" class="form-control" type="date">
+                            <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="imageFile" class="form-label">Ảnh</label>
+                            <input asp-for="imageFile" class="form-control" type="file">
+                            <span asp-validation-for="imageFile" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tạo mới</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function OnSearch() {
+            var searchTerm = document.getElementById("searchInput").value;
+            console.log("Search term:", searchTerm);
+        }
+    </script>
+</body>
+</html>
