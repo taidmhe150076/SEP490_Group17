@@ -11,23 +11,30 @@
     <title>User Table</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-UEEvrhj7GD7rNRMU7rKBAaz+4zg+1B9zHvY7mLprGXAv1NX8Mp9jjgQQwZc7a9/y" crossorigin="anonymous">
-    <link href="~/css/stylemessage.css" rel="stylesheet" />
+    <link href="~/css/stylemessage.css" rel="stylesheet">
+    <style>
+        .btn-action {
+            min-width: 80px; /* Điều chỉnh kích thước nút theo ý muốn */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Danh sách người dùng</h1>
-        <div class="col">
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" name="departmentName" placeholder="Search By Department Name" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+        <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Danh sách người dùng</span></h1>
+        <div class="row mb-3">
+            <div class="col">
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" name="departmentName" placeholder="Search By Department Name" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
         </div>
-        <table class="table">
-            <thead>
+        <table class="table table-striped table-bordered">
+            <thead class="table-light" style="background-color: lightskyblue;">
                 <tr>
                     <th scope="col">Id</th>
                     <th scope="col">Email</th>
-                    <th scope="col">ValidDate</th>
+                    <th scope="col">Valid Date</th>
                     <th scope="col">Department</th>
                     <th scope="col">Role</th>
                     <th scope="col">Action</th>
@@ -37,7 +44,7 @@
                 @foreach (var item in Model.ListUsers)
                 {
                     <tr>
-                        <th scope="row">@item.Id</th>
+                        <td>@item.Id</td>
                         <td>@item.Email</td>
                         <td>@item.ValidDate</td>
                         <td>@item.DepartmentldNavigation.DepartmentName</td>
@@ -46,17 +53,17 @@
                             @if (item.IsActive == true)
                             {
                                 <form asp-page-handler="BanUser" asp-route-userId="@item.Id" method="post">
-                                    <button class="btn btn-danger" type="submit">Ban</button>
+                                    <button class="btn btn-danger btn-sm btn-action" type="submit">Ban</button>
                                 </form>
                             }
                             else
                             {
                                 <form asp-page-handler="ActiveUser" asp-route-userId="@item.Id" method="post">
-                                    <button class="btn btn-success" type="submit">Active</button>
+                                    <button class="btn btn-success btn-sm btn-action" type="submit">Active</button>
                                 </form>
                             }
                             <!-- Button to trigger the edit modal -->
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editUserModal-@item.Id">Edit</button>
+                            <button class="btn btn-primary btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal-@item.Id">Edit</button>
 
                             <!-- Edit User Modal -->
                             <div class="modal fade" id="editUserModal-@item.Id" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
@@ -75,7 +82,7 @@
                                                     <input asp-for="@Model.User.Email" class="form-control" value="@item.Email">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="form-label">ValidDate</label>
+                                                    <label class="form-label">Valid Date</label>
                                                     <input asp-for="@Model.User.ValidDate" class="form-control" value="@item.ValidDate" type="date">
                                                 </div>
                                                 <div class="mb-3">
@@ -105,115 +112,78 @@
                         </td>
                     </tr>
                 }
-                <section class="py-5 text-white">
-                    <div class="text-center">
-                        <a class="btn btn-primary btn-lg px-5 py-3 fs-6 fw-bolder" data-bs-toggle="modal" data-bs-target="#createUserModal">Tạo mới</a>
-                    </div>
-                </section>
-
-                <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form asp-page-handler="CreateNewUser" method="post" id="createNewUser" enctype="multipart/form-data">
-                                    <div class="mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input class="form-control" name="email" placeholder="Input Email">
-                                        <span class="text-danger"></span>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Password</label>
-                                        <input class="form-control" type="password" name="password" placeholder="Input Password">
-                                        <span class="text-danger"></span>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Valid Date</label>
-                                        <input class="form-control" type="date" name="ValidDate" placeholder="Valid Date">
-                                        <span class="text-danger"></span>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Department</label>
-                                        <select class="form-select" name="DepartmentId">
-                                            @foreach (var item in Model.Departments)
-                                            {
-                                                <option value="@item.Id">@item.DepartmentName</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Role</label>
-                                        <select class="form-select" name="RoleId">
-                                            @foreach (var item in Model.Roles)
-                                            {
-                                                <option value="@item.Id">@item.RoleName</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Tạo mới</button>
-                                    @if (ViewData["ErrorMessage"] != null)
-                                    {
-                                        <div class="alert alert-danger" style="color:red" role="alert">
-                                            @ViewData["ErrorMessage"]
-                                        </div>
-                                    }
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </tbody>
         </table>
+        <div class="text-center">
+            <button class="btn btn-primary btn-lg px-5 py-3 fs-6 fw-bolder" data-bs-toggle="modal" data-bs-target="#createUserModal">Tạo mới</button>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createUserModalLabel">Create User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-page-handler="CreateNewUser" method="post" id="createNewUser" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input class="form-control" name="email" placeholder="Input Email">
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input class="form-control" type="password" name="password" placeholder="Input Password">
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valid Date</label>
+                            <input class="form-control" type="date" name="ValidDate" placeholder="Valid Date">
+                            <span class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            <select class="form-select" name="DepartmentId">
+                                @foreach (var department in Model.Departments)
+                                {
+                                    <option value="@department.Id">@department.DepartmentName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="RoleId">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <option value="@role.Id">@role.RoleName</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        @if (ViewData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger mt-3" role="alert">
+                                @ViewData["ErrorMessage"]
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-XI6XjqXgS/ie3SmZFrsGfUqPNa+Qblm4foTwpfGZ3tHJL/Nc5X2kq2L8yUpT2fsB" crossorigin="anonymous"></script>
 
-    @{
-        if (Model.Msg != null)
-        {
-            if (Model.Msg.Contains("Success"))
-            {
-                <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
-                <div class="alert-box-wrap alert-success-popup">
-                    <div class="alert-content">
-                        <div class="icon">
-                            <img src="~/Image/success-icon.svg" alt="alert-icon">
-                        </div>
-                        <div class="body">
-                            <h3>@Model.Msg</h3>
-                        </div>
-                        <div class="close-alert">
-                            <label for="alert-success-popup">&times;</label>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <input type="checkbox" id="alert-error-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
-                <div class="alert-box-wrap alert-error-popup">
-                    <div class="alert-content">
-                        <div class="icon">
-                            <img src="~/Image/error-icon.svg" alt="alert-icon">
-                        </div>
-                        <div class="body">
-                            <h3>@Model.Msg</h3>
-                        </div>
-                        <div class="close-alert">
-                            <label for="alert-error-popup">&times;</label>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-    }
-
+    <!-- Optional JavaScript for closing alerts -->
     <script>
         setTimeout(function () {
-            document.querySelector('.alert-box-wrap').style.display = 'none';
+            document.querySelectorAll('.alert').forEach(function (alert) {
+                alert.style.display = 'none';
+            });
         }, 1000);
     </script>
 </body>
