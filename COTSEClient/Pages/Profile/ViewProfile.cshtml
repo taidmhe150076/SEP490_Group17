@@ -1,0 +1,145 @@
+﻿@page "/Profile"
+@model COTSEClient.Pages.Profile.ViewProfileModel
+@{
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">User Information</h1>
+        <div class="card mt-3">
+            <div class="card-body">
+                @if (User != null)
+                {
+                    <div class="form-group">
+                        <label for="userId">User ID</label>
+                        <input type="text" readonly id="userId" class="form-control" value="@Model.User.Id" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">User First Name</label>
+                        <input type="text" id="firstName" class="form-control" value="@Model.User.FirstName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">User Last Name</label>
+                        <input type="text" id="lastName" class="form-control" value="@Model.User.LastName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Email</label>
+                        <input type="text" id="email" class="form-control" value="@Model.User.Email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">DOB</label>
+                        <input type="text" id="userName" class="form-control" value="@Model.User.Dob" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Department</label>
+                        <input type="text" id="userName" class="form-control" value="@Model.User.DepartmentldNavigation.DepartmentName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Role</label>
+                        <input type="text" id="userName" class="form-control" value="@Model.User.RoleldNavigation.RoleName" readonly>
+                    </div>
+
+                    <!-- Add more user information fields as needed -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">Edit</button>
+                }
+                else
+                {
+                    <p class="card-text">User not found</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit User Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Add form fields to edit user information here -->
+                    <form asp-page-handler="UpdateInformation" method="post">
+                        <div class="form-group" hidden>
+                            <label asp-for="User.Id" class="form-label"></label>
+                            <input asp-for="User.Id" class="form-control" readonly>
+                            <span asp-validation-for="User.Id" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.FirstName"></label>
+                            <input asp-for="User.FirstName" class="form-control">
+                            <span asp-validation-for="User.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.Email"></label>
+                            <input asp-for="User.Email" class="form-control">
+                            <span asp-validation-for="User.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.FirstName"></label>
+                            <input asp-for="User.FirstName" class="form-control">
+                            <span asp-validation-for="User.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.LastName"></label>
+                            <input asp-for="User.LastName" class="form-control">
+                            <span asp-validation-for="User.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.Dob"></label>
+                            <input asp-for="User.Dob" type="date" class="form-control">
+                            <span asp-validation-for="User.Dob" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.DepartmentldNavigation.DepartmentName"></label>
+                            <input asp-for="User.DepartmentldNavigation.DepartmentName" class="form-control" readonly>
+                            <span asp-validation-for="User.Departmentld" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.RoleldNavigation.RoleName"></label>
+                            <input asp-for="User.RoleldNavigation.RoleName" class="form-control" readonly>
+                            <span asp-validation-for="User.Roleld" class="text-danger"></span>
+                        </div>
+                        <div class="form-group" hidden>
+                            <label asp-for="User.Password"></label>
+                            <input asp-for="User.Password" class="form-control" readonly>
+                            <span asp-validation-for="User.Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="User.ValidDate"></label>
+                            <input asp-for="User.ValidDate" type="date" class="form-control" readonly>
+                            <span asp-validation-for="User.ValidDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group" hidden>
+                            <label asp-for="User.IsActive"></label>
+                            <input asp-for="User.IsActive" class="form-control" readonly>
+                            <span asp-validation-for="User.IsActive" class="text-danger"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+
+
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

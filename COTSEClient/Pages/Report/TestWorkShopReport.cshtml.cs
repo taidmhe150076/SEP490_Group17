@@ -23,7 +23,7 @@ namespace COTSEClient.Pages.Report
         public List<Test>? InfoTest { get; set; }
         public string? WorkShopName { get; set; }
 
-        public void OnGet(int workShopId = 3)
+        public void OnGet(int workShopId)
         {
             var getData = _repositoryWorkshops.GetParticiPantScoresByWorkshopId(workShopId);
             WorkShopName = _repositoryWorkshops.GetWorkshopByWorkshopId(workShopId)?.WorkshopName;

@@ -8,5 +8,6 @@
         public string? CourseNumber{ get; set; }
         public string? Major { get; set; }
         public string? FavoriteTopics { get; set; }
+        public int? WorkshopSeriesId { get; set; }
     }
 }
