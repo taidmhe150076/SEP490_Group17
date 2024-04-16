@@ -29,7 +29,7 @@ namespace COTSEClient.Pages.Department
             _repositoryWorkshopSeries = repositoryWorkshopSeries;
         }
 
-        public void OnGet( int pageIndex = 1, int pageSize = 3)
+        public void OnGet( int pageIndex = 1, int pageSize = 9)
         {
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
@@ -39,7 +39,7 @@ namespace COTSEClient.Pages.Department
 
         }
 
-        public void OnPost( string searchInput, int pageIndex = 1, int pageSize = 3)
+        public void OnPost( string searchInput, int pageIndex = 1, int pageSize = 9)
         {
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();

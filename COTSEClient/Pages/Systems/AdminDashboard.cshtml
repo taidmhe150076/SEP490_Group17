@@ -1,0 +1,158 @@
+﻿@page "/DashBoard"
+@model COTSEClient.Pages.Systems.AdminDashboardModel
+@{
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">System Dashboard</h1>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Organizations</h5>
+                        <p class="card-text" id="totalOrganizations"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Users</h5>
+                        <p class="card-text" id="totalUsers"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Workshops</h5>
+                        <p class="card-text" id="totalWorkshops"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="selectYear">Select Year:</label>
+                    <select class="form-control" id="selectYear" onchange="updateChart()">
+                        <option value="" disabled selected>Select year...</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <!-- Add more years as needed -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col">
+                <canvas id="workshopsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script>
+        // Mock data
+        var totalOrganizations = 100;
+        var totalUsers = 500;
+        var totalWorkshops = 50;
+        var workshopsData = [
+            { year: 2022, month: "January", count: 10 },
+            { year: 2022, month: "February", count: 20 },
+            { year: 2022, month: "March", count: 30 },
+            { year: 2022, month: "April", count: 0 },
+            { year: 2022, month: "May", count: 20 },
+            { year: 2022, month: "June", count: 0 },
+            { year: 2022, month: "July", count: 30 },
+            { year: 2022, month: "August", count: 30 },
+            { year: 2022, month: "September", count: 10 },
+            { year: 2022, month: "October", count: 30 },
+            { year: 2022, month: "November", count: 30 },
+            { year: 2022, month: "December", count: 40 },
+            { year: 2023, month: "January", count: 15 },
+            { year: 2023, month: "February", count: 25 },
+            { year: 2023, month: "March", count: 35 },
+            { year: 2024, month: "January", count: 10 },
+            { year: 2024, month: "February", count: 5 },
+            { year: 2024, month: "March", count: 10 },
+            { year: 2024, month: "May", count: 20 },
+            { year: 2024, month: "September", count: 10 },
+            { year: 2024, month: "December", count: 10 },
+            // Add more data as needed
+        ];
+
+        // Display total numbers
+        document.getElementById("totalOrganizations").innerText = "Total Organizations: " + totalOrganizations;
+        document.getElementById("totalUsers").innerText = "Total Users: " + totalUsers;
+        document.getElementById("totalWorkshops").innerText = "Total Workshops: " + totalWorkshops;
+
+        // Initial chart data
+        var selectedYear = 2022; // Default to 2022
+        var workshopsChart;
+
+        // Function to update chart based on selected year
+        function updateChart() {
+            var selectedYear = parseInt(document.getElementById("selectYear").value);
+            var filteredData = workshopsData.filter(function (item) {
+                return item.year === selectedYear;
+            });
+
+            var months = filteredData.map(function (item) { return item.month; });
+            var counts = filteredData.map(function (item) { return item.count; });
+
+            // Check if chart exists
+            if (workshopsChart) {
+                // Update chart data
+                workshopsChart.data.labels = months;
+                workshopsChart.data.datasets[0].data = counts;
+                workshopsChart.update();
+            } else {
+                // Create new chart
+                var ctx = document.getElementById('workshopsChart').getContext('2d');
+                workshopsChart = new Chart(ctx, {
+                    type: 'bar', // Change to bar chart
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Workshops',
+                            backgroundColor: 'rgb(255, 99, 132)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: counts,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true, // Always start at zero
+                                    suggestedMin: 0 // Ensure the scale starts at zero
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
