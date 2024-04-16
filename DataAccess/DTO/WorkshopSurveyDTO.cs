@@ -1,5 +1,4 @@
 ﻿using COTSEClient.DTO;
-using DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DTO
 {
-    public class WorkshopSeriesWorkshopDTO
+    public class WorkshopSurveyDTO
     {
         public int Id { get; set; }
         public string? WorkshopSeriesName { get; set; }

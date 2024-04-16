@@ -7,23 +7,17 @@ public partial class WorkshopSurveyUrl
 {
     public int Id { get; set; }
 
-    public int? WorkshopSeriesId { get; set; }
+    public string? Url { get; set; }
 
-    public int? WorkshopId { get; set; }
+    public DateTime? AddedDate { get; set; }
 
     public string? SurveyName { get; set; }
 
-    public string? Url { get; set; }
+    public int? AddedBy { get; set; }
 
     public string? FileByte { get; set; }
 
     public string? FileType { get; set; }
 
-    public DateTime? AddedDate { get; set; }
-
-    public int? AddedBy { get; set; }
-
-    public virtual Workshop? Workshop { get; set; }
-
-    public virtual WorkshopSeries? WorkshopSeries { get; set; }
+    public virtual ICollection<UrlForm> UrlForms { get; set; } = new List<UrlForm>();
 }

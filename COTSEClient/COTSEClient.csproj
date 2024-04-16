@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\temp\" />
-    <Folder Include="wwwroot\temp\" />
   </ItemGroup>
 
   <ItemGroup>

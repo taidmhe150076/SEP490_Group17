@@ -31,7 +31,27 @@ namespace BusinessLogic.Repository
             {
                 throw;
             }
-            
+
+        }
+
+        public async Task<WorkshopSurveyUrl> getSurvey(int wssId, int wsId, int surveyId)
+        {
+            try {
+                var data = await _context.WorkshopSurveyUrls
+                    .Include(survey => survey.UrlForms)
+                    .ThenInclude(urlForm => urlForm.Workshop)
+                    .ThenInclude(workshop => workshop.WorkshopSeries)
+                    .Where(survey => survey.Id == surveyId && survey.UrlForms.Any(urlForm => urlForm.WorkshopId == wsId))
+                    .SingleOrDefaultAsync();
+
+                if (data == null) {
+                    throw new NullReferenceException();
+                }
+                return data;
+
+            } catch (Exception) {
+                throw new Exception();
+            }
         }
 
         public List<Test> GetScoresTestsByWorkshopId(int? workshopId)

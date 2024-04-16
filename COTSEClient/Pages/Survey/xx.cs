@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Survey
 {
-    public class SurveyByWorkshopModel : PageModel
+    public class SurveyDetailModel : PageModel
     {
         private readonly IRepositorySurvey _repo;
 
-        public SurveyByWorkshopModel(IRepositorySurvey repo)
+        public SurveyDetailModel(IRepositorySurvey repo)
         {
             _repo = repo;
         }
