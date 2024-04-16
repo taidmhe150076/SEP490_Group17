@@ -11,6 +11,6 @@ namespace BusinessLogic.IRepository
     {
         public List<Participant> GetParticipantsOrderBy();
         public List<Participant> GetParticipants();
-
+        public int InsertRange(List<Participant> listParticipants);
     }
 }

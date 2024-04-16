@@ -20,15 +20,17 @@ namespace COTSEClient.Pages.Department
         public readonly IRepositoryWorkshops _repositoryWorkshops;
         public readonly IRepositoryWorkshopSeries _repositoryWorkshopsSeries;
         public readonly IRepositoryPresenter _repositoryPresenter;
+        public readonly IRepositoryParticipants _repositoryParticipants;
         public string? urlRoom;
         public string? linkCF;
         public string? emailAdmin;
         public string? passwork;
-        public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryPresenter repositoryPresenter, IConfiguration configuration)
+        public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryPresenter repositoryPresenter, IRepositoryParticipants repositoryParticipants, IConfiguration configuration)
         {
             _repositoryWorkshops = repositoryWorkshops;
             _repositoryWorkshopsSeries = repositoryWorkshopSeries;
             _repositoryPresenter = repositoryPresenter;
+            _repositoryParticipants = repositoryParticipants;
             _configuration = configuration;
             urlRoom = _configuration["ConfigWorkshop:URLRoom"];
             linkCF = _configuration["ConfigWorkshop:LinkCF"];
@@ -49,6 +51,7 @@ namespace COTSEClient.Pages.Department
         {
             if (seriesWorkshopId != null)
             {
+                SeriesWorkshopId = seriesWorkshopId;
                 NameSersies = _context.WorkshopSeries.FirstOrDefault(x => x.Id == seriesWorkshopId).WorkshopSeriesName;
             }
             if (idWorkshop != null && email != null && date != null)
@@ -151,7 +154,8 @@ namespace COTSEClient.Pages.Department
                                 NameParticipant = rowData[1],
                                 CourseNumber = rowData[3],
                                 Major = rowData[4],
-                                FavoriteTopics = rowData[5]
+                                FavoriteTopics = rowData[5],
+                                WorkshopSeriesId = SeriesWorkshopId
                             };
                             seriesWorkshopForm.Add(newSeriesWorkshopForm);
                         }
@@ -159,18 +163,18 @@ namespace COTSEClient.Pages.Department
                 }
                 if (seriesWorkshopForm.Count() > 0)
                 {
-                    WorkshopSeries workshopSeries = new WorkshopSeries
+                    var listParticipants = seriesWorkshopForm.Select(x => new Participant
                     {
-                        WorkshopSeriesName = "WorkshopSeriesName",
-                        DepartmentId = 1,
-                        StartDate = DateTime.Now,
-                        EndDate = null
-                    };
-                    var resultInsert = _repositoryWorkshopsSeries.InsertWorkshopSeries(workshopSeries);
+                        Email = x.Email,
+                        TimeStamp = x.Timestamp,
+                        FullName = x.NameParticipant,
+                        FavoriteTopics = x.FavoriteTopics,
+                        Major = x.Major,
+                        WorkshopSeriesId= x.WorkshopSeriesId
+                    }).ToList();
+                    var resultInsert = _repositoryParticipants.InsertRange(listParticipants);
                     if (resultInsert > 0)
                     {
-                        // add id
-                        SeriesWorkshopId = workshopSeries.Id;
 
                         // Get Toppic
                         List<string> listTopic = new List<string>();
@@ -189,13 +193,12 @@ namespace COTSEClient.Pages.Department
                         var resultCount = 0;
                         for (int i = 0; i < topicNames.Count(); i++)
                         {
-
                             Workshop workshop = new Workshop
                             {
                                 WorkshopName = topicNames[i].Topic,
                                 DatePresent = null,
-                                WorkshopSeriesId = workshopSeries.Id,
-                                KeyPresenter = HelperMethods.GenerateSecretKey(topicNames[i].Topic + workshopSeries.Id, 6),
+                                WorkshopSeriesId = SeriesWorkshopId,
+                                KeyPresenter = HelperMethods.GenerateSecretKey(topicNames[i].Topic + SeriesWorkshopId, 6),
                                 StatusId = COTSEConstants.STATUS_DEFAULT,
                                 Index = topicNames[i].Count,
                             };
@@ -207,7 +210,7 @@ namespace COTSEClient.Pages.Department
                         }
                         if (resultCount > 0)
                         {
-                            WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(workshopSeries.Id).OrderByDescending(x => x.Index).ToList();
+                            WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(SeriesWorkshopId).OrderByDescending(x => x.Index).ToList();
                             OrtherWorkShopList = new List<WorkshopDTO>();
                             foreach (var item in WorkShopList)
                             {

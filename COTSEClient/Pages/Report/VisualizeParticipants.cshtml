@@ -1,0 +1,67 @@
+﻿@page "/visualizeParticipants"
+@model COTSEClient.Pages.Report.VisualizeParticipantsModel
+@{
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participants Comparison</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Chart.js Datalabels plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+    <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Estimated Participants And Actual Participants</span></h1>
+
+    <div class="row gx-5 justify-content-center">
+        <canvas id="participantsChart"></canvas>
+    </div>
+
+    <script>
+        const data = {
+            labels: ['Estimated Participants', 'Actual participants'],
+            datasets: [
+                {
+                    label: 'Estimated Participants',
+                    data: [100],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                },
+                {
+                    label: 'Actual Participants',
+                    data: [90],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                },
+            ],
+        };
+
+        // Options for the chart
+        const options = {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        };
+
+        // Get the canvas element
+        const ctx = document.getElementById('participantsChart').getContext('2d');
+
+        // Create the chart
+        const participantsChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: options
+        });
+    </script>
+</body>
+</html>
