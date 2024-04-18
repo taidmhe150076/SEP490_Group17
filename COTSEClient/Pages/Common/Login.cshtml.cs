@@ -1,32 +1,26 @@
 using COTSEClient.Helper;
-using DataAccess.Models;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Data;
 using System.Security.Claims;
+using DataAccess.Models;
 
 namespace COTSEClient.Pages.Common
 {
     public class LoginModel : PageModel
     {
-        private readonly IConfiguration _configuration;
         private readonly Sep490G17DbContext _context;
-        private readonly ILogger<LoginModel> _logger;
         
-
-        public LoginModel(IConfiguration configuration,Sep490G17DbContext context , ILogger<LoginModel> logger )
+        public LoginModel(Sep490G17DbContext context)
         {
-            _configuration = configuration;
             _context = context;
-            _logger = logger;
-
         }
 
         [BindProperty]
         public string Username { get; set; }
-
-        [BindProperty] 
+        [BindProperty]
         public string Password { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
@@ -35,48 +29,52 @@ namespace COTSEClient.Pages.Common
             {
                 return Page();
             }
+            string hashPassword = HelperMethods.GenerateSecretKey(Password, 32);
+            var user = _context.SystemUsers.FirstOrDefault(x => x.Email == Username && x.Password == hashPassword);
 
-            string password = HelperMethods.GenerateSecretKey(Password, 32);
-            var user = _context.Accounts.FirstOrDefault(x => x.UserName == Username && x.Password == password);
-
-            if (user == null)
+            if (user == null || user.IsActive == false)
             {
-                ModelState.AddModelError(string.Empty, "Invalid username or password");
-                ViewData["ErrorMessage"] = "Invalid user or password";
+                ModelState.AddModelError(string.Empty, "invalid username or password.");
+                ViewData["ErrorMessage"] = "Invalid username or password";
                 return Page();
             }
 
-            var roles = _context.Accounts.Select(x => x.User.Role.Name).ToList();
+            var role = _context.SystemUsers.Select(x => x.RoleldNavigation.RoleName).ToList();
 
-            var claim = new List<Claim>
+            var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, Username)
+                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                  new Claim(ClaimTypes.Name, Username),
             };
 
-            foreach(var role in roles)
+            foreach (var item in role)
             {
-                claim.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, item));
             }
-            var claimIdentity = new ClaimsIdentity(claim , CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperty = new AuthenticationProperties
             {
                 IsPersistent = true,
-                ExpiresUtc = DateTime.UtcNow.AddHours(0.5),
+                ExpiresUtc = DateTime.UtcNow.AddHours(0.2),
                 AllowRefresh = true,
                 IssuedUtc = DateTime.UtcNow
             };
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimIdentity),authProperty);
-            if (roles.Contains("Admin"))
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperty);
+
+            if (role.Contains("Admin"))
             {
-                return Redirect("/Dashboard");
-            }else if(roles.Contains("Host")) {
+                return Redirect("/Users");
+            }
+            else if (role.Contains("Host"))
+            {
                 return Redirect("/Home");
             }
-            else 
+            else
             {
                 return Redirect("/Index");
             }
         }
+
     }
 }

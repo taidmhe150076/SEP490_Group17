@@ -15,8 +15,6 @@ public partial class Sep490G17DbContext : DbContext
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
-
     public virtual DbSet<AnswerParticipant> AnswerParticipants { get; set; }
 
     public virtual DbSet<AnswerQuestion> AnswerQuestions { get; set; }
@@ -25,23 +23,33 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<Department> Departments { get; set; }
 
+    public virtual DbSet<Image> Images { get; set; }
+
     public virtual DbSet<ParticiPantScore> ParticiPantScores { get; set; }
 
     public virtual DbSet<Participant> Participants { get; set; }
 
     public virtual DbSet<ParticipantAnswer> ParticipantAnswers { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Presenter> Presenters { get; set; }
+
+    public virtual DbSet<SlideWorkShop> SlideWorkShops { get; set; }
 
     public virtual DbSet<StatusWorkShop> StatusWorkShops { get; set; }
 
     public virtual DbSet<SurveyAnswerDetail> SurveyAnswerDetails { get; set; }
 
+    public virtual DbSet<SystemRole> SystemRoles { get; set; }
+
+    public virtual DbSet<SystemUser> SystemUsers { get; set; }
+
     public virtual DbSet<Test> Tests { get; set; }
 
     public virtual DbSet<TestQuestion> TestQuestions { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<TestType> TestTypes { get; set; }
+
+    public virtual DbSet<UrlForm> UrlForms { get; set; }
 
     public virtual DbSet<WorkShopSurveyQuestion> WorkShopSurveyQuestions { get; set; }
 
@@ -55,36 +63,26 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<WorkshopSeries> WorkshopSeries { get; set; }
 
+    public virtual DbSet<WorkshopSurveyUrl> WorkshopSurveyUrls { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=(local);database=SEP490_G17_DB;Integrated Security = true;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Account__3213E83FB5143254");
-
-            entity.ToTable("Account");
-
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.UserName)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.ValidDate).HasColumnType("datetime");
-        });
-
         modelBuilder.Entity<AnswerParticipant>(entity =>
         {
-            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId });
+            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId }).HasName("PK_AnswerParticipants_1");
 
             entity.Property(e => e.QuestionId).HasColumnName("Question_id");
-            entity.Property(e => e.Answer).HasMaxLength(50);
             entity.Property(e => e.SubmissionTime)
                 .HasColumnType("datetime")
                 .HasColumnName("submission_time");
+
+            entity.HasOne(d => d.Answer).WithMany(p => p.AnswerParticipants)
+                .HasForeignKey(d => d.AnswerId)
+                .HasConstraintName("FK_AnswerParticipants_AnswerQuestion");
 
             entity.HasOne(d => d.Participant).WithMany(p => p.AnswerParticipants)
                 .HasForeignKey(d => d.ParticipantId)
@@ -137,6 +135,14 @@ public partial class Sep490G17DbContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.ToTable("Image");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Image1).HasColumnName("Image");
+        });
+
         modelBuilder.Entity<ParticiPantScore>(entity =>
         {
             entity.HasKey(e => new { e.TestId, e.ParticipantId });
@@ -170,15 +176,30 @@ public partial class Sep490G17DbContext : DbContext
             entity.Property(e => e.ParticipantsEmail).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<Role>(entity =>
+        modelBuilder.Entity<Presenter>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Role__3213E83FF6920F19");
+            entity.ToTable("Presenter");
 
-            entity.ToTable("Role");
+            entity.Property(e => e.PresenterEmail).HasMaxLength(50);
+        });
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+        modelBuilder.Entity<SlideWorkShop>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
+
+            entity.ToTable("SlideWorkShop");
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+            entity.HasOne(d => d.Image).WithMany(p => p.SlideWorkShops)
+                .HasForeignKey(d => d.ImageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SlideWorkShop_Image");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.SlideWorkShops)
+                .HasForeignKey(d => d.WorkshopId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SlideWorkShop_Workshop");
         });
 
         modelBuilder.Entity<StatusWorkShop>(entity =>
@@ -212,6 +233,32 @@ public partial class Sep490G17DbContext : DbContext
                 .HasConstraintName("FK_SurveyAnswerDetail_WorkShopSurveyQuestion");
         });
 
+        modelBuilder.Entity<SystemRole>(entity =>
+        {
+            entity.ToTable("SystemRole");
+
+            entity.Property(e => e.RoleName).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<SystemUser>(entity =>
+        {
+            entity.ToTable("SystemUser");
+
+            entity.Property(e => e.Dob).HasColumnName("DOB");
+            entity.Property(e => e.Email).HasMaxLength(255);
+            entity.Property(e => e.FirstName).HasMaxLength(250);
+            entity.Property(e => e.LastName).HasMaxLength(250);
+            entity.Property(e => e.Password).HasMaxLength(255);
+
+            entity.HasOne(d => d.DepartmentldNavigation).WithMany(p => p.SystemUsers)
+                .HasForeignKey(d => d.Departmentld)
+                .HasConstraintName("FK_SystemUser_Department");
+
+            entity.HasOne(d => d.RoleldNavigation).WithMany(p => p.SystemUsers)
+                .HasForeignKey(d => d.Roleld)
+                .HasConstraintName("FK_SystemUser_SystemRole");
+        });
+
         modelBuilder.Entity<Test>(entity =>
         {
             entity.ToTable("Test");
@@ -220,6 +267,10 @@ public partial class Sep490G17DbContext : DbContext
             entity.Property(e => e.DateStart).HasColumnType("datetime");
             entity.Property(e => e.ExpiredTime).HasColumnType("datetime");
             entity.Property(e => e.TestName).HasMaxLength(50);
+
+            entity.HasOne(d => d.TestType).WithMany(p => p.Tests)
+                .HasForeignKey(d => d.TestTypeId)
+                .HasConstraintName("FK_Test_TestType");
 
             entity.HasOne(d => d.Workshop).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.WorkshopId)
@@ -247,40 +298,33 @@ public partial class Sep490G17DbContext : DbContext
                 .HasConstraintName("FK_TestQuestion_Test");
         });
 
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<TestType>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User__3213E83FC9AE2326");
+            entity.ToTable("TestType");
 
-            entity.ToTable("User");
+            entity.Property(e => e.TypeName).HasMaxLength(50);
+        });
 
-            entity.HasIndex(e => e.AccountId, "UQ__User__F267253F560C4AD2").IsUnique();
+        modelBuilder.Entity<UrlForm>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.WorkshopSurveyUrl, e.WorkshopId });
 
-            entity.Property(e => e.AccountId).HasColumnName("AccountID");
-            entity.Property(e => e.Address)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
-            entity.Property(e => e.Dob)
-                .HasColumnType("datetime")
-                .HasColumnName("DOB");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.ToTable("UrlForm");
 
-            entity.HasOne(d => d.Account).WithOne(p => p.User)
-                .HasForeignKey<User>(d => d.AccountId)
-                .HasConstraintName("FK_User_Account");
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.UrlForm1)
+                .HasMaxLength(1000)
+                .HasColumnName("UrlForm");
 
-            entity.HasOne(d => d.Department).WithMany(p => p.Users)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK_User_Department");
+            entity.HasOne(d => d.Workshop).WithMany(p => p.UrlForms)
+                .HasForeignKey(d => d.WorkshopId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UrlForm_Workshop");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK_User_Role");
+            entity.HasOne(d => d.WorkshopSurveyUrlNavigation).WithMany(p => p.UrlForms)
+                .HasForeignKey(d => d.WorkshopSurveyUrl)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UrlForm_WorkshopSurveyUrl");
         });
 
         modelBuilder.Entity<WorkShopSurveyQuestion>(entity =>
@@ -336,7 +380,7 @@ public partial class Sep490G17DbContext : DbContext
 
             entity.HasOne(d => d.Presenter).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.PresenterId)
-                .HasConstraintName("FK_Workshop_User");
+                .HasConstraintName("FK_Workshop_Presenter");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Workshops)
                 .HasForeignKey(d => d.StatusId)
@@ -363,6 +407,7 @@ public partial class Sep490G17DbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Workshop__3213E83FAFF7FF5C");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
             entity.Property(e => e.WorkshopSeriesName)
@@ -372,6 +417,22 @@ public partial class Sep490G17DbContext : DbContext
             entity.HasOne(d => d.Department).WithMany(p => p.WorkshopSeries)
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_WorkshopSeries_Department");
+        });
+
+        modelBuilder.Entity<WorkshopSurveyUrl>(entity =>
+        {
+            entity.ToTable("WorkshopSurveyUrl");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.AddedDate).HasColumnType("datetime");
+            entity.Property(e => e.FileByte).HasColumnName("fileByte");
+            entity.Property(e => e.FileType)
+                .HasMaxLength(10)
+                .HasColumnName("fileType");
+            entity.Property(e => e.SurveyName).HasMaxLength(255);
+            entity.Property(e => e.Url)
+                .HasMaxLength(1000)
+                .HasColumnName("url");
         });
 
         OnModelCreatingPartial(modelBuilder);

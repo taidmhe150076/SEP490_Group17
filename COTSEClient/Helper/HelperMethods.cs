@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using IronBarCode;
+using System.Text.RegularExpressions;
 
 namespace COTSEClient.Helper
 {
@@ -11,7 +12,9 @@ namespace COTSEClient.Helper
     {
         public static string GenerateQRCode(string content)
         {
-            QRCodeLogo qrCodeLogo = new QRCodeLogo("C:\\Users\\DoanManhTai\\Documents\\SEP490_Group17\\COTSEClient\\wwwroot\\Image\\LogoTeam.png");
+            IronBarCode.License.LicenseKey = "IRONSUITE.TAIDMHE150076.FPT.EDU.VN.25431-5066BB8270-BEQTS2I-YB64YJEB4Z4R-PKD7IW4AUHBH-ZLOWGA3JMBWE-WYO5U5VE7N4W-5XX6JA7UQGYR-HB7A2S3XOLFX-CAGX2T-TY2BX5IQEY6MEA-DEPLOYMENT.TRIAL-CY3YQK.TRIAL.EXPIRES.04.MAY.2024";
+            var filePath = "wwwroot/Image/LogoTeam.png";
+            QRCodeLogo qrCodeLogo = new QRCodeLogo(filePath);
             GeneratedBarcode myQRCodeWithLogo = IronBarCode.QRCodeWriter.CreateQrCodeWithLogo(content, qrCodeLogo);
             myQRCodeWithLogo.ResizeTo(250, 250).SetMargins(10).ChangeBarCodeColor(Color.Black);
             return myQRCodeWithLogo.ToDataUrl();
@@ -32,25 +35,46 @@ namespace COTSEClient.Helper
                 return stringBuilder.ToString();
             }
         }
-        public static void SendMail(string workshopName, string time, string address, string urlRoom, string MKM, string linkCf, string mailTo)
+        public static void SendMail(string body, string subject, string mailFrom, string passMail,string mailTo)
         {
             using (var client = new SmtpClient("smtp.office365.com"))
             {
                 client.Port = 587;
                 client.EnableSsl = true;
-                client.Credentials = new NetworkCredential("NgocAnhNT2010@outlook.com", "@Ngocanh2010");
+                client.Credentials = new NetworkCredential(mailFrom, passMail);
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("NgocAnhNT2010@outlook.com"),
-                    Subject = "Happy Birthday!",
-                    IsBodyHtml = true
+                    From = new MailAddress(mailFrom),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true,
                 };
-                string body = $"<html>\r\n\r\n<head>\r\n    <title>Mời tham dự diễn giả workshop</title>\r\n</head>\r\n\r\n<body>\r\n    <h1>Chào bạn,</h1>\r\n    <p>Chúng tôi mời bạn tham gia với vai trò làm diễn giả cho workshop của chúng tôi.</p>\r\n    <p>Với Chủ Đề là : {workshopName}</p>\r\n    <p>Thời gian: {time}</p>\r\n    <p>Địa điểm: Lab318 FPT </p>\r\n    <p>Link Room: {urlRoom}</p>\r\n\r\n    <p>Vui lòng xác nhận tham dự bằng cách vào Link phía dưới và đăng nhập mã khách khán giả để xác nhận và Import\r\n        Document cho buổi workshop gồm bộ câu hỏi và Link slide.</p>\r\n    <p>Mã Khách Mời: {MKM}</p>\r\n    <P>link Comfirm và Submit : {linkCf}</P>\r\n    <p>Trân trọng,</p>\r\n    <p>Phòng Nghiên Cứu Lab318 FPT</p>\r\n</body>\r\n\r\n</html>";
-                mailMessage.Body = body;
                 mailMessage.To.Add(mailTo);
                 client.Send(mailMessage);
             }
         }
+        public static string ConvertImageToBase64(FileInfo fileInfo)
+        {
+            if (!fileInfo.Exists)
+            {
+                throw new FileNotFoundException("File not found.", fileInfo.FullName);
+            }
+
+            byte[] imageBytes = File.ReadAllBytes(fileInfo.FullName);
+            string base64String = Convert.ToBase64String(imageBytes);
+
+            return base64String;
+        }
+
+        public static string RemoveSpecialCharacters(string inputString)
+        {
+            string pattern = @"[^\w]";
+
+            string result = Regex.Replace(inputString,pattern, "");
+            return result;
+        }
+
+
     }
 }

@@ -15,9 +15,35 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
+
+        public List<Participant> GetParticipants()
+        {
+            try
+            {
+                return _context.Participants.OrderBy(x => x.TimeStamp).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public List<Participant> GetParticipantsOrderBy()
         {
             return _context.Participants.OrderBy(x => x.TimeStamp).ToList();
+        }
+
+        public int InsertRange(List<Participant> listParticipants)
+        {
+            try
+            {
+                _context.Participants.AddRange(listParticipants);
+                return _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

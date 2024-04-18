@@ -10,5 +10,7 @@ namespace BusinessLogic.IRepository
     public interface IRepositoryParticipants
     {
         public List<Participant> GetParticipantsOrderBy();
+        public List<Participant> GetParticipants();
+        public int InsertRange(List<Participant> listParticipants);
     }
 }

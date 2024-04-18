@@ -26,6 +26,4 @@ public partial class User
     public virtual Department? Department { get; set; }
 
     public virtual Role? Role { get; set; }
-
-    public virtual ICollection<Workshop> Workshops { get; set; } = new List<Workshop>();
 }

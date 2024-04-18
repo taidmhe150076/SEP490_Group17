@@ -1,0 +1,141 @@
+﻿@page "/evaluate"
+@model COTSEClient.Pages.Report.HomeChartsWorkshopModel
+@{
+    Layout = "_Layout";
+}
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-container .form-control {
+        margin-right: 10px;
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Các chuỗi hội thảo</title>
+    <style>
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .col-lg-4 {
+            width: calc(33.33% - 20px); 
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card {
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-body {
+            flex-grow: 1; 
+        }
+
+        .card-buttons {
+            margin-top: auto; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; 
+        }
+    </style>
+</head>
+<body>
+    <section class="py-5">
+        <div class="container-fluid px-5 mb-5">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Biểu đồ phân tích từ hội thảo</span></h1>
+            </div>
+            <div class="row" id="cardRow">
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/lineChart.png" alt="Evaluate Score">
+                                <h5>Điểm của người tham gia</h5>
+                                <a class="btn btn-primary" href="/testScore?workShopId=@Model.WorkshopId">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/BarChart.png" alt="Evaluate Score">
+                                <h5>Số lượng người tham gia ước tính so với thực tế</h5>
+                                <a class="btn btn-primary" href="/visualizeParticipants">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/piechart.png" alt="Evaluate Score">
+                                <h5>Slide của hội thảo</h5>
+                                <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/barChartVarious.png" alt="Evaluate Score">
+                                <h5>Mức độ quan tâm tới các chủ đề của hội thảo</h5>
+                                <a class="btn btn-primary" href="/variousWorkshops?srId=@Model.WSSeriesId">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/radaChart.png" alt="Evaluate Score">
+                                <h5>Phân tích cảm xúc người tham gia</h5>
+                                <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/radaChart.png" alt="Evaluate Score">
+                                <h5>Phân tích cảm xúc của diễn giả</h5>
+                                <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card overflow-hidden shadow rounded-4 border-0">
+                        <div class="card-body p-3">
+                            <div>
+                                <img style="width:200px; height:200px;" src="https://localhost:7149/Image/radaChart.png" alt="Evaluate Score">
+                                <h5>Phân tích cảm xúc của diễn giả</h5>
+                                <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

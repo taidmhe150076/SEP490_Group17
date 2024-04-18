@@ -21,11 +21,15 @@ public partial class Workshop
 
     public int? Index { get; set; }
 
-    public virtual User? Presenter { get; set; }
+    public virtual Presenter? Presenter { get; set; }
+
+    public virtual ICollection<SlideWorkShop> SlideWorkShops { get; set; } = new List<SlideWorkShop>();
 
     public virtual StatusWorkShop? Status { get; set; }
 
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
+
+    public virtual ICollection<UrlForm> UrlForms { get; set; } = new List<UrlForm>();
 
     public virtual ICollection<WorkShopSurveyQuestion> WorkShopSurveyQuestions { get; set; } = new List<WorkShopSurveyQuestion>();
 

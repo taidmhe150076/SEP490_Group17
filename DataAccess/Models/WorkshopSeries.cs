@@ -15,6 +15,10 @@ public partial class WorkshopSeries
 
     public DateTime? EndDate { get; set; }
 
+    public string? Description { get; set; }
+
+    public string? Image { get; set; }
+
     public virtual Department? Department { get; set; }
 
     public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();
