@@ -21,5 +21,9 @@ namespace DataAccess.Common
 
         public const string REGREX_SPECIAL_CHARACTER = @"[^\w\s]";
 
+
+        public const string IS_PRESENTER_FORM = "presenter form";
+        public const string IS_PATICIPANT_FORM = "participant form";
+
     }
 }
