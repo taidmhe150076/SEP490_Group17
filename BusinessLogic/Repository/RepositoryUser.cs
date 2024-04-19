@@ -24,7 +24,7 @@ namespace BusinessLogic.Repository
             SystemUser user = new SystemUser();
             try
             {
-                user = _context.SystemUsers.FirstOrDefault(x => x.Id == id);
+                user = _context.SystemUsers.Include(x => x.DepartmentldNavigation).Include(x => x.RoleldNavigation).FirstOrDefault(x => x.Id == id);
             }
             catch (Exception ex)
             {
@@ -45,12 +45,12 @@ namespace BusinessLogic.Repository
                 throw new Exception(ex.Message);
             }
         }
-       public List<SystemUser> getAllUser()
+        public List<SystemUser> getAllUser()
         {
             List<SystemUser> users = new List<SystemUser>();
             try
             {
-                users = _context.SystemUsers.Include(x => x.DepartmentldNavigation).Include(x => x.RoleldNavigation).ToList();
+                users = _context.SystemUsers.Include(x => x.DepartmentldNavigation).Include(x => x.RoleldNavigation).ToList(); ;
             }
             catch (Exception ex)
             {
@@ -84,6 +84,51 @@ namespace BusinessLogic.Repository
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+
+        public void updatePassword(int userId, string password)
+        {
+            try
+            {
+                var user = _context.SystemUsers.Find(userId);
+
+                if (user != null)
+                {
+                    user.Password = password;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new InvalidOperationException($"User with ID '{userId}' not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error updating password : " + ex.Message);
+            }
+        }
+
+
+        public void updateUserAvatar(int id, string image)
+        {
+            try
+            {
+                var user = _context.SystemUsers.Find(id);
+
+                if (user != null)
+                {
+                    user.ImageUrl = image;
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new InvalidOperationException($"User with ID '{id}' not found.");
+                }
+            }catch(Exception ex)
+            {
+                throw new Exception ("Error updating avartar : " + ex.Message);
             }
         }
     }

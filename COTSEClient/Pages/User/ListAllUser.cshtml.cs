@@ -33,24 +33,38 @@ namespace COTSEClient.Pages.User
         [BindProperty]
         public string Msg { get; set; }
 
+        public PageList<SystemUser> SystemUserPage { get; set; }
+
         public ListAllUserModel(Sep490G17DbContext context,IRepositoryUser repositoryUser)
         {
             _repositoryUser = repositoryUser;
             _context = context;
         }
-        public IActionResult OnGet(string departmentName)
+        public void OnGet(int pageIndex = 1 , int pageSize = 9 )
         {
             Msg = TempData["Msg"] as string;
 
-            ListUsers = _repositoryUser.getAllUser();
-            if(!string.IsNullOrEmpty(departmentName))
-            {
-                ListUsers = ListUsers.Where(x => x.DepartmentldNavigation.DepartmentName.Contains(departmentName)).ToList();    
-            }
+            var result  = _repositoryUser.getAllUser().AsQueryable();
+
+            SystemUserPage = PageList<SystemUser>.Create(result, pageIndex, pageSize);
+            
             Departments = _context.Departments.ToList();
             Roles = _context.SystemRoles.ToList(); 
-            return Page();
+            
         }
+
+        public void OnPost(string searchInput , int pageIndex = 1, int pageSize = 9)
+        {
+            var result = _repositoryUser.getAllUser().AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchInput))
+            {
+                ListUsers = ListUsers.Where(x => x.DepartmentldNavigation.DepartmentName.Contains(searchInput)).ToList();
+            }
+
+            SystemUserPage = PageList<SystemUser>.Create(result, pageIndex, pageSize);
+        }
+
         public IActionResult OnPostCreateNewUser(DataAccess.Models.SystemUser user)
         {
             string hashPassword = HelperMethods.GenerateSecretKey(password, 32);
@@ -83,7 +97,6 @@ namespace COTSEClient.Pages.User
                 return RedirectToPage();
             }
             checkExist.Email = User.Email;
-            checkExist.Password = User.Password;
             checkExist.ValidDate = User.ValidDate;
             checkExist.Departmentld = User.Departmentld;
             checkExist.Roleld = User.Roleld;
@@ -104,6 +117,7 @@ namespace COTSEClient.Pages.User
 
             user.IsActive = false;
             await _context.SaveChangesAsync();
+            TempData["Msg"] = "User is baned";
             return RedirectToPage();
         }
 
@@ -116,6 +130,7 @@ namespace COTSEClient.Pages.User
             }
             user.IsActive = true;
             await _context.SaveChangesAsync();
+            TempData["Msg"] = "User is Active Success";
             return RedirectToPage();
         }
 
