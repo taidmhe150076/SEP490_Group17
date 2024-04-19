@@ -63,10 +63,14 @@
             </div>
 
     </main>
+    <h1 class="text-gradient d-inline">Biểu Đồ SỐ LƯỢNG SINH VIÊN TRONG KHOẢNG ĐIỂM 1-> 10 PRE và POST</h1>
     <div class="row gx-5 justify-content-center">
         <canvas id="lineChart"></canvas>
     </div>
-
+    <h1 class="text-gradient d-inline">Biểu Đồ so sánh số lượng người làm bài PRE và POST</h1>
+    <div class="row gx-5 justify-content-center">
+        <canvas id="participantsCompare"></canvas>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Include Chart.js Datalabels plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -138,11 +142,20 @@
                         plugins: {
                             title: {
                                 display: true,
+                                align: 'center',
                                 text: 'GPA Pre and Post',
                                 font: {
                                     weight: 'bold',
                                     size: 25
+                                },
+                                padding: {
+                                    bottom: 50 // Điều chỉnh giá trị top của padding
                                 }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                align: 'center'
                             },
                             datalabels: {
                                 anchor: 'end',
@@ -168,6 +181,87 @@
                 }
                 return color;
             }
+        });
+    </script>
+
+    <!-- compare so luong lam bai truoc va sau -->
+    <script>
+        Chart.register(ChartDataLabels);
+        const data2 = {
+            labels: [''],
+            datasets: [
+                {
+                    label: 'Participants Do Exam Pre',
+                    data: [@Html.Raw(Json.Serialize(Model.ParticiPantDoPre))],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    barPercentage: 0.3,
+
+                },
+                {
+                    label: 'Participants Do Exam Post',
+                    data: [@Html.Raw(Json.Serialize(Model.ParticiPantDoPost))],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    barPercentage: 0.3,
+
+                }
+            ],
+        };
+
+        // Options for the chart
+        const options2 = {
+            responsive: true,
+            barSpacing: 50,
+            legend: {
+                position: 'top'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    barPercentage: 0.5,
+                    barThickness: 10,
+                }],
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    align: 'center',
+                    text: 'Compare Participants Do Exam Pre And Post',
+                    font: {
+                        weight: 'bold',
+                        size: 25
+                    },
+                    padding: {
+                        bottom: 20 // Điều chỉnh giá trị top của padding
+                    }
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'start',
+                    color: '#333', // Màu của nhãn
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    align: 'center'
+                },
+            }
+
+        };
+
+        const ctx2 = document.getElementById('participantsCompare').getContext('2d');
+
+        const participantsChart = new Chart(ctx2, {
+            type: 'bar',
+            data: data2,
+            options: options2
         });
     </script>
 </body>

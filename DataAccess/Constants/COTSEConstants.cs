@@ -13,6 +13,8 @@ namespace DataAccess.Constants
         public const int STATUS_PENDING = 2;
         public const int STATUS_ACCEPT = 3;
         public const string CORRECT_ANSWER = "1";
+        public const int TEST_PRE = 1;
+        public const int TEST_POST = 2;
 
 
         // survey
