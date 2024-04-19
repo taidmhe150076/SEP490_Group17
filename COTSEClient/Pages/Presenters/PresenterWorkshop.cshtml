@@ -73,8 +73,10 @@
                             <input type="date" id="expiredTime" name="expiredTime" class="form-control" />
                             <input type="hidden" asp-for="@Model.WorkshopId" />
                         </div>
-                        <button type="submit" class="btn btn-primary">Tạo câu hỏi</button>
+                        <button type="submit" class="btn btn-primary">Tạo câu hỏi</button>                    
                     </form>
+                    <a asp-page="WorkshopQuestion" asp-route-workshopId="@Model.WorkshopId">Danh sách câu hỏi</a>
+
                 }
                 else
                 {
