@@ -25,6 +25,8 @@ public partial class SystemUser
 
     public bool? IsActive { get; set; }
 
+    public string? ImageUrl { get; set; }
+
     public virtual Department? DepartmentldNavigation { get; set; }
 
     public virtual SystemRole? RoleldNavigation { get; set; }

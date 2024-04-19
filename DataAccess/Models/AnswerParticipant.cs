@@ -11,13 +11,13 @@ public partial class AnswerParticipant
 
     public int TestId { get; set; }
 
-    public int? AnswerId { get; set; }
+    public int AnswerId { get; set; }
 
     public int? ParticipantId { get; set; }
 
     public DateTime? SubmissionTime { get; set; }
 
-    public virtual AnswerQuestion? Answer { get; set; }
+    public virtual AnswerQuestion Answer { get; set; } = null!;
 
     public virtual ParticipantAnswer? Participant { get; set; }
 
