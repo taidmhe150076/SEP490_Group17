@@ -1,9 +1,11 @@
 using BusinessLogic.IRepository;
 using COTSEClient.Models;
+using DataAccess.Constants;
 using DataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Scripting.Utils;
 
 namespace COTSEClient.Pages.Report
 {
@@ -23,11 +25,17 @@ namespace COTSEClient.Pages.Report
         public List<Test>? InfoTest { get; set; }
         public string? WorkShopName { get; set; }
 
+        public int? ParticiPantDoPre { get; set; }
+        public int? ParticiPantDoPost { get; set; }
+
+
         public void OnGet(int workShopId)
         {
             var getData = _repositoryWorkshops.GetParticiPantScoresByWorkshopId(workShopId);
             WorkShopName = _repositoryWorkshops.GetWorkshopByWorkshopId(workShopId)?.WorkshopName;
             InfoTest = _repositoryTests.GetScoresTestsByWorkshopId(workShopId);
+            ParticiPantDoPre = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_PRE).ParticiPantScores.Count();
+            ParticiPantDoPost = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_POST).ParticiPantScores.Count();
             foreach (var data in getData)
             {
                 foreach (var test in data.Tests)
