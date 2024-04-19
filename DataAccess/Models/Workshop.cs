@@ -21,6 +21,8 @@ public partial class Workshop
 
     public int? Index { get; set; }
 
+    public virtual ICollection<ChartImage> ChartImages { get; set; } = new List<ChartImage>();
+
     public virtual Presenter? Presenter { get; set; }
 
     public virtual ICollection<SlideWorkShop> SlideWorkShops { get; set; } = new List<SlideWorkShop>();

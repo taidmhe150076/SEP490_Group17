@@ -9,5 +9,7 @@ public partial class Image
 
     public string? Image1 { get; set; }
 
+    public virtual ICollection<ChartImage> ChartImages { get; set; } = new List<ChartImage>();
+
     public virtual ICollection<SlideWorkShop> SlideWorkShops { get; set; } = new List<SlideWorkShop>();
 }
