@@ -14,5 +14,9 @@ namespace BusinessLogic.IRepository
         public void updateUser(SystemUser user);
         public SystemUser getUserById(int? id);
         public void addUser(SystemUser user);
+
+        public void updatePassword (int userId, string password);
+
+        public void  updateUserAvatar(int id , string image);
     }
 }
