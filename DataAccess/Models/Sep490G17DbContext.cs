@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace DataAccess.Models;
 
@@ -21,6 +20,8 @@ public partial class Sep490G17DbContext : DbContext
     public virtual DbSet<AnswerQuestion> AnswerQuestions { get; set; }
 
     public virtual DbSet<AnswerSurvey> AnswerSurveys { get; set; }
+
+    public virtual DbSet<ChartImage> ChartImages { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
 
@@ -79,7 +80,7 @@ public partial class Sep490G17DbContext : DbContext
     {
         modelBuilder.Entity<AnswerParticipant>(entity =>
         {
-            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId }).HasName("PK_AnswerParticipants_1");
+            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId, e.AnswerId }).HasName("PK_AnswerParticipants_1");
 
             entity.Property(e => e.QuestionId).HasColumnName("Question_id");
             entity.Property(e => e.SubmissionTime)
@@ -88,6 +89,7 @@ public partial class Sep490G17DbContext : DbContext
 
             entity.HasOne(d => d.Answer).WithMany(p => p.AnswerParticipants)
                 .HasForeignKey(d => d.AnswerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AnswerParticipants_AnswerQuestion");
 
             entity.HasOne(d => d.Participant).WithMany(p => p.AnswerParticipants)
@@ -130,6 +132,24 @@ public partial class Sep490G17DbContext : DbContext
                 .HasConstraintName("FK_AnswerSurvey_WorkShopSurveyQuestion");
         });
 
+        modelBuilder.Entity<ChartImage>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
+
+            entity.Property(e => e.Descriptions).HasColumnType("text");
+            entity.Property(e => e.Title).HasColumnType("text");
+
+            entity.HasOne(d => d.Image).WithMany(p => p.ChartImages)
+                .HasForeignKey(d => d.ImageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChartImages_Image");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.ChartImages)
+                .HasForeignKey(d => d.WorkshopId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChartImages_Workshop");
+        });
+
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Departme__3213E83F5A2C4CA4");
@@ -152,6 +172,10 @@ public partial class Sep490G17DbContext : DbContext
         modelBuilder.Entity<ParticiPantScore>(entity =>
         {
             entity.HasKey(e => new { e.TestId, e.ParticipantId });
+
+            entity.Property(e => e.SubmissionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("submission_time");
 
             entity.HasOne(d => d.Participant).WithMany(p => p.ParticiPantScores)
                 .HasForeignKey(d => d.ParticipantId)
