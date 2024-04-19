@@ -1,29 +1,26 @@
 using BusinessLogic.IRepository;
-using DataAccess.Common;
 using DataAccess.DTO;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Survey
 {
-    public class SurveyByWorkshopModel : PageModel
+    public class SurveyDetailsModel : PageModel
     {
+
         private readonly IRepositorySurvey _repo;
 
-        public SurveyByWorkshopModel(IRepositorySurvey repo)
+        public SurveyDetailsModel(IRepositorySurvey repo)
         {
             _repo = repo;
         }
-
         // Define properties for binding
         [BindProperty(SupportsGet = true)]
         public int wssId { get; set; }
         [BindProperty(SupportsGet = true)]
         public int wsId { get; set; }
         [BindProperty(SupportsGet = true)]
-        public int survey_id { get; set; }
-
+        public int surveyId { get; set; }
 
 
         [BindProperty]
@@ -43,10 +40,10 @@ namespace COTSEClient.Pages.Survey
         public async Task<IActionResult> OnGetAsync()
         {
             try
-            {
-                surveyInfo = await _repo.getSurey(survey_id);
-                feedbackResults = await _repo.getSurveySentimentResult(survey_id);
-                dataList = await _repo.getOtherData(survey_id);
+             {
+                surveyInfo = await _repo.getSurey(surveyId);
+                feedbackResults = await _repo.getSurveySentimentResult(surveyId);
+                dataList = await _repo.getOtherData(surveyId);
                 feedbackCount = await _repo.CountFeedback(feedbackResults);
                 state_display = true;
                 return Page();
@@ -58,8 +55,6 @@ namespace COTSEClient.Pages.Survey
             }
 
         }
-
-
 
     }
 }
