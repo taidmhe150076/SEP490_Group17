@@ -42,5 +42,19 @@ namespace BusinessLogic.Repository
                 throw;
             }
         }
+        public bool DeleteScoresForTest(int testId)
+        {
+            try
+            {
+                var scoresToDelete = _context.ParticiPantScores.Where(x => x.TestId == testId).ToList();
+                _context.ParticiPantScores.RemoveRange(scoresToDelete);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
