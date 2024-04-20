@@ -27,6 +27,8 @@ namespace COTSEClient.Pages.Report
         public List<Test>? InfoTest { get; set; }
         public List<InfoExamDTO>? InfoTestPre { get; set; }
         public List<InfoExamDTO>? InfoTestPos { get; set; }
+        public BubbleChartGPADTO? BubbleChartGPAPRE { get; set; }
+        public BubbleChartGPADTO BubbleChartGPAPOST { get; set; }
         public string? WorkShopName { get; set; }
 
         public int? ParticiPantDoPre { get; set; }
@@ -52,6 +54,50 @@ namespace COTSEClient.Pages.Report
                                         TimeSubmit = x.SubmissionTime == null ? null : (DateTime)x.SubmissionTime,
                                         ParticiPantScores = (int?)x.Score
                                     }).ToList();
+
+            double diemTrungBinh = InfoTestPre
+                                    .Where(x => x.ParticiPantScores.HasValue)
+                                    .Average(x => x.ParticiPantScores.Value);
+
+            if (InfoTestPre.Count > 0 && InfoTestPos.Count > 0)
+            {
+                
+                BubbleChartGPAPRE = new BubbleChartGPADTO
+                {
+                    AverageScore = InfoTestPre
+                                   .Where(x => x.ParticiPantScores.HasValue)
+                                   .Average(x => x.ParticiPantScores.Value).ToString("N2"),
+                    NumberParticipant = InfoTestPre.Count(),
+                    Width = InfoTestPre.Count() < 10 ? InfoTestPre.Count() * 4 : InfoTestPre.Count() * 2
+                };
+
+                BubbleChartGPAPOST = new BubbleChartGPADTO
+                {
+                    AverageScore = InfoTestPos
+                                        .Where(x => x.ParticiPantScores.HasValue)
+                                        .Average(x => x.ParticiPantScores.Value).ToString("N2"),
+                    NumberParticipant = InfoTestPos.Count(),
+                    Width = InfoTestPos.Count() < 10 ? InfoTestPos.Count() * 4 : InfoTestPos.Count() * 2
+                };
+            }
+           
+            List<InfoExamDTO> matchedItemsPre = new List<InfoExamDTO>();
+            List<InfoExamDTO> matchedItemsPos = new List<InfoExamDTO>();
+
+            foreach (var item1 in InfoTestPre)
+            {
+                var matchingItem = InfoTestPos.FirstOrDefault(item2 => item2.ParticiPantName == item1.ParticiPantName);
+
+                if (matchingItem != null)
+                {
+                    matchedItemsPre.Add(item1);
+                    matchedItemsPos.Add(matchingItem);
+                }
+            }
+
+            InfoTestPre = matchedItemsPre;
+            InfoTestPos = matchedItemsPos;
+
             ParticiPantDoPre = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_PRE).ParticiPantScores.Count();
             ParticiPantDoPost = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_POST).ParticiPantScores.Count();
             foreach (var data in getData)
