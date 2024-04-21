@@ -21,7 +21,12 @@ namespace COTSEClient.Pages.Department
 
         [BindProperty]
         public WorkshopSeries WorkshopSeries { get; set; }
-  
+
+        [BindProperty]
+        public int WorskhopSeriesId { get; set; }
+        [BindProperty]
+        public string Msg { get; set; }
+
         public PageList<WorkshopSeries> WorkshopSeriesPage { get; set; }
      
         public AllSeriesWorkshopModel(IRepositoryWorkshopSeries repositoryWorkshopSeries)
@@ -31,6 +36,7 @@ namespace COTSEClient.Pages.Department
 
         public void OnGet( int pageIndex = 1, int pageSize = 9)
         {
+            Msg = TempData["Msg"] as string;
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
 
@@ -68,7 +74,7 @@ namespace COTSEClient.Pages.Department
                 }
 
                 WorkshopSeries createdWorkshopSeries = _repositoryWorkshopSeries.CreateWorkshopSeries(workshopSeries);
-
+                TempData["Msg"] = "Update Success!";
                 return RedirectToPage("AddNewSeries", new { seriesWorkshopId = createdWorkshopSeries.Id });
 
             }
@@ -78,6 +84,41 @@ namespace COTSEClient.Pages.Department
             }
             return Page();
 
+        }
+
+        public IActionResult OnPostUpdateWorkshopSeries()
+        {
+            try
+            {
+               var  workshopSeries = _repositoryWorkshopSeries.GetWorkshopSeriesById(WorkshopSeries.Id);
+
+                if (workshopSeries == null)
+                {
+                    TempData["Msg"] = "User Not Exists!";
+                    return RedirectToPage();
+                }
+
+                workshopSeries.WorkshopSeriesName = WorkshopSeries.WorkshopSeriesName;
+                workshopSeries.Description = WorkshopSeries.Description;
+                workshopSeries.StartDate = WorkshopSeries.StartDate;
+                workshopSeries.EndDate = WorkshopSeries.EndDate;
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        imageFile.CopyTo(memoryStream);
+
+                        workshopSeries.Image = Convert.ToBase64String(memoryStream.ToArray());
+                    }
+                }
+                _repositoryWorkshopSeries.UpdateWorkshopSeries(workshopSeries);
+                TempData["Msg"] = "Update Success!";
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return RedirectToPage();
         }
     }
 }

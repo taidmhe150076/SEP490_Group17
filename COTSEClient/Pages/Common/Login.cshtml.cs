@@ -8,6 +8,7 @@ using System.Security.Claims;
 using DataAccess.Models;
 using BusinessLogic.IRepository;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace COTSEClient.Pages.Common
 {
@@ -45,7 +46,7 @@ namespace COTSEClient.Pages.Common
                 return Page();
             }
 
-            var role = _context.SystemUsers.Select(x => x.RoleldNavigation.RoleName).ToList();
+            var role = _context.SystemUsers.Include(x => x.RoleldNavigation).Where(x => x.Id == user.Id).ToList();
 
             var claims = new List<Claim>
             {
@@ -56,7 +57,7 @@ namespace COTSEClient.Pages.Common
             {
                 if (item != null)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, item));
+                    claims.Add(new Claim(ClaimTypes.Role, item.RoleldNavigation.RoleName));
                 }
             }
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -69,19 +70,20 @@ namespace COTSEClient.Pages.Common
             };
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperty);
-
-            if (role.Contains("Admin"))
-            {
-                return Redirect("/Users");
-            }
-            else if (role.Contains("User"))
-            {
-                return Redirect("/Home");
-            }
-            else
-            {
-                return Redirect("/Index");
-            }
+            
+            return Redirect("/Users");
+            //if (role.Contains("Admin"))
+            //{
+            //    return Redirect("/Users");
+            //}
+            //else if (role.Contains("User"))
+            //{
+            //    return Redirect("/Home");
+            //}
+            //else
+            //{
+            //    return Redirect("/Index");
+            //}
         }
 
     }
