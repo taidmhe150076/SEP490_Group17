@@ -59,6 +59,16 @@ namespace BusinessLogic.Repository
 			}
         }
 
+        public WorkshopSeries GetWorkshopSeriesById(int id)
+        {
+            try
+            {
+                return _context.WorkshopSeries.FirstOrDefault(x => x.Id == id);
+            }catch (Exception)
+            {
+                throw;
+            }
+        }
         public WorkshopSeries CreateWorkshopSeries(WorkshopSeries workshopSeries)
         {
             try
@@ -82,6 +92,18 @@ namespace BusinessLogic.Repository
                 return searchResults;
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public void UpdateWorkshopSeries( WorkshopSeries workshopSeries)
+        {
+            try
+            {                               
+                    _context.WorkshopSeries.Update(workshopSeries);
+                    _context.SaveChanges();               
+            }catch (Exception)
             {
                 throw;
             }

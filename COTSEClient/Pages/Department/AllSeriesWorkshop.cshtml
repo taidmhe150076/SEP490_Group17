@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Các chuỗi hội thảo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="~/css/stylemessage.css" rel="stylesheet">
     <style>
         .search-container {
             display: flex;
@@ -79,7 +80,57 @@
                                         <td>@series.EndDate</td>
                                         <td>
                                             <a class="btn btn-primary" href="/AllWorkshop?wsSeriesId=@series.Id">Xem chi tiết</a>
-                                            <a class="btn btn-primary" href="#">Cập nhật thông tin</a>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSeriesModal-@series.Id">
+                                               Cập nhật thông tin
+                                            </button>
+
+                                            <!-- Modal Update-->
+                                            <div class="modal fade" id="editSeriesModal-@series.Id" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="createSeriesModalLabel">Cập nhật thông tin chuỗi hội thảo </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form asp-page-handler="UpdateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
+                                                                <input type="hidden" asp-for="@Model.WorkshopSeries.Id" value="@series.Id"/>
+                                                                
+                                                                <div class="mb-3">
+                                                                    <label  class="form-label">Tên chuỗi hội thảo</label>
+                                                                    <input asp-for="@Model.WorkshopSeries.WorkshopSeriesName" value="@series.WorkshopSeriesName" class="form-control" >
+                                                                    <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
+                                                                </div>
+
+                                                                <input type="hidden" asp-for="@Model.WorkshopSeries.DepartmentId" value="@series.Id" />
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Mô tả : </label>
+                                                                    <input asp-for="@Model.WorkshopSeries.Description" class="form-control" value="@series.Description">
+                                                                    <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label  class="form-label">Ngày bắt đầu</label>
+                                                                    <input asp-for="@Model.WorkshopSeries.StartDate" value="@series.StartDate" class="form-control" type="datetime">
+                                                                    <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Ngày kết thúc</label>
+                                                                    <input asp-for="@Model.WorkshopSeries.EndDate" value="@series.EndDate" class="form-control" type="datetime">
+                                                                    <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label asp-for="imageFile" class="form-label">Ảnh</label>
+                                                                    <input asp-for="imageFile" class="form-control" type="file">
+                                                                    <span asp-validation-for="imageFile" class="text-danger"></span>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Cập nhật </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -131,7 +182,9 @@
         </section>
     </main>
 
-    <!-- Modal -->
+
+  
+    <!-- Modal Create-->
     <div class="modal fade" id="createSeriesModal" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -188,6 +241,51 @@
             var searchTerm = document.getElementById("searchInput").value;
             console.log("Search term:", searchTerm);
         }
+    </script>
+
+    @{
+        if (Model.Msg != null)
+        {
+            if (Model.Msg.Contains("Success"))
+            {
+                <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-success-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/success-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-success-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="checkbox" id="alert-error-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-error-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/error-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-error-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+    <script>
+        setTimeout(function () {
+            document.querySelector('.alert-box-wrap').style.display = 'none';
+        }, 1000);
     </script>
 </body>
 </html>

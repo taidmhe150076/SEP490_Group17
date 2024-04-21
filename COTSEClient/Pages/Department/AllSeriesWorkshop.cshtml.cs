@@ -118,5 +118,41 @@ namespace COTSEClient.Pages.Department
             Msg = "Add SeriesWorkshop Error";
             return Page();
         }
+        public IActionResult OnPostUpdateWorkshopSeries()
+        {
+            try
+            {
+                var workshopSeries = _repositoryWorkshopSeries.GetWorkshopSeriesById(WorkshopSeries.Id);
+
+                if (workshopSeries == null)
+                {
+                    TempData["Msg"] = "User Not Exists!";
+                    return RedirectToPage();
+                }
+
+                workshopSeries.WorkshopSeriesName = WorkshopSeries.WorkshopSeriesName;
+                workshopSeries.Description = WorkshopSeries.Description;
+                workshopSeries.StartDate = WorkshopSeries.StartDate;
+                workshopSeries.EndDate = WorkshopSeries.EndDate;
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        imageFile.CopyTo(memoryStream);
+
+                        workshopSeries.Image = Convert.ToBase64String(memoryStream.ToArray());
+                    }
+                }
+                _repositoryWorkshopSeries.UpdateWorkshopSeries(workshopSeries);
+                TempData["Msg"] = "Update Success!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Msg"] = "Update Success!";
+                return RedirectToPage();
+                throw;
+            }
+            return RedirectToPage();
+        }
     }
 }

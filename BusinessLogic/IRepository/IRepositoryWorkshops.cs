@@ -19,5 +19,7 @@ namespace BusinessLogic.IRepository
         public int UpdateDatePresent(Workshop workshop);
         public int InsertWorkshop(Workshop workshop);
 
+        public void UpdateStaus(string invitationCode, int status);
+
     }
 }

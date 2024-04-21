@@ -70,8 +70,23 @@
                 <label for="invitationCode">Nhập mã khách mời:</label>
                 <input type="text" id="invitationCode" name="invitationCode" required>
             </div>
-            <button type="submit" class="btn-confirm">Xác nhận</button>
+            <button type="submit" class="btn-confirm" id="confirmButton">Xác nhận</button>
         </form>
     </div>
+
+    <script>
+        var flag = @Html.Raw(Json.Serialize(Model.Flag));
+        var invitationCode = @Html.Raw(Json.Serialize(Model.InvitationCode));
+        console.log(flag);
+        if (flag == true) {
+            console.log('flag');
+            var confirmation = confirm("Bạn có chắc chắn muốn làm diễn gỉa cho workshop này không ?");
+            if (confirmation) {
+                window.location.href = "https://localhost:7149/Presenters/EnterKey?invitationCode=" + invitationCode + "&&checkCf=true";
+            }
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 </body>
 </html>
