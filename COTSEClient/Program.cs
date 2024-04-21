@@ -51,6 +51,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapFallbackToPage("/Common/NotFound");
 
 app.MapHub<ParticiPantScoresHub>("/particiPantScoresHub");
 
