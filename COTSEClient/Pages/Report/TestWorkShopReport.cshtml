@@ -74,7 +74,7 @@
         </div>
     </div>
     <div style="margin-bottom:50px" class="card overflow-hidden shadow rounded-4 border-0 h-100 text-center">
-        <h1 style="padding-top:30px" class="text-gradient d-inline">Biểu Đồ so sánh số lượng người tham gia PRE và POST</h1>
+        <h1 style="padding-top:30px" class="text-gradient d-inline">Biểu Đồ so sánh số lượng người tham gia Trước và Sau</h1>
         <div class="card-body p-3">
             <canvas id="participantsCompare"></canvas>
         </div>
@@ -87,7 +87,7 @@
         </div>
     </div>
     <div style="margin-bottom:50px" class="card overflow-hidden shadow rounded-4 border-0 h-100 text-center">
-        <h1 style="padding-top:30px" class="text-gradient d-inline">Biểu Đồ SỐ LƯỢNG SINH VIÊN TRONG KHOẢNG ĐIỂM 1 -> 10 PRE và POST</h1>
+        <h1 style="padding-top:30px" class="text-gradient d-inline">Biểu Đồ SỐ LƯỢNG SINH VIÊN TRONG KHOẢNG ĐIỂM 1 -> 10 Quiz Trước và Quiz Sau</h1>
         <div class="card-body p-3">
             <canvas id="lineChart"></canvas>
         </div>
@@ -156,7 +156,7 @@
                             title: {
                                 display: true,
                                 align: 'center',
-                                text: 'GPA Pre and Post',
+                                text: 'Điểm Trung Bình Quiz Trước và Sau',
                                 font: {
                                     weight: 'bold',
                                     size: 25
@@ -204,7 +204,7 @@
             labels: [''],
             datasets: [
                 {
-                    label: 'Participants Do Exam Pre',
+                    label: 'Participants Do Quiz Trước',
                     data: [@Html.Raw(Json.Serialize(Model.ParticiPantDoPre))],
                     borderColor: 'rgba(255, 99, 132, 1)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -212,7 +212,7 @@
 
                 },
                 {
-                    label: 'Participants Do Exam Post',
+                    label: 'Participants Do Quiz Sau',
                     data: [@Html.Raw(Json.Serialize(Model.ParticiPantDoPost))],
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -242,7 +242,7 @@
                 title: {
                     display: true,
                     align: 'center',
-                    text: 'Compare Participants Do Exam Pre And Post',
+                    text: 'Compare Participants Do Quiz Trước và Sau',
                     font: {
                         weight: 'bold',
                         size: 25
