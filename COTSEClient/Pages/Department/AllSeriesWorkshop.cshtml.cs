@@ -1,15 +1,21 @@
 using BusinessLogic.IRepository;
 using COTSEClient.Helper;
+using DataAccess.Constants;
 using DataAccess.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace COTSEClient.Pages.Department
 {
+    [Authorize(Roles = COTSEConstants.ROLE_ORGANIZER)]
     public class AllSeriesWorkshopModel : PageModel
     {
 
         private readonly IRepositoryWorkshopSeries _repositoryWorkshopSeries;
+        private readonly IRepositoryUser _repositoryUser;
+        private readonly IRepositoryAssign _repositoryAssign;
 
         [BindProperty(SupportsGet = true)]
         public string SearchInput { get; set; }
@@ -23,20 +29,42 @@ namespace COTSEClient.Pages.Department
         public WorkshopSeries WorkshopSeries { get; set; }
   
         public PageList<WorkshopSeries> WorkshopSeriesPage { get; set; }
-     
-        public AllSeriesWorkshopModel(IRepositoryWorkshopSeries repositoryWorkshopSeries)
+
+        [BindProperty]
+        public int ResearchAssignId { get; set; }
+        [BindProperty]
+        public string Msg { get; set; }
+        [BindProperty]
+        public List<SystemUser> SystemUsers { get; set; }
+
+        public AllSeriesWorkshopModel(IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryUser repositoryUser, IRepositoryAssign repositoryAssign)
         {
             _repositoryWorkshopSeries = repositoryWorkshopSeries;
+            _repositoryUser = repositoryUser;
+            _repositoryAssign = repositoryAssign;
         }
 
-        public void OnGet( int pageIndex = 1, int pageSize = 9)
+        public IActionResult OnGet( int pageIndex = 1, int pageSize = 9)
         {
+            var user = HttpContext.User;
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+            {
+                string userId = userIdClaim.Value;
+                var checkExits = _repositoryUser.getUserById(Convert.ToInt32(userId));
+                if (checkExits == null)
+                {
+                    Msg = "Username Not Exits In System";
+                    return Page();
+                }
+                SystemUsers = _repositoryUser.getAllResearchByDepartmentId((int)checkExits.Departmentld);
+            }
+           
 
             var source = _repositoryWorkshopSeries.GetAllWorkshopSeries().AsQueryable();
 
              WorkshopSeriesPage = PageList<WorkshopSeries>.Create(source, pageIndex, pageSize);
-
-
+            return Page();
         }
 
         public void OnPost( string searchInput, int pageIndex = 1, int pageSize = 9)
@@ -66,18 +94,29 @@ namespace COTSEClient.Pages.Department
                         workshopSeries.Image = Convert.ToBase64String(memoryStream.ToArray());
                     }
                 }
-
+                
                 WorkshopSeries createdWorkshopSeries = _repositoryWorkshopSeries.CreateWorkshopSeries(workshopSeries);
-
-                return RedirectToPage("AddNewSeries", new { seriesWorkshopId = createdWorkshopSeries.Id });
-
+                if (createdWorkshopSeries != null)
+                {
+                    Assign newAssign = new Assign
+                    {
+                        UserSystemId = ResearchAssignId,
+                        WorkshopSeriesId = workshopSeries.Id,
+                    };
+                    var resultInsert = _repositoryAssign.InsertAssignResearch(newAssign);
+                    if (resultInsert > 0)
+                    {
+                        return RedirectToPage("AddNewSeries", new { seriesWorkshopId = createdWorkshopSeries.Id });
+                    }
+                }
             }
             catch (Exception ex)
             {
-                
+                Msg = "Add SeriesWorkshop Error";
+                return Page();
             }
+            Msg = "Add SeriesWorkshop Error";
             return Page();
-
         }
     }
 }

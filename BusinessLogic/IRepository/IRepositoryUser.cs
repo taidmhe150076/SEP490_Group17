@@ -10,7 +10,9 @@ namespace BusinessLogic.IRepository
     public interface IRepositoryUser
     {
         public List<SystemUser> getAllUser();
+        public List<SystemUser> getAllResearchByDepartmentId(int id);
         public SystemUser getByEmailAndPassword(string email , string password);
+        public SystemUser? getUserById(int id);
         public void updateUser(SystemUser user);
         public SystemUser getUserById(int? id);
         public void addUser(SystemUser user);

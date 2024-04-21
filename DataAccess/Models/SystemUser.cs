@@ -27,6 +27,8 @@ public partial class SystemUser
 
     public string? ImageUrl { get; set; }
 
+    public virtual ICollection<Assign> Assigns { get; set; } = new List<Assign>();
+
     public virtual Department? DepartmentldNavigation { get; set; }
 
     public virtual SystemRole? RoleldNavigation { get; set; }

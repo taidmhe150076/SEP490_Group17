@@ -22,6 +22,8 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<AnswerSurvey> AnswerSurveys { get; set; }
 
+    public virtual DbSet<Assign> Assigns { get; set; }
+
     public virtual DbSet<ChartImage> ChartImages { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
@@ -131,6 +133,25 @@ public partial class Sep490G17DbContext : DbContext
             entity.HasOne(d => d.WorkShopSurveyQuestion).WithMany(p => p.AnswerSurveys)
                 .HasForeignKey(d => d.WorkShopSurveyQuestionId)
                 .HasConstraintName("FK_AnswerSurvey_WorkShopSurveyQuestion");
+        });
+
+        modelBuilder.Entity<Assign>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.WorkshopSeriesId, e.UserSystemId });
+
+            entity.ToTable("Assign");
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+            entity.HasOne(d => d.UserSystem).WithMany(p => p.Assigns)
+                .HasForeignKey(d => d.UserSystemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assign_SystemUser");
+
+            entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.Assigns)
+                .HasForeignKey(d => d.WorkshopSeriesId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assign_WorkshopSeries");
         });
 
         modelBuilder.Entity<ChartImage>(entity =>

@@ -19,6 +19,8 @@ public partial class WorkshopSeries
 
     public string? Image { get; set; }
 
+    public virtual ICollection<Assign> Assigns { get; set; } = new List<Assign>();
+
     public virtual Department? Department { get; set; }
 
     public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();

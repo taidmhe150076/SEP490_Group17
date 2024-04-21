@@ -55,9 +55,6 @@ namespace COTSEClient.Pages.Report
                                         ParticiPantScores = (int?)x.Score
                                     }).ToList();
 
-            double diemTrungBinh = InfoTestPre
-                                    .Where(x => x.ParticiPantScores.HasValue)
-                                    .Average(x => x.ParticiPantScores.Value);
 
             if (InfoTestPre.Count > 0 && InfoTestPos.Count > 0)
             {
@@ -79,39 +76,40 @@ namespace COTSEClient.Pages.Report
                     NumberParticipant = InfoTestPos.Count(),
                     Width = InfoTestPos.Count() < 10 ? InfoTestPos.Count() * 4 : InfoTestPos.Count() * 2
                 };
-            }
-           
-            List<InfoExamDTO> matchedItemsPre = new List<InfoExamDTO>();
-            List<InfoExamDTO> matchedItemsPos = new List<InfoExamDTO>();
 
-            foreach (var item1 in InfoTestPre)
-            {
-                var matchingItem = InfoTestPos.FirstOrDefault(item2 => item2.ParticiPantName == item1.ParticiPantName);
 
-                if (matchingItem != null)
+                List<InfoExamDTO> matchedItemsPre = new List<InfoExamDTO>();
+                List<InfoExamDTO> matchedItemsPos = new List<InfoExamDTO>();
+
+                foreach (var item1 in InfoTestPre)
                 {
-                    matchedItemsPre.Add(item1);
-                    matchedItemsPos.Add(matchingItem);
-                }
-            }
+                    var matchingItem = InfoTestPos.FirstOrDefault(item2 => item2.ParticiPantName == item1.ParticiPantName);
 
-            InfoTestPre = matchedItemsPre;
-            InfoTestPos = matchedItemsPos;
-
-            ParticiPantDoPre = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_PRE).ParticiPantScores.Count();
-            ParticiPantDoPost = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_POST).ParticiPantScores.Count();
-            foreach (var data in getData)
-            {
-                foreach (var test in data.Tests)
-                {
-                    var gPAScoreRange = GetGPAScoreRange(test.ParticiPantScores);
-
-                    TestGPAScoreRangeDTO newTestGPAScoreRangeDTO = new TestGPAScoreRangeDTO()
+                    if (matchingItem != null)
                     {
-                        Name = test.TestName,
-                        GPAScoreRange = gPAScoreRange,
-                    };
-                    TestGPAScoreRangeDTO.Add(newTestGPAScoreRangeDTO);
+                        matchedItemsPre.Add(item1);
+                        matchedItemsPos.Add(matchingItem);
+                    }
+                }
+
+                InfoTestPre = matchedItemsPre;
+                InfoTestPos = matchedItemsPos;
+
+                ParticiPantDoPre = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_PRE).ParticiPantScores.Count();
+                ParticiPantDoPost = InfoTest.FirstOrDefault(x => x.TestTypeId == COTSEConstants.TEST_POST).ParticiPantScores.Count();
+                foreach (var data in getData)
+                {
+                    foreach (var test in data.Tests)
+                    {
+                        var gPAScoreRange = GetGPAScoreRange(test.ParticiPantScores);
+
+                        TestGPAScoreRangeDTO newTestGPAScoreRangeDTO = new TestGPAScoreRangeDTO()
+                        {
+                            Name = test.TestName,
+                            GPAScoreRange = gPAScoreRange,
+                        };
+                        TestGPAScoreRangeDTO.Add(newTestGPAScoreRangeDTO);
+                    }
                 }
             }
         }
