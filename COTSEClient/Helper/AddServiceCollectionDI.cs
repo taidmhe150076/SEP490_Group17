@@ -26,6 +26,7 @@ namespace COTSEClient.Helper
             services.AddScoped<IRepositoryUser, RepositoryUser>();
             services.AddScoped<IRepositoryUrlForm, RepositoryUrlForm>();
             services.AddScoped<IRepositorySlideWorkshop, RepositorySlideWorkshop>();
+            services.AddScoped<IRepositoryAssign, RepositoryAssign>();
         }
     }
 }

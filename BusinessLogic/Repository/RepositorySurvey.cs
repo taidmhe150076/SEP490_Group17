@@ -311,7 +311,7 @@ namespace BusinessLogic.Repository
                     .SingleOrDefaultAsync(survey => survey.Id == surveyId);
                 if (survey == null)
                 {
-                    throw new NullReferenceException();
+                    throw new Exception("Survey Not Have Data");
                 }
                 else
                 {
@@ -352,7 +352,7 @@ namespace BusinessLogic.Repository
             }
             catch (Exception)
             {
-                throw new Exception();
+                throw new Exception("Survey has not been imported yet");
             }
         }
 
@@ -478,7 +478,7 @@ namespace BusinessLogic.Repository
             }
             catch (Exception)
             {
-                throw new Exception();
+                throw new Exception("survey has not been imported yet");
             }
             finally
             {
@@ -486,8 +486,9 @@ namespace BusinessLogic.Repository
             }
         }
 
-        public async Task<List<WorkshopSurveyDTO>> surveyList()
+        public async Task<List<WorkshopSurveyDTO>> surveyList(List<DataAccess.Models.Assign> assignList)
         {
+            List<WorkshopSurveyDTO> workshopSurveyDTOs = new List<WorkshopSurveyDTO>();
             var workshopSeries = await _context.WorkshopSeries
                 .Include(wss => wss.Workshops)
                     .ThenInclude(ws => ws.UrlForms)
@@ -515,8 +516,15 @@ namespace BusinessLogic.Repository
                         }).ToList()
                     }).ToList()
                 }).ToListAsync();
-
-            return workshopSeries;
+            foreach (var item in assignList)
+            {
+                var checkExits = workshopSeries.FirstOrDefault(x => x.Id == item.WorkshopSeriesId);
+                if (checkExits != null)
+                {
+                    workshopSurveyDTOs.Add(checkExits);
+                }
+            }
+            return workshopSurveyDTOs;
         }
 
 
@@ -983,7 +991,7 @@ namespace BusinessLogic.Repository
                 var findUrlForms = _context.UrlForms.FirstOrDefault(x => x.WorkshopId == wsId && x.IsPresenter == false);
                 if (findUrlForms == null)
                 {
-                    throw new Exception();
+                    throw new Exception("Url form has not been imported yet");
                 }
                 return findUrlForms.WorkshopSurveyUrl;
 

@@ -19,12 +19,23 @@ namespace COTSEClient.Pages.Report
         public int? WSSeriesId { get; set; }
         [BindProperty]
         public int? SurveyDataId { get; set; }
+        [BindProperty]
+        public string Msg { get; set; }
         public IActionResult OnGet(int? workShopId, int? wsSeriesId)
         {
-            WorkshopId = workShopId;
-            WSSeriesId = wsSeriesId;
-            SurveyDataId = _repositorySurvey.GetWorkshopSurveyUrlIdOfParticipants((int)workShopId);
-            return Page();
+            try
+            {
+                WorkshopId = workShopId;
+                WSSeriesId = wsSeriesId;
+                SurveyDataId = _repositorySurvey.GetWorkshopSurveyUrlIdOfParticipants((int)workShopId);
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                Msg = ex.Message;
+                return Page();
+            }
+            
         }
     }
 }

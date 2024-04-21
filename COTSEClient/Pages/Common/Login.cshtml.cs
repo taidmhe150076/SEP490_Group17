@@ -8,7 +8,9 @@ using System.Security.Claims;
 using DataAccess.Models;
 using BusinessLogic.IRepository;
 using System.ComponentModel.DataAnnotations;
+using static iTextSharp.text.pdf.AcroFields;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace COTSEClient.Pages.Common
 {
@@ -51,7 +53,7 @@ namespace COTSEClient.Pages.Common
             var claims = new List<Claim>
             {
                  new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                  new Claim(ClaimTypes.Name, Email),
+                 new Claim(ClaimTypes.Name, Email),
             };
             foreach (var item in role)
             {
@@ -70,9 +72,9 @@ namespace COTSEClient.Pages.Common
             };
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperty);
-            
+
             return Redirect("/Users");
-            //if (role.Contains("Admin"))
+            //if (role.Contains())
             //{
             //    return Redirect("/Users");
             //}

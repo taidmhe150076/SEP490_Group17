@@ -23,7 +23,7 @@ namespace BusinessLogic.IRepository
         Task<List<CommonQA>> getOtherData(int surveyId);
         Task<int> updateSurvey(WorkshopInfoDTO workshopInformation, int mode);
         // return file path
-        Task<List<WorkshopSurveyDTO>> surveyList();
+        Task<List<WorkshopSurveyDTO>> surveyList(List<Assign> assignList);
 
         //analyze
         Task<List<FeedbackResult>> getSurveySentimentResult(int surveyId);

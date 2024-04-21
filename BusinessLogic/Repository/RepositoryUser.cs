@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.IRepository;
+using DataAccess.Constants;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -129,6 +130,35 @@ namespace BusinessLogic.Repository
             }catch(Exception ex)
             {
                 throw new Exception ("Error updating avartar : " + ex.Message);
+            }
+        }
+
+        public SystemUser? getUserById(int id)
+        {
+            try
+            {
+                var checkExits = _context.SystemUsers.FirstOrDefault(x => x.Id == id);
+                if (checkExits == null)
+                {
+                    return null;
+                }
+                return checkExits;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<SystemUser> getAllResearchByDepartmentId(int id)
+        {
+            try
+            {
+                return _context.SystemUsers.Where(x => x.Departmentld == id && x.Roleld == COTSEConstants.RESEARCHER_ROLE).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }
