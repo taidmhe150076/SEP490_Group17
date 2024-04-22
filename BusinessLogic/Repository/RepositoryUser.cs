@@ -137,7 +137,7 @@ namespace BusinessLogic.Repository
         {
             try
             {
-                var checkExits = _context.SystemUsers.FirstOrDefault(x => x.Id == id);
+                var checkExits = _context.SystemUsers.Include(x => x.DepartmentldNavigation).Include(x => x.RoleldNavigation).FirstOrDefault(x => x.Id == id);
                 if (checkExits == null)
                 {
                     return null;

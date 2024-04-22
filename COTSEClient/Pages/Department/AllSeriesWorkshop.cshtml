@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Các chuỗi hội thảo</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <script src="https://cdn.tiny.cloud/1/o26m93ytnqs81i154itfeifyl1xyfpelfuho2wv2lv4j9q19/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <link href="~/css/stylemessage.css" rel="stylesheet">
     <style>
         .search-container {
@@ -43,6 +43,32 @@
                 .search-container button[type="submit"]:hover {
                     background-color: #0056b3;
                 }
+
+        .toolbar {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .toolbar-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 20px;
+        }
+
+        #editor {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -76,8 +102,9 @@
                                 {
                                     <tr>
                                         <td>@series.WorkshopSeriesName</td>
-                                        <td>@series.Description</td>
-                                        <td>@series.StartDate</td>
+                                        <td>@Html.Raw(series.Description)</td>
+@*                                         <td>@series.Description</td>
+ *@                                        <td>@series.StartDate</td>
                                         <td>@series.EndDate</td>
                                         <td>
                                             <a class="btn btn-primary" href="/AllWorkshop?wsSeriesId=@series.Id">Xem chi tiết</a>
@@ -106,8 +133,8 @@
                                                                 <input type="hidden" asp-for="@Model.WorkshopSeries.DepartmentId" value="@series.Id" />
 
                                                                 <div class="mb-3">
-                                                                    <label class="form-label">Mô tả : </label>
-                                                                    <input asp-for="@Model.WorkshopSeries.Description" class="form-control" value="@series.Description">
+                                                                    <label class="form-label">Mô tả :</label>
+                                                                    <textarea id="WorkshopSeries_Description" asp-for="@Model.WorkshopSeries.Description" class="form-control">@series.Description</textarea>
                                                                     <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
                                                                 </div>
 
@@ -202,7 +229,7 @@
                         </div>
                         <div class="mb-3">
                             <label asp-for="WorkshopSeries.Description" class="form-label">Mô tả</label>
-                            <input asp-for="WorkshopSeries.Description" class="form-control" placeholder="Nhập mô tả">
+                            <textarea asp-for="WorkshopSeries.Description" class="form-control" placeholder="Nhập mô tả"></textarea>
                             <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
@@ -242,6 +269,15 @@
             var searchTerm = document.getElementById("searchInput").value;
             console.log("Search term:", searchTerm);
         }
+
+        tinymce.init({
+            selector: 'textarea#WorkshopSeries_Description',
+            plugins: 'lists link',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link',
+            toolbar_mode: 'floating',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+        });
     </script>
     @{
         if (Model.Msg != null)
