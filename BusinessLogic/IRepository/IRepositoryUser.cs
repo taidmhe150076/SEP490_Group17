@@ -14,7 +14,6 @@ namespace BusinessLogic.IRepository
         public SystemUser getByEmailAndPassword(string email , string password);
         public SystemUser? getUserById(int id);
         public void updateUser(SystemUser user);
-        public SystemUser getUserById(int? id);
         public void addUser(SystemUser user);
 
         public void updatePassword (int userId, string password);

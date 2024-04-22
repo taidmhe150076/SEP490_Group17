@@ -160,7 +160,7 @@ namespace COTSEClient.Pages.Profile
                     _repository.updateUserAvatar(user.Id, base64Image);
                 }
 
-                return RedirectToPage(); // Redirect to the current page
+                return RedirectToPage();
             }
             catch (Exception ex)
             {
