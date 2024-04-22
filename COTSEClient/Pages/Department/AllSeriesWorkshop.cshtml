@@ -135,17 +135,17 @@
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Mô tả :</label>
                                                                     <textarea id="WorkshopSeries_Description" asp-for="@Model.WorkshopSeries.Description" class="form-control">@series.Description</textarea>
-                                                                    <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
+                                                                    <span asp-validation-for="WorkshopSeries.Description" class="text-danger">@Model.WorkshopSeries?.Description</span>
                                                                 </div>
 
                                                                 <div class="mb-3">
                                                                     <label  class="form-label">Ngày bắt đầu</label>
-                                                                    <input asp-for="@Model.WorkshopSeries.StartDate" value="@series.StartDate" class="form-control" type="datetime">
+                                                                    <input asp-for="@Model.WorkshopSeries.StartDate" value="@series.StartDate" class="form-control" type="date">
                                                                     <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
                                                                 </div>
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Ngày kết thúc</label>
-                                                                    <input asp-for="@Model.WorkshopSeries.EndDate" value="@series.EndDate" class="form-control" type="datetime">
+                                                                    <input asp-for="@Model.WorkshopSeries.EndDate" value="@series.EndDate" class="form-control" type="date">
                                                                     <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
                                                                 </div>
                                                                 <div class="mb-3">

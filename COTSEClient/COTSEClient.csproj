@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\PDF\" />
+    <Folder Include="wwwroot\PDF\" />
     <Folder Include="wwwroot\temp\" />
   </ItemGroup>
 

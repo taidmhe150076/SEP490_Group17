@@ -26,6 +26,8 @@ namespace COTSEClient.Pages.Department
         public readonly IRepositoryUser _repositoryUser;
         public string? urlRoom;
         public string? linkCF;
+        public string? linkDownloadTools;
+        public string? baseURL;
         public string? emailAdmin;
         public string? passwork;
         public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryPresenter repositoryPresenter, IRepositoryParticipants repositoryParticipants, IRepositoryAssign repositoryAssign, IRepositoryUser repositoryUser, IConfiguration configuration)
@@ -39,6 +41,8 @@ namespace COTSEClient.Pages.Department
             _configuration = configuration;
             urlRoom = _configuration["ConfigWorkshop:URLRoom"];
             linkCF = _configuration["ConfigWorkshop:LinkCF"];
+            baseURL = _configuration["BaseURL"];
+            linkDownloadTools = _configuration["LinkDowloandTools"];
             emailAdmin = _configuration["AccountAdmin:Email"];
             passwork = _configuration["AccountAdmin:Passwork"];
         }
@@ -247,8 +251,8 @@ namespace COTSEClient.Pages.Department
                                 TimeStart = WorkshopSeries.StartDate.ToString(),
                                 WorkshopInformation = workshopInformations,
                                 UrlRoom = urlRoom,
-                                UrlDownLoadTool = "urlLinkDownLoad",
-                                UrlWebLogin = "urlLink Loggin"
+                                UrlDownLoadTool = baseURL+ COTSEConstants.DOWNLOADTOOLS,
+                                UrlWebLogin = baseURL + COTSEConstants.LOGIN
                             };
                             var bodyMail = TeamplateMail.TeamplateMailResearch(templateMailResearcher);
                             string subject = "Thư Mời Researcher";
