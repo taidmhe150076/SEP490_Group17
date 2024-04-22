@@ -33,6 +33,7 @@
             flex-direction: column;
         }
 
+
         .card {
             height: 100%; 
             display: flex;
@@ -42,6 +43,7 @@
         .card-body {
             flex-grow: 1; 
         }
+
 
         .card-buttons {
             margin-top: auto; 
@@ -86,7 +88,9 @@
                             <div>
                                 <img style="width:200px; height:200px;" src="https://localhost:7149/Image/piechart.png" alt="Evaluate Score">
                                 <h5>Slide của hội thảo</h5>
+
                                 <a class="btn btn-primary" href="/AllImage?workShopId=@Model.WorkshopId">Xem chi tiết</a>
+
                             </div>
                         </div>
                     </div>
@@ -108,6 +112,7 @@
                             <div>
                                 <img style="width:200px; height:200px;" src="https://localhost:7149/Image/radaChart.png" alt="Evaluate Score">
                                 <h5>Phân tích cảm xúc người tham gia</h5>
+
                                 <a class="btn btn-primary" href="/Surveys/Details?wssId=@Model.WSSeriesId&wsId=@Model.WorkshopId&surveyId=@Model.SurveyDataId">Xem chi tiết</a>
                             </div>
                         </div>

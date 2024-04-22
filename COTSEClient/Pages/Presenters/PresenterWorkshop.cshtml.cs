@@ -22,7 +22,8 @@ namespace COTSEClient.Pages.Presenters
         private readonly IRepositoryTestType _repositoryTestType;
         private readonly IRepositoryWorkshopQuestions _repositoryWorkshopQuestions;
         private readonly IRepositoryAnswerQuestion _repositoryAnswerQuestion;
-        public PresenterWorkshopModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryTests repositoryTests, IRepositoryParticipants repositoryParticipants, IRepositoryTestType repositoryTestType , IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryAnswerQuestion repositoryAnswerQuestion, IConfiguration configuration)
+        private readonly IRepositoryParticiPantScore _repositoryParticiPantScore; 
+        public PresenterWorkshopModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryTests repositoryTests, IRepositoryParticipants repositoryParticipants, IRepositoryTestType repositoryTestType, IRepositoryWorkshopQuestions repositoryWorkshopQuestions, IRepositoryAnswerQuestion repositoryAnswerQuestion, IRepositoryParticiPantScore repositoryParticiPantScore, IConfiguration configuration)
         {
             _configuration = configuration;
             baseUrl = _configuration["BaseURL"];
@@ -32,6 +33,8 @@ namespace COTSEClient.Pages.Presenters
             _repositoryTestType = repositoryTestType;
             _repositoryWorkshopQuestions = repositoryWorkshopQuestions;
             _repositoryAnswerQuestion = repositoryAnswerQuestion;
+            _repositoryParticiPantScore = repositoryParticiPantScore; 
+
         }
         static string? invitationCode;
         [BindProperty]
@@ -76,7 +79,33 @@ namespace COTSEClient.Pages.Presenters
                 return BadRequest(ex.Message);
             }
         }
+        public IActionResult OnPostDeleteTest(int testId)
+        {
+            try
+            {
+                var testToDelete = _repositoryTests.GetTestById(testId);
+                if (testToDelete == null)
+                {
+                    return NotFound();
+                }
 
+                _repositoryParticiPantScore.DeleteScoresForTest(testId);
+
+                bool deleted = _repositoryTests.DeleteTest(testId);
+                if (!deleted)
+                {
+                    return BadRequest("Failed to delete the test.");
+                }
+
+                TempData["SuccessMessage"] = "Test deleted successfully.";
+
+                return RedirectToPage("PresenterWorkshop", new { key = invitationCode });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error deleting the test: {ex.Message}");
+            }
+        }
         public IActionResult OnPostCreateTest(string testName, DateTime expiredTime)
         {
             try

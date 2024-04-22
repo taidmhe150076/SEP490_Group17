@@ -70,7 +70,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                                            <h5 class="modal-title" id="editUserModalLabel">Chỉnh sửa thông tin</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
@@ -86,12 +86,14 @@
                                                 
                                                 
                                                 <div class="mb-3">
+
                                                     <label class="form-label">Valid Date</label>
                                                     <input asp-for="@Model.User.ValidDate" class="form-control" value="@item.ValidDate" type="date" required>
                                                 </div>
                                                
                                                 
                                                 <div class="mb-3">
+
                                                     <label class="form-label">Department</label>
                                                     <select asp-for="@Model.User.Departmentld" class="form-select" required>
                                                         @foreach (var department in Model.Departments)
@@ -111,7 +113,7 @@
                                                         }
                                                     </select>
                                                 </div>
-                                               
+                                              
                                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                                             </form>
                                         </div>
@@ -123,7 +125,6 @@
                 }
             </tbody>
         </table>
-
 
         @* Paginate *@
         <div class="row justify-content-center">
@@ -165,12 +166,12 @@
             <button class="btn btn-primary btn-lg px-5 py-3 fs-6 fw-bolder" data-bs-toggle="modal" data-bs-target="#createUserModal">Tạo mới</button>
         </div>
     </div>
-
     <!-- Create User Modal -->
     <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+
                     <h5 class="modal-title" id="createUserModalLabel">Create User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -178,6 +179,7 @@
                     <form asp-page-handler="CreateNewUser" method="post" id="createNewUser" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label class="form-label">Email</label>
+
                             <input class="form-control" name="email" placeholder="Input Email" required>
                             <span class="text-danger"></span>
                         </div>
@@ -201,6 +203,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
+
                             <label class="form-label">Role</label>
                             <select class="form-select" name="RoleId" required>
                                 @foreach (var role in Model.Roles)
@@ -209,6 +212,7 @@
                                 }
                             </select>
                         </div>
+
                         <button type="submit" class="btn btn-primary">Create</button>                     
                     </form>
                 </div>

@@ -21,32 +21,60 @@
             <div class="right">
                 <div class="content">
                     <h2>Đăng nhập</h2>
-                    <form method="post" >
+                    <form method="post" id="loginForm">
                         <div class="form-outline mb-4">
+
                             <input type="email" id="email" name="email" class="form-control form-control-lg"
                                    placeholder="Enter a valid email address" />
                         </div>
 
-                        <div class="form-outline mb-3">
+                        <div class="form-outline mb-3" id="passwordField">
                             <input type="password" id="password" name="password" class="form-control form-control-lg"
-                                   placeholder="Enter password" />
+                                   placeholder="Nhập mật khẩu của bạn" required />
                         </div>
-                        
+
                         <button id="login" type="submit">Login</button>
-                         @if (ViewData["ErrorMessage"] != null)
-                        {
-                            <div class="alert alert-danger" style="color:red" role="alert">
-                                @ViewData["ErrorMessage"]
-                            </div>
-                        }
+                        <div class="form-outline mb-3">
+                            <a href="#" id="forgotPasswordLink">Quên mật khẩu</a>
+                        </div>
                     </form>
-                    <div class="form-outline mb-3">
-                        <a href="#">Quên mật khẩu</a>
-                    </div>
+
+                    <form method="post" id="forgotPasswordForm" style="display: none;">
+                        <div class="form-outline mb-4">
+                            <input type="email" id="forgotEmail" name="forgotEmail" class="form-control form-control-lg"
+                                   placeholder="Nhập địa chỉ email của bạn" required />
+                        </div>
+                        <button id="sendResetLink" type="submit">Gửi</button>
+                        <button id="cancelReset" type="button">Đóng</button>
+                    </form>
+
+                    @if (ViewData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger" style="color:red" role="alert">
+                            @ViewData["ErrorMessage"]
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById("forgotPasswordLink").addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("emailField").style.display = "none";
+            document.getElementById("passwordField").style.display = "none";
+            document.getElementById("login").style.display = "none";
+            document.getElementById("forgotPasswordForm").style.display = "block";
+        });
+
+        document.getElementById("cancelReset").addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("forgotPasswordForm").style.display = "none";
+            document.getElementById("emailField").style.display = "block";
+            document.getElementById("passwordField").style.display = "block";
+            document.getElementById("login").style.display = "block";
+        });
+    </script>
 </body>
 </html>
-

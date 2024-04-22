@@ -12,5 +12,7 @@ namespace BusinessLogic.IRepository
     {
         public int InsertParticiPantScore(ParticiPantScore particiPantScore);
         public List<ParticiPantScore> GetParticiPantScoreByTestId(int testId);
+        bool DeleteScoresForTest(int testId);
+
     }
 }

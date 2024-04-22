@@ -14,5 +14,7 @@ namespace BusinessLogic.IRepository
         public int UpdateTest(Test test);
         public List<Test> GetScoresTestsByWorkshopId(int? workshopId);
         public string GetTestTypeByTestId(int testId);
+        bool DeleteTest(int testId);
+        Test GetTestById(int testId);
     }
 }

@@ -16,7 +16,10 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
-
+        public Test GetTestById(int testId)
+        {
+            return _context.Tests.FirstOrDefault(t => t.Id == testId);
+        }
         public List<Test> GetTestByWorkshopId(int? workshopId)
         {
             try
@@ -101,6 +104,25 @@ namespace BusinessLogic.Repository
             catch (Exception)
             {
                 throw;
+            }
+        }
+        public bool DeleteTest(int testId)
+        {
+            try
+            {
+                var testToDelete = _context.Tests.FirstOrDefault(t => t.Id == testId);
+                if (testToDelete != null)
+                {
+                    _context.Tests.Remove(testToDelete);
+                    _context.SaveChanges();
+                    return true; // Trả về true nếu xóa thành công
+                }
+                return false; // Trả về false nếu không tìm thấy bài kiểm tra để xóa
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu cần thiết
+                return false; // Trả về false nếu có lỗi xảy ra khi xóa
             }
         }
     }

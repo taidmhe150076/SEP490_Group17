@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/PresenterWorkshop"
 @model COTSEClient.Pages.Presenters.PresenterWorkshopModel
 @{
     Layout = "_PresenterLayout";
@@ -115,6 +115,7 @@
                         <th scope="col">DateStart</th>
                         <th scope="col">ExpiredTime</th>
                         <th scope="col">QR</th>
+                        <th>Tùy chọn</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,12 +138,25 @@
                             <td>
                                 <a asp-page="ListParticiPantScores" asp-route-testId="@item.Id">View Score Details</a>
                             </td>
+                            <td>
+                                <form id="deleteForm" method="post" asp-page-handler="DeleteTest" onsubmit="return confirm('Bạn có muốn xóa bài kiểm tra này?');">
+                                    <input type="hidden" id="testId" name="testId" value="@item.Id" />
+                                    <button type="submit">Xóa</button>
+                                   @*  @if (TempData["SuccessMessage"] != null)
+                                    {
+                                        <div class="alert alert-success">
+                                            @TempData["SuccessMessage"]
+                                        </div>
+                                    } *@
+                                </form>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
+
 
     <script>
         document.getElementById('questionExcel').addEventListener('change', function () {
@@ -162,7 +176,6 @@
             </div>
         </div>
     </div>
-
     <script>
         function showQRPopup(itemId) {
             console.log(itemId + 'alo');
@@ -172,6 +185,18 @@
 
             popupQRCodeImage.src = qrCodeSrc;
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            var delayTime = 2000; // Thời gian hiển thị thông báo (miligiây)
+
+            var successMessage = document.querySelector(".alert-success");
+
+            if (successMessage) {
+                setTimeout(function () {
+                    successMessage.style.display = "none";
+                }, delayTime);
+            }
+        });
+
     </script>
 </body>
 </html>

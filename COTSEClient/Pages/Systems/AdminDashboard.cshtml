@@ -12,8 +12,6 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" />
     <style>
-
-
         .card {
             margin-bottom: 20px;
             border-radius: 15px;
@@ -26,6 +24,9 @@
 
         .chart-container {
             margin-top: 20px;
+
+            text-align: center; /* Canh giữa biểu đồ */
+
         }
     </style>
 </head>
@@ -35,127 +36,84 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Total Organizations</h5>
-                        <p class="card-text" id="totalOrganizations">100</p>
+
+                        <h5 class="card-title">Tổng số người dùng: @Model.TotalUsers</h5>
+
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Total Users</h5>
-                        <p class="card-text" id="totalUsers">500</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Workshops</h5>
-                        <p class="card-text" id="totalWorkshops">50</p>
+                        <h5 class="card-title">Tổng số hội thảo: @Model.TotalWorkshops</h5>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="selectYear">Select Year:</label>
-                    <select class="form-control" id="selectYear" onchange="updateChart()">
-                        <option value="" disabled selected>Select year...</option>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col">
-                <h5 class="text-center" id="chartTitle" style="display: none;"></h5>
-                <div class="chart-container">
-                    <canvas id="workshopsChart" width="400" height="200"></canvas>
-                </div>
-            </div>
+        <select id="yearSelect" onchange="updateChart()">
+            @for (var year = DateTime.Now.Year; year >= 2020; year--)
+            {
+                <option value="@year">@year</option>
+            }
+        </select>
+        <div class="chart-container">
+            <canvas id="workshopsChart"></canvas>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-    <script>
-        var workshopsData = [
-            { year: 2022, month: "January", count: 10 },
-            { year: 2022, month: "February", count: 20 },
-            { year: 2022, month: "March", count: 30 },
-            { year: 2022, month: "April", count: 0 },
-            { year: 2022, month: "May", count: 20 },
-            { year: 2022, month: "June", count: 0 },
-            { year: 2022, month: "July", count: 30 },
-            { year: 2022, month: "August", count: 30 },
-            { year: 2022, month: "September", count: 10 },
-            { year: 2022, month: "October", count: 30 },
-            { year: 2022, month: "November", count: 30 },
-            { year: 2022, month: "December", count: 40 },
-            { year: 2023, month: "January", count: 15 },
-            { year: 2023, month: "February", count: 25 },
-            { year: 2023, month: "March", count: 35 },
-            { year: 2024, month: "January", count: 10 },
-            { year: 2024, month: "February", count: 5 },
-            { year: 2024, month: "March", count: 10 },
-            { year: 2024, month: "May", count: 20 },
-            { year: 2024, month: "September", count: 10 },
-            { year: 2024, month: "December", count: 10 },
-        ];
-
-        function updateChart() {
-            var selectedYear = parseInt(document.getElementById("selectYear").value);
-            var titleElement = document.getElementById("chartTitle");
-            if (selectedYear) {
-                titleElement.style.display = "block";
-                titleElement.innerText = "Biểu đồ tăng trưởng số lượng hội thảo trong năm " + selectedYear;
-            } else {
-                titleElement.style.display = "none";
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            function updateChart() {
+                var selectedYear = document.getElementById('yearSelect').value;
+                fetch('/DashBoard?handler=ChartData&year=' + selectedYear)
+                    .then(response => response.json())
+                    .then(data => {
+                        workshopsChart.data.labels = data.months.split(',').map(month => monthNames[parseInt(month)]);
+                        workshopsChart.data.datasets[0].data = data.workshopCounts.split(',').map(count => parseInt(count));
+                        workshopsChart.update();
+                    });
             }
-
-            var filteredData = workshopsData.filter(function (item) {
-                return item.year === selectedYear;
-            });
-
-            var months = filteredData.map(function (item) { return item.month; });
-            var counts = filteredData.map(function (item) { return item.count; });
+            var monthNames = ["", "Tháng một", "Tháng hai", "Tháng ba", "Tháng tư", "Tháng năm", "Tháng sáu", "Tháng bảy", "Tháng tám", "Tháng chín", "Tháng mười", "Tháng mười một", "Tháng mười hai"];
 
             var ctx = document.getElementById('workshopsChart').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Workshops',
-                        data: counts,
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
+            var workshopsChart;
+            function updateChart() {
+                var selectedYear = document.getElementById('yearSelect').value;
+                fetch('/DashBoard?handler=ChartData&year=' + selectedYear)
+                    .then(response => response.json())
+                    .then(data => {
+                        workshopsChart.data.labels = data.months.split(',').map(month => monthNames[parseInt(month)]);
+                        workshopsChart.data.datasets[0].data = data.workshopCounts.split(',').map(count => parseInt(count));
+                        workshopsChart.update();
+                    });
+            }
+            fetch('/DashBoard?handler=ChartData&year=' + new Date().getFullYear())
+                .then(response => response.json())
+                .then(data => {
+                    workshopsChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: monthNames.slice(1),
+                            datasets: [{
+                                label: 'Số lượng hội thảo',
+                                data: data.workshopCounts.split(',').map(count => parseInt(count)),
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
                             }
-                        }]
-                    }
-                }
-            });
-        }
-
-        updateChart(); 
-    </script>
+                        }
+                    });
+                });
+        </script>
 </body>
 </html>
