@@ -9,6 +9,8 @@
 <head>
     <title>Báo cáo hội thảo</title>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
 </head>
 <body class="d-flex flex-column h-100 bg-light">
     <main class="flex-shrink-0">
@@ -16,56 +18,81 @@
             <div class="text-center mb-5">
                 <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Report Tests <br> @Model.WorkShopName </span></h1>
             </div>
-            <div class="col">
-                <div class="card overflow-hidden shadow rounded-4 border-0 h-100">
-                    <div class="card-body p-3">
-                        @foreach (var InfoTest in Model.InfoTest)
-                        {
-                            <div class="card-body p-3" style="display: flex; flex-wrap: wrap;">
-                                <div style="width:100%;">
-                                    <!-- Chia đôi bằng cách đặt chiều rộng của mỗi phần là 50% -->
-                                    <h2>Dữ Liệu Bài @InfoTest.TestName </h2>
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">TestName</th>
-                                                <th scope="col">ParticipantsEmail</th>
-                                                <th scope="col">Score</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @{
-                                                double totalScore = 0.0;
-                                                var count = 0;
-                                            }
-                                            @foreach (var item in InfoTest.ParticiPantScores)
-                                            {
-                                                totalScore += item.Score;
-                                                count++;
+            <div class="row">
+                @foreach (var InfoTest in Model.InfoTest)
+                {
+                    <div class="col-md-6">
+                        <div class="card overflow-hidden shadow rounded-4 border-0 h-100">
+                            <div class="card-body p-3">
+                                <div class="card-body p-3" style="display: flex; flex-wrap: wrap;">
+                                    <div style="width:100%;">
+                                        <!-- Chia đôi bằng cách đặt chiều rộng của mỗi phần là 50% -->
+                                        <h2>Dữ Liệu Bài @InfoTest.TestName </h2>
+                                        <table class="table table-striped">
+                                            <thead>
                                                 <tr>
-                                                    <td>@item.Test.TestName</td>
-                                                    <td>@item.Participant.ParticipantsEmail</td>
-                                                    <td>@item.Score</td>
+                                                    <th scope="col">TestName</th>
+                                                    <th scope="col">ParticipantsEmail</th>
+                                                    <th scope="col">Score</th>
                                                 </tr>
-                                            }
-                                            <tr>
-                                                <th scope="col">AverageScore</th>
-                                                <th scope="col"></th>
-                                                <th scope="col">@(totalScore / count)</th>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    double totalScore = 0.0;
+                                                    var count = 0;
+                                                }
+                                                @foreach (var item in InfoTest.ParticiPantScores)
+                                                {
+                                                    totalScore += item.Score;
+                                                    count++;
+                                                    <tr>
+                                                        <td>@item.Test.TestName</td>
+                                                        <td>@item.Participant.ParticipantsEmail</td>
+                                                        <td>@item.Score</td>
+                                                    </tr>
+                                                }
+                                                <tr>
+                                                    <th scope="col">AverageScore</th>
+                                                    <th scope="col"></th>
+                                                    <th scope="col">@((totalScore / count).ToString("N2"))</th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        }
+                        </div>
                     </div>
-                </div>
+                }
             </div>
-
     </main>
-    <div class="row gx-5 justify-content-center">
-        <canvas id="lineChart"></canvas>
+
+    <div style="margin-bottom:50px" class="card overflow-hidden shadow rounded-4 border-0 h-100 text-center">
+        <h1 style="padding-top:30px" class="text-gradient d-inline">Điểm Trung Bình Hai Bài Quiz Trước và Sau</h1>
+        <div class="card-body p-3">
+            <canvas id="bubbleChart"></canvas>
+        </div>
     </div>
+    <div style="margin-bottom:50px" class="card overflow-hidden shadow rounded-4 border-0 h-100 text-center">
+        <h1 style="padding-top:30px" class="text-gradient d-inline">Biểu Đồ so sánh số lượng người tham gia Trước và Sau</h1>
+        <div class="card-body p-3">
+            <canvas id="participantsCompare"></canvas>
+        </div>
+    </div>
+    <div style="margin-bottom:50px" class="card overflow-hidden shadow rounded-4 border-0 h-100 text-center">
+        <h1 style="padding-top:30px" class="text-gradient d-inline">Lấy Mẫu Điểm Số Trước và Sau Của Participants</h1>
+        <button class="btn btn-outline-secondary" id="randomButton">Get Sample</button>
+        <div class="card-body p-3">
+            <canvas id="ChartRandom"></canvas>
+        </div>
+    </div>
+    <div style="margin-bottom:50px" class="card overflow-hidden shadow rounded-4 border-0 h-100 text-center">
+        <h1 style="padding-top:30px" class="text-gradient d-inline">Biểu Đồ SỐ LƯỢNG SINH VIÊN TRONG KHOẢNG ĐIỂM 1 -> 10 Quiz Trước và Quiz Sau</h1>
+        <div class="card-body p-3">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Include Chart.js Datalabels plugin -->
@@ -78,7 +105,9 @@
             Chart.register(ChartDataLabels);
             // Access the model data
             const data = @Html.Raw(Json.Serialize(Model.TestGPAScoreRangeDTO));
+
             console.log(data);
+
             let chart;
             // draw chart
             function renderChart(data) {
@@ -87,16 +116,13 @@
                 });
                 var datasets = data.map(function (item) {
                     return {
-                        label: "GPA " + item.name,
+                        label: "Điểm" + item.name,
                         data: item.gpaScoreRange.map(function (range) {
                             return range.count;
                         }),
                         fill: false,
                         borderColor: getRandomColor(),
                         tension: 0,
-                        pointStyle: 'rect',
-                        pointRadius: 15,
-                        pointHoverRadius: 15
                     };
                 });
                 console.log(datasets);
@@ -113,16 +139,7 @@
                         responsive: true,
                         scales: {
                             y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Number of Score Range',
-                                    type: 'log2',
-                                    font: {
-                                        size: 20,
-                                        weight: 'bold'
-                                    }
-                                }
+                                beginAtZero: true
                             },
                             x: {
                                 title: {
@@ -138,11 +155,20 @@
                         plugins: {
                             title: {
                                 display: true,
-                                text: 'GPA Pre and Post',
+                                align: 'center',
+                                text: 'Điểm Trung Bình Quiz Trước và Sau',
                                 font: {
                                     weight: 'bold',
                                     size: 25
+                                },
+                                padding: {
+                                    bottom: 50 // Điều chỉnh giá trị top của padding
                                 }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                align: 'center'
                             },
                             datalabels: {
                                 anchor: 'end',
@@ -170,5 +196,295 @@
             }
         });
     </script>
+
+    <!-- compare so luong lam bai truoc va sau -->
+    <script>
+        Chart.register(ChartDataLabels);
+        const data2 = {
+            labels: [''],
+            datasets: [
+                {
+                    label: 'Participants Do Quiz Trước',
+                    data: [@Html.Raw(Json.Serialize(Model.ParticiPantDoPre))],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    barPercentage: 0.3,
+
+                },
+                {
+                    label: 'Participants Do Quiz Sau',
+                    data: [@Html.Raw(Json.Serialize(Model.ParticiPantDoPost))],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    barPercentage: 0.3,
+
+                }
+            ],
+        };
+
+        // Options for the chart
+        const options2 = {
+            responsive: true,
+            barSpacing: 50,
+            legend: {
+                position: 'top'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    barPercentage: 0.5,
+                    barThickness: 10,
+                }],
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    align: 'center',
+                    text: 'Compare Participants Do Quiz Trước và Sau',
+                    font: {
+                        weight: 'bold',
+                        size: 25
+                    },
+                    padding: {
+                        bottom: 20 // Điều chỉnh giá trị top của padding
+                    }
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'start',
+                    color: '#333', // Màu của nhãn
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    align: 'center'
+                },
+            }
+
+        };
+
+        const ctx2 = document.getElementById('participantsCompare').getContext('2d');
+
+        const participantsChart = new Chart(ctx2, {
+            type: 'bar',
+            data: data2,
+            options: options2
+        });
+    </script>
+
+    <!-- Chart Random scrore -->
+    <script>
+        Chart.register(ChartDataLabels);
+        let myChartRandom;
+        function handleRandomButtonClick() {
+
+            console.log("Click");
+            console.log("Click1" + myChartRandom);
+
+            const list1 = @Html.Raw(Json.Serialize(Model.InfoTestPre));
+            console.log(list1);
+            const list2 = @Html.Raw(Json.Serialize(Model.InfoTestPos));
+            console.log(list2);
+
+            // Lấy ngẫu nhiên 3 phần tử từ data1
+            var randomIndexes = [];
+            while (randomIndexes.length < 3) {
+                var randomIndex = Math.floor(Math.random() * list1.length);
+                if (!randomIndexes.includes(randomIndex)) {
+                    randomIndexes.push(randomIndex);
+                }
+            }
+
+            var randomElements1 = [];
+            var correspondingElements2 = [];
+
+            // Tìm phần tử tương ứng trong data2 dựa trên tên của các phần tử ngẫu nhiên từ data1
+            randomIndexes.forEach(function (index) {
+                var randomElement1 = list1[index];
+                var correspondingElement2 = list2.find(element => element.particiPantName === randomElement1.particiPantName);
+
+                // Nếu correspondingElement2 không tồn tại, gán particiPantScores bằng 0
+                if (!correspondingElement2) {
+                    correspondingElement2 = { particiPantScores: 0 };
+                }
+
+                randomElements1.push(randomElement1);
+                correspondingElements2.push(correspondingElement2);
+            });
+            console.log(randomElements1);
+            console.log(correspondingElements2);
+
+            if (!myChartRandom) {
+                drawChart(randomElements1, correspondingElements2);
+            } else {
+                myChartRandom.data.labels = [
+                    randomElements1[0].particiPantName,
+                    randomElements1[1].particiPantName,
+                    randomElements1[2].particiPantName
+                ];
+                // Vẽ lại biểu đồ cột với dữ liệu mới
+                myChartRandom.data.datasets[0].data = [
+                    randomElements1[0].particiPantScores,
+                    randomElements1[1].particiPantScores,
+                    randomElements1[2].particiPantScores
+                ];
+                myChartRandom.data.datasets[1].data = [
+                    correspondingElements2[0].particiPantScores,
+                    correspondingElements2[1].particiPantScores,
+                    correspondingElements2[2].particiPantScores
+                ];
+                myChartRandom.update();
+            }
+        }
+        function drawChart(randomElements1, correspondingElements2) {
+            var ctxRandom = document.getElementById('ChartRandom').getContext('2d');
+            myChartRandom = new Chart(ctxRandom, {
+                type: 'bar',
+                data: {
+                    labels: [randomElements1[0].particiPantName, randomElements1[1].particiPantName, randomElements1[2].particiPantName],
+                    datasets: [{
+                        label: 'Điểm Quiz 1',
+                        data: [
+                            randomElements1[0].particiPantScores,
+                            randomElements1[1].particiPantScores,
+                            randomElements1[2].particiPantScores
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        barPercentage: 0.4,
+                        stack: 'combined',
+
+                    },
+                    {
+                        label: 'Điểm Quiz 2',
+                        data: [
+                            correspondingElements2[0].particiPantScores,
+                            correspondingElements2[1].particiPantScores,
+                            correspondingElements2[2].particiPantScores
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        type: 'line',
+                        borderWidth: 4,
+
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'start',
+                            font: {
+                                size: 15,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            align: 'center'
+                        },
+                    }
+                }
+            });
+        }
+        document.getElementById('randomButton').addEventListener('click', handleRandomButtonClick);
+    </script>
+
+
+    <!-- Chart bubble scrore -->
+    <script>
+        const gpa1 = @Html.Raw(Json.Serialize(Model.BubbleChartGPAPRE));
+        console.log(gpa1);
+        const gpa2 = @Html.Raw(Json.Serialize(Model.BubbleChartGPAPOST));
+        console.log(gpa2);
+
+        const databubbleChart = {
+            datasets: [{
+                label: 'Quiz Trước',
+                data: [
+                    { y: gpa1.averageScore, x: gpa1.numberParticipant, r: gpa1.width },
+                ],
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+            },
+            {
+                label: 'Quiz Sau',
+                data: [
+                    { y: gpa2.averageScore, x: gpa2.numberParticipant, r: gpa2.width },
+                ],
+                backgroundColor: 'rgba(255, 200, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+            }]
+        };
+
+        const config = {
+            type: 'bubble',
+            data: databubbleChart,
+            options: {
+                scales: {
+                    y: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'Điểm'
+                        },
+                        min: 0,
+                        max: 10,
+
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Số Lượng Người Tham Gia'
+                        },
+                        min: 0,
+                        max: gpa1.numberParticipant * 2,
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        display: true,
+                        formatter: function (value, context) {
+                            return context.chart.data.datasets[context.datasetIndex].data[context.dataIndex].y;
+                        },
+                        anchor: 'start',
+                        align: 'start',
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function (context) {
+                                const dataPoint = context.raw;
+                                return 'Điểm Trung Bình: ' + dataPoint.y + ', Số Lượng Người Tham Gia: ' + dataPoint.x;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        align: 'center'
+                    },
+                }
+            }
+        };
+
+        var ctxbubble = document.getElementById('bubbleChart').getContext('2d');
+        var bubbleChart = new Chart(ctxbubble, config);
+    </script>
+
+    <!-- Chart Export Image -->
 </body>
 </html>

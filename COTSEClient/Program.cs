@@ -21,7 +21,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login";
-        options.AccessDeniedPath = "/AccessDenied";
+        options.AccessDeniedPath = "/Common/AccessDenied";
     });
 
 // Add scope repository
@@ -51,6 +51,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapFallbackToPage("/Common/NotFound");
 
 app.MapHub<ParticiPantScoresHub>("/particiPantScoresHub");
 

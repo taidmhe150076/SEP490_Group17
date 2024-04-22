@@ -17,6 +17,7 @@
 <html lang="en">
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="~/css/stylemessage.css" rel="stylesheet">
     <title>Các chuỗi hội thảo</title>
     <style>
         .row {
@@ -32,6 +33,7 @@
             flex-direction: column;
         }
 
+
         .card {
             height: 100%; 
             display: flex;
@@ -41,6 +43,7 @@
         .card-body {
             flex-grow: 1; 
         }
+
 
         .card-buttons {
             margin-top: auto; 
@@ -85,7 +88,9 @@
                             <div>
                                 <img style="width:200px; height:200px;" src="https://localhost:7149/Image/piechart.png" alt="Evaluate Score">
                                 <h5>Slide của hội thảo</h5>
-                                <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+
+                                <a class="btn btn-primary" href="/AllImage?workShopId=@Model.WorkshopId">Xem chi tiết</a>
+
                             </div>
                         </div>
                     </div>
@@ -107,7 +112,8 @@
                             <div>
                                 <img style="width:200px; height:200px;" src="https://localhost:7149/Image/radaChart.png" alt="Evaluate Score">
                                 <h5>Phân tích cảm xúc người tham gia</h5>
-                                <a class="btn btn-primary" href="/AllWorkshop">Xem chi tiết</a>
+
+                                <a class="btn btn-primary" href="/Surveys/Details?wssId=@Model.WSSeriesId&wsId=@Model.WorkshopId&surveyId=@Model.SurveyDataId">Xem chi tiết</a>
                             </div>
                         </div>
                     </div>
@@ -137,5 +143,45 @@
             </div>
         </div>
     </section>
+
+    @{
+        if (Model.Msg != null)
+        {
+            if (Model.Msg.Contains("Success"))
+            {
+                <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-success-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/success-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-success-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="checkbox" id="alert-error-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-error-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/error-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-error-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
 </body>
 </html>

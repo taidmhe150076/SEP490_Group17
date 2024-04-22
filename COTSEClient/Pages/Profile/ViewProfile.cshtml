@@ -10,59 +10,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/css/stylemessage.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-5">Thông tin cá nhân</h1>
-        <div class="card mt-3">
-            <div class="card-body">
-                @if (User != null)
-                {
-                    <div class="form-group">
-                        <label for="userId">User ID</label>
-                        <input type="text" readonly id="userId" class="form-control" value="@Model.User.Id" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">User First Name</label>
-                        <input type="text" id="firstName" class="form-control" value="@Model.User.FirstName" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">User Last Name</label>
-                        <input type="text" id="lastName" class="form-control" value="@Model.User.LastName" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">Email</label>
-                        <input type="text" id="email" class="form-control" value="@Model.User.Email" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">DOB</label>
-                        <input type="text" id="userName" class="form-control" value="@Model.User.Dob" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">Department</label>
-                        <input type="text" id="userName" class="form-control" value="@Model.User.DepartmentldNavigation.DepartmentName" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="userName">Role</label>
-                        <input type="text" id="userName" class="form-control" value="@Model.User.RoleldNavigation.RoleName" readonly>
-                    </div>
+    <style>
+        body {
+            margin-top: 20px;
+        }
 
-                    <!-- Add more user information fields as needed -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">Edit</button>
-                }
-                else
-                {
-                    <p class="card-text">User not found</p>
-                }
+        .avatar {
+            width: 200px;
+            height: 200px;
+        }
+
+        .button-1 {
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        .button-2 {
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+    </style>
+    <div class="container bootstrap snippets bootdey">
+        <h1 class="text-primary">Hồ sơ cá nhân </h1>
+        <hr>
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-3">
+                <div class="text-center">
+                    <!-- Use Razor syntax to set the src attribute dynamically -->
+                    <img id="avatarImage" src="data:image/png;base64,@Model.User.ImageUrl" class="avatar img-circle img-thumbnail" alt="avatar">
+                    <form asp-page-handler="ChangeAvatar" method="post" enctype="multipart/form-data">
+
+                        <div class="form-group" hidden>
+                            <label asp-for="User.Id" class="form-label"></label>
+                            <input asp-for="User.Id" class="form-control" readonly>
+                            <span asp-validation-for="User.Id" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="ImageFile">Choose Image</label>
+                            <input asp-for="ImageFile" type="file" class="form-control-file" />
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload Image</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <!-- edit form column -->
+            <div class="col-md-9 personal-info">
+                <h3>Thông tin người dùng</h3>
+
+                <form class="form-horizontal" role="form">
+                    @if (User != null)
+                    {
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Họ : </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" value="@Model.User.FirstName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Tên : </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" value="@Model.User.LastName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Email : </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" value="@Model.User.Email" readonly>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Ngày sinh :</label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" value="@Model.User.Dob" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Phòng ban : </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" value="@Model.User?.DepartmentldNavigation.DepartmentName" readonly>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-lg-3 control-label">Vai trò  : </label>
+                            <div class="col-lg-8">
+                                <input class="form-control" type="text" value="@Model.User.RoleldNavigation.RoleName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-8">
+                                <div class="d-flex">
+                                    <button type="button" class="btn btn-primary button-1" data-toggle="modal" data-target="#editModal">Cập nhật thông tin</button>
+                                    <button type="button" class="btn btn-primary button-2" data-toggle="modal" data-target="#changePassModel">Đổi mật khẩu</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </form>
+
+
             </div>
         </div>
     </div>
+    <!-- Popup edit user information -->
+
 
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin cá nhân</h5>
+
+                    <h5 class="modal-title" id="editModalLabel">Cập nhật thông tin </h5>
+
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -77,36 +152,31 @@
                             <span asp-validation-for="User.Id" class="text-danger"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="User.FirstName"></label>
-                            <input asp-for="User.FirstName" class="form-control">
-                            <span asp-validation-for="User.FirstName" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
                             <label asp-for="User.Email"></label>
-                            <input asp-for="User.Email" class="form-control">
+                            <input asp-for="User.Email" class="form-control" required>
                             <span asp-validation-for="User.Email" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="User.FirstName"></label>
-                            <input asp-for="User.FirstName" class="form-control">
+                            <input asp-for="User.FirstName" class="form-control" required>
                             <span asp-validation-for="User.FirstName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="User.LastName"></label>
-                            <input asp-for="User.LastName" class="form-control">
+                            <input asp-for="User.LastName" class="form-control" required>
                             <span asp-validation-for="User.LastName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="User.Dob"></label>
-                            <input asp-for="User.Dob" type="date" class="form-control">
+                            <input asp-for="User.Dob" type="date" class="form-control" required>
                             <span asp-validation-for="User.Dob" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" hidden>
                             <label asp-for="User.DepartmentldNavigation.DepartmentName"></label>
                             <input asp-for="User.DepartmentldNavigation.DepartmentName" class="form-control" readonly>
                             <span asp-validation-for="User.Departmentld" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" hidden>
                             <label asp-for="User.RoleldNavigation.RoleName"></label>
                             <input asp-for="User.RoleldNavigation.RoleName" class="form-control" readonly>
                             <span asp-validation-for="User.Roleld" class="text-danger"></span>
@@ -116,7 +186,7 @@
                             <input asp-for="User.Password" class="form-control" readonly>
                             <span asp-validation-for="User.Password" class="text-danger"></span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" hidden>
                             <label asp-for="User.ValidDate"></label>
                             <input asp-for="User.ValidDate" type="date" class="form-control" readonly>
                             <span asp-validation-for="User.ValidDate" class="text-danger"></span>
@@ -132,14 +202,106 @@
                         </div>
                     </form>
                 </div>
-
-
-                
             </div>
         </div>
     </div>
 
+
+    <!-- Popup Change password -->
+    <div class="modal fade" id="changePassModel" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Cập nhật thông tin </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Add form fields to edit user information here -->
+                    <form asp-page-handler="ChangePassword" method="post">  
+                        
+                        <div class="form-group" hidden>
+                            <label asp-for="User.Id" class="form-label"></label>
+                            <input asp-for="User.Id" class="form-control" readonly>
+                            <span asp-validation-for="User.Id" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="OldPassword">Old Password:</label>
+                            <input type="password" class="form-control" id="OldPassword" name="OldPassword" required>
+                            <span asp-validation-for="OldPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="NewPassword">New Password:</label>
+                            <input type="password" class="form-control" id="NewPassword" name="NewPassword" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ConfirmNewPassword">Confirm New Password:</label>
+                            <input type="password" class="form-control" id="ConfirmNewPassword" name="ConfirmNewPassword" required>
+                            <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @{
+        if (Model.Msg != null)
+        {
+            if (Model.Msg.Contains("Success"))
+            {
+                <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-success-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/success-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-success-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="checkbox" id="alert-error-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-error-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/error-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-error-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+    <script>
+        setTimeout(function () {
+            document.querySelector('.alert-box-wrap').style.display = 'none';
+        }, 1000);
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
 </body>
 </html>

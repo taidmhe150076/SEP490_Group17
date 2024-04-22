@@ -44,7 +44,7 @@ namespace COTSEClient.Pages.Department
             Url = _configuration["BaseURL"];
         }
 
-        public IActionResult OnGet(int workShopId = 1244)
+        public IActionResult OnGet(int workShopId)
         {
 
             if (workShopId == 0)

@@ -1,0 +1,233 @@
+﻿@page 
+@model COTSEClient.Pages.Presenters.WorkshopQuestionModel
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Question Test</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/css/quizzteamplate.css" rel="stylesheet" />
+    <link href="~/css/stylemessage.css" rel="stylesheet">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <style>
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: #f8f9fa;
+        }
+
+        .modal-header {
+            background-color: #6c757d;
+            color: #fff;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .btn-close {
+            color: #fff;
+        }
+
+        .score-container {
+            text-align: center;
+        }
+
+        #createSeriesModalScore {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        #countdownMessage {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <div id="countdownDisplay" class="mt-3"></div>
+        <div class="widget-wrap">
+            @if (Model.listWorkshopQuestion != null)
+            {
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <div class="survey-header">Câu hỏi dành cho hội thảo</div>
+                    </div>
+                </div>
+
+                @for (int i = 0; i < Model.listWorkshopQuestion.Count; i++)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="card-text">@Model.listWorkshopQuestion[i].QuestionText</p>
+
+                            @foreach (var answer in @Model.listWorkshopQuestion[i].AnswerQuestions)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="@Model.listWorkshopQuestion[i].Id" id="@answer.Id" value="@answer.AnswerText" onclick="handleRadioClick(this)">
+                                    <label class="form-check-label" for="answer_@answer.AnswerText">@answer.AnswerText</label>
+                                </div>
+                            }
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#editModal-@Model.listWorkshopQuestion[i].Id">Cập nhật</button>
+
+                            <div class="modal fade" id="editModal-@Model.listWorkshopQuestion[i].Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Cập nhật câu hỏi </h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form asp-page-handler="UpdateQuestion" method="post">
+                                                <input type="hidden" asp-for="@Model.WorkshopQuestion.Id" value="@Model.listWorkshopQuestion[i].Id" />
+
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">Câu hỏi :</label>
+                                                    <input type="text" class="form-control" value="@Model.listWorkshopQuestion[i].QuestionText">
+                                                </div>
+                                                @for (int j = 0; j < Model.listWorkshopQuestion[i].AnswerQuestions.Count; j++)
+                                                {
+                                                    <div class="form-group">
+                                                        <label for="answer-@j" class="col-form-label">Đáp án @j :</label>
+                                                        <input type="text" class="form-control" value="">
+                                                    </div>
+                                                }
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                                            <button type="button" class="btn btn-success">Cập nhật</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Delete question-->
+                            <form method="post">
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-@Model.listWorkshopQuestion[i].Id">
+                                    Xóa
+                                </button>
+                                <input type="hidden" name="id" value="@Model.listWorkshopQuestion[i].Id" />
+                                <input type="hidden" asp-for="@Model.WorkshopId" />
+                                <div class="modal fade" id="deleteModal-@Model.listWorkshopQuestion[i].Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Xóa câu hỏi</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Xác nhận xóa câu hỏi !!!!
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                                                <button type="submit" class="btn btn-danger">Xóa</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                }
+
+            }
+        </div>
+
+        <!--Create new question-->
+        <form asp-page-handler="InsertQuestion" method="post">
+        <div class="text-center">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Tạo mới</button>
+        </div>
+        <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Tạo câu hỏi mới:</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">                                             
+                            <input type="hidden" asp-for="@Model.WorkshopId" />
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Câu hỏi :</label>
+                                <input type="text" class="form-control" id="recipient-name" asp-for="QuestionText">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Đáp án :</label>
+                                <textarea class="form-control" id="message-text" asp-for="AnswerText"></textarea>
+                            </div>                  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                        <button type="submit" class="btn btn-primary">Tạo mới </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+  
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    @{
+        if (Model.Msg != null)
+        {
+            if (Model.Msg.Contains("Success"))
+            {
+                <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-success-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/success-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-success-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="checkbox" id="alert-error-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+                <div class="alert-box-wrap alert-error-popup">
+                    <div class="alert-content">
+                        <div class="icon">
+                            <img src="~/Image/error-icon.svg" alt="alert-icon">
+                        </div>
+                        <div class="body">
+                            <h3>@Model.Msg</h3>
+                        </div>
+                        <div class="close-alert">
+                            <label for="alert-error-popup">&times;</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+    <script>
+        setTimeout(function () {
+            document.querySelector('.alert-box-wrap').style.display = 'none';
+        }, 1000);
+    </script>
+
+
+</body>
+</html>

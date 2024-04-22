@@ -99,5 +99,23 @@ namespace BusinessLogic.Repository
                 throw;
             }
         }
+
+        public void UpdateStaus(string invitationCode, int status)
+        {
+            var workShop = _context.Workshops.FirstOrDefault(x => x.KeyPresenter == invitationCode);
+            try
+            {
+                if (workShop != null)
+                {
+                    workShop.StatusId = status;
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+        }
     }
 }

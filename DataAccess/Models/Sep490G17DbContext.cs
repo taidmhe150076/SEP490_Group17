@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DataAccess.Models;
 
@@ -20,6 +21,10 @@ public partial class Sep490G17DbContext : DbContext
     public virtual DbSet<AnswerQuestion> AnswerQuestions { get; set; }
 
     public virtual DbSet<AnswerSurvey> AnswerSurveys { get; set; }
+
+    public virtual DbSet<Assign> Assigns { get; set; }
+
+    public virtual DbSet<ChartImage> ChartImages { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
 
@@ -66,14 +71,19 @@ public partial class Sep490G17DbContext : DbContext
     public virtual DbSet<WorkshopSurveyUrl> WorkshopSurveyUrls { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-LJLCRRI;database=SEP490_G17_DB;uid=sa;pwd=123;TrustServerCertificate=true;");
+    {
+        var builder = new ConfigurationBuilder()
+                     .SetBasePath(Directory.GetCurrentDirectory())
+                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        IConfigurationRoot configuration = builder.Build();
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AnswerParticipant>(entity =>
         {
-            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId }).HasName("PK_AnswerParticipants_1");
+            entity.HasKey(e => new { e.Id, e.QuestionId, e.TestId, e.AnswerId }).HasName("PK_AnswerParticipants_1");
 
             entity.Property(e => e.QuestionId).HasColumnName("Question_id");
             entity.Property(e => e.SubmissionTime)
@@ -82,6 +92,7 @@ public partial class Sep490G17DbContext : DbContext
 
             entity.HasOne(d => d.Answer).WithMany(p => p.AnswerParticipants)
                 .HasForeignKey(d => d.AnswerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AnswerParticipants_AnswerQuestion");
 
             entity.HasOne(d => d.Participant).WithMany(p => p.AnswerParticipants)
@@ -124,6 +135,43 @@ public partial class Sep490G17DbContext : DbContext
                 .HasConstraintName("FK_AnswerSurvey_WorkShopSurveyQuestion");
         });
 
+        modelBuilder.Entity<Assign>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.WorkshopSeriesId, e.UserSystemId });
+
+            entity.ToTable("Assign");
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+            entity.HasOne(d => d.UserSystem).WithMany(p => p.Assigns)
+                .HasForeignKey(d => d.UserSystemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assign_SystemUser");
+
+            entity.HasOne(d => d.WorkshopSeries).WithMany(p => p.Assigns)
+                .HasForeignKey(d => d.WorkshopSeriesId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Assign_WorkshopSeries");
+        });
+
+        modelBuilder.Entity<ChartImage>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
+
+            entity.Property(e => e.Descriptions).HasColumnType("text");
+            entity.Property(e => e.Title).HasColumnType("text");
+
+            entity.HasOne(d => d.Image).WithMany(p => p.ChartImages)
+                .HasForeignKey(d => d.ImageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChartImages_Image");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.ChartImages)
+                .HasForeignKey(d => d.WorkshopId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChartImages_Workshop");
+        });
+
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Departme__3213E83F5A2C4CA4");
@@ -146,6 +194,10 @@ public partial class Sep490G17DbContext : DbContext
         modelBuilder.Entity<ParticiPantScore>(entity =>
         {
             entity.HasKey(e => new { e.TestId, e.ParticipantId });
+
+            entity.Property(e => e.SubmissionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("submission_time");
 
             entity.HasOne(d => d.Participant).WithMany(p => p.ParticiPantScores)
                 .HasForeignKey(d => d.ParticipantId)

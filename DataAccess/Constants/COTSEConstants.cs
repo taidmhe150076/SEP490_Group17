@@ -13,6 +13,9 @@ namespace DataAccess.Constants
         public const int STATUS_PENDING = 2;
         public const int STATUS_ACCEPT = 3;
         public const string CORRECT_ANSWER = "1";
+        public const int TEST_PRE = 1;
+        public const int TEST_POST = 2;
+        public const int RESEARCHER_ROLE = 3;
 
 
         // survey
@@ -23,5 +26,12 @@ namespace DataAccess.Constants
         public const int DB_STATUS_FAIL = -1;
         public const int DB_STATUS_SUCCESS = 1;
         public const int DB_STATUS_EXIST = 999;
+
+        // Role
+        public const string ROLE_RESEARCHER = "Researcher";
+        public const string ROLE_ORGANIZER = "Organizer";
+        public const string ROLE_ADMIN = "Admin";
+        public const string ROLE_STAFF = "Staff";
+
     }
 }

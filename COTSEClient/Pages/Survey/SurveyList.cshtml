@@ -3,120 +3,51 @@
 @{
     Layout = "_Layout";
 }
-
+@section Title {
+    Survey List
+}
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 
-<div class="container">
-    <h1>All workshop series</h1>
-    <!-- later add search and filter-->
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Workshop Series</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var wss in Model.list_data)
-            {
-                <tr id="wss_@wss.Id">
-                    <td colspan="2">
-                        <table class="table ms-1 table-borderless">
-                            <thead>
-                                <tr>
-                                    <th>@wss.WorkshopSeriesName</th>
-                                    <th> Date</th>
-                                    <th> Presenter</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var ws in wss.workshops)
-                                {
-                                    <tr id="ws_@ws.Id" onclick="callMe('ws_@ws.Id')">
-                                        <td>@ws.WorkshopName</td>
-                                        <td>@ws.DatePresent?.ToString("dd/MM/yyyy")</td>
-                                        <td>@ws.KeyPresenter</td>
-                                    </tr>
-                                    <tr id="survey_ws_@ws.Id" class="d-none">
-                                        @if (ws.Survey == null || ws.Survey.Count == 0)
-                                        {
-                                            <td colspan="2">
-                                                <strong>
-                                                    workshop has no survey
-                                                </strong>
-                                            </td>
-                                            <td>
-                                                <form method="get" asp-page="AddSurveyToWorkshop" id="form_@ws.Id">
-                                                    @Html.AntiForgeryToken()
-                                                    @Html.Hidden("wssId", wss.Id)
-                                                    @Html.Hidden("wsId", ws.Id)
-                                                    <button onclick="()=>{$('#form_@ws.Id').submit()" class="btn btn-primary"> Add Survey</button>
-                                                </form>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td colspan="3">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-                                                <table class="table ps-5 ms-2">
-                                                    <thead>
-                                                        <tr>
-                                                            <th><h3>Survey</h3></th>
-                                                            <th></th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><strong>Add new Survey</strong></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <form method="get" asp-page="AddSurveyToWorkshop" id="form_@ws.Id">
-                                                                    @Html.AntiForgeryToken()
-                                                                    @Html.Hidden("wssId", wss.Id)
-                                                                    @Html.Hidden("wsId", ws.Id)
-                                                                    <button onclick="()=>{$('#form_@ws.Id').submit()" class="btn btn-primary"> Add Survey</button>
-                                                                </form>
-                                                            </td>
-                                                        </tr>
-                                                        @foreach (var survey in ws.Survey)
-                                                        {
-                                                            <tr>
-                                                                <td>
-                                                                    @survey.survey_name
-                                                                </td>
-                                                                <td>
-                                                                </td>
-                                                                <td>
-                                                                    <a asp-page="SurveyByWorkshop" asp-route-wssId="@wss.Id" asp-route-wsId="@ws.Id" asp-route-survey_id="@survey.Id" class="btn btn-primary">View</a>
+<!-- Bootstrap Bundle with Popper.js (includes Modal functionality) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-                                                                    <a class="btn btn-danger"> Delete Survey</a>
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<link href="~/css/style.css" rel="stylesheet" />
+<style>
+    .custom-spinner {
+        width: 20rem;
+        height: 20rem;
+    }
+</style>
+<div class="container" id="app-content">
 </div>
 
+<!-- Modal -->
+<div class="modal fade" data-bs-backdrop='static' id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content align-items-center justify-content-center shadow-none border-0 bg-transparent">
+            <div class="spinner-border text-primary custom-spinner" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- path -->
 <script>
-    var callMe = (id) => {
-        let name = "#survey_" + id;
-        console.log(name)
-        if ($(name).hasClass("d-none")) {
-            $(name).removeClass("d-none")
-        } else {
-            $(name).addClass("d-none")
-        }
-    }
+    var url_list = '@Url.Page("/Survey/SurveyList", "List")'
+    var url_add = '@Url.Page("AddSurveyToWorkshop")'
+    var url_update = '@Url.Page("UpdateSurvey")'
+    var url_single = '@Url.Page("SurveyDetails")'
+    var url_delete = '@Url.Page("/Survey/SurveyList", "DeleteSurvey")';
+    const token = '@Html.AntiForgeryToken()';
 </script>
+
+<script src="~/js/Survey/list.js"></script>

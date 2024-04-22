@@ -11,6 +11,8 @@ public partial class ParticiPantScore
 
     public double Score { get; set; }
 
+    public DateTime? SubmissionTime { get; set; }
+
     public virtual ParticipantAnswer Participant { get; set; } = null!;
 
     public virtual Test Test { get; set; } = null!;

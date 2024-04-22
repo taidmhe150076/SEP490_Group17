@@ -14,6 +14,7 @@ namespace DataAccess.Constants
         public const string ERR_LOAD_FILE = "file '{file_type}' is not supported!";
         public const string ERR_FILES_LOAD = "load files invalid!!";
         public const string ERR_ILLEGAL_CALL = "illigal call!";
+        public const string ERR_FORM_URL_PROVIDE = "you have not provide the form submit";
         // uncommon
         public const string ERR_1 = "";
         public const string ERR_FILE_NAME = "file '{file_name}' is not in the right format";
@@ -34,5 +35,7 @@ namespace DataAccess.Constants
 
         //db connection
         public const string ERR_SURVEY_CONNECTION = "service not reach";
+
+        public const string ERR_UPDATE_SURVEY_FAIL = "Update Survey Fail!";
     }
 }

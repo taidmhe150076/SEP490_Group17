@@ -1,5 +1,5 @@
-﻿@page "/Surveys/series-{wssId:int}/workshop-{wsId:int}/survey-{survey_id:int}/"
-@model COTSEClient.Pages.Survey.SurveyByWorkshopModel
+﻿@page "/Surveys/Details"
+@model COTSEClient.Pages.Survey.SurveyDetailsModel
 @{
     Layout = "_Layout";
 }
@@ -34,7 +34,7 @@
         {
             <h1>Something when wrong reload the page</h1>
 
-            <a asp-page="SurveyByWorkshop" asp-route-wssId="@Model.wssId" asp-route-wsId="@Model.wsId" asp-route-survey_id="@Model.survey_id" class="btn btn-outline-secondary">Reload</a>
+            <a asp-page="SurveyByWorkshop" asp-route-wssId="@Model.wssId" asp-route-wsId="@Model.wsId" asp-route-survey_id="@Model.surveyId" class="btn btn-outline-secondary">Reload</a>
         }
         @if (Model.state_display)
         {
@@ -94,12 +94,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var result in Model.feedbackResults)
-                            {
-                                <tr>
-                                    <td>@result.Question</td>
-                                    <td>@result.getResult()</td>
-                                </tr>
+                            @if (Model.feedbackResults != null)
+                                            {
+                                @foreach (var result in Model.feedbackResults)
+                                {
+                                    <tr>
+                                        <td>@result.Question</td>
+                                        <td>@result.getResult()</td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>

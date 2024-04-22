@@ -41,5 +41,34 @@ namespace BusinessLogic.Repository
                 throw;
             }
         }
+
+        public void DeleteQuestion(int id)
+        {          
+            try
+            {
+                var answerPaticipant = _context.AnswerParticipants.Where(x => x.QuestionId == id);
+                _context.AnswerParticipants.RemoveRange(answerPaticipant);
+                _context.SaveChanges();
+
+                var answerQuestion = _context.AnswerQuestions.Where(x => x.QuestionId == id);
+                _context.AnswerQuestions.RemoveRange(answerQuestion);
+                _context.SaveChanges();
+              
+                var workshopQuestion = _context.WorkshopQuestions.Find(id);
+                if (workshopQuestion != null)
+                {
+                    _context.WorkshopQuestions.Remove(workshopQuestion);
+
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception ex) 
+            { 
+                throw new Exception(ex.Message);
+            }
+            
+        }
+
+        
     }
 }

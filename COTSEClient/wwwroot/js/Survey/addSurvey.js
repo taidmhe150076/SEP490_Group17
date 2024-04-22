@@ -18,20 +18,25 @@
         console.log(fileValue)
         if (fileValue.length > 0) {
             $("#url_checked").prop("disabled", true)
-            $("#submit").prop("disabled", false)
         } else if (fileValue.length === 0) {
             $("#url_checked").prop("disabled", false)
-            $("#submit").prop("disabled", true)
         }
     })
     $("#url").on("input", () => {
-        let urlValue = $("#url").val().trim();
-        console.log(urlValue)
+        let urlValue = $("#url").val().trim()
         if (urlValue.length > 0) {
             $("#url_checked").prop("disabled", true)
-            $("#submit").prop("disabled", false)
         } else if (urlValue.length === 0) {
             $("#url_checked").prop("disabled", false)
+        }
+    })
+
+    $("#formUrl").on("input", () => {
+        let form_url = $("#formUrl").val().trim()
+        console.log(form_url)
+        if (form_url.length > 0) {
+            $("#submit").prop("disabled", false)
+        } else {
             $("#submit").prop("disabled", true)
         }
     })

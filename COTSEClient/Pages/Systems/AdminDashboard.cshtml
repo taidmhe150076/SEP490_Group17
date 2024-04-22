@@ -24,7 +24,9 @@
 
         .chart-container {
             margin-top: 20px;
+
             text-align: center; /* Canh giữa biểu đồ */
+
         }
     </style>
 </head>
@@ -34,7 +36,9 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
+
                         <h5 class="card-title">Tổng số người dùng: @Model.TotalUsers</h5>
+
                     </div>
                 </div>
             </div>
@@ -74,7 +78,6 @@
 
             var ctx = document.getElementById('workshopsChart').getContext('2d');
             var workshopsChart;
-
             function updateChart() {
                 var selectedYear = document.getElementById('yearSelect').value;
                 fetch('/DashBoard?handler=ChartData&year=' + selectedYear)
@@ -85,7 +88,6 @@
                         workshopsChart.update();
                     });
             }
-
             fetch('/DashBoard?handler=ChartData&year=' + new Date().getFullYear())
                 .then(response => response.json())
                 .then(data => {
@@ -113,6 +115,5 @@
                     });
                 });
         </script>
-    }
 </body>
 </html>

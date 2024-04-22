@@ -1,38 +1,38 @@
 using BusinessLogic.IRepository;
-using DataAccess.Common;
+using DataAccess.Constants;
 using DataAccess.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Survey
 {
-    public class SurveyByWorkshopModel : PageModel
+    [Authorize(Roles = COTSEConstants.ROLE_RESEARCHER + "," + COTSEConstants.ROLE_ORGANIZER)]
+    public class SurveyDetailsModel : PageModel
     {
+
         private readonly IRepositorySurvey _repo;
 
-        public SurveyByWorkshopModel(IRepositorySurvey repo)
+        public SurveyDetailsModel(IRepositorySurvey repo)
         {
             _repo = repo;
         }
-
         // Define properties for binding
         [BindProperty(SupportsGet = true)]
         public int wssId { get; set; }
         [BindProperty(SupportsGet = true)]
         public int wsId { get; set; }
         [BindProperty(SupportsGet = true)]
-        public int survey_id { get; set; }
-
+        public int surveyId { get; set; }
 
 
         [BindProperty]
-        public SurveyDTO surveyInfo { get; set; } = null!;
+        public SurveyDTO surveyInfo { get; set; } = new SurveyDTO();
         [BindProperty]
-        public List<FeedbackResult> feedbackResults { get; set; } = null!;
+        public List<FeedbackResult> feedbackResults { get; set; }
 
         [BindProperty]
-        public Dictionary<string, int> feedbackCount { get; set; } = null!;
+        public Dictionary<string, int> feedbackCount { get; set; }
 
         [BindProperty]
         public List<CommonQA> dataList { get; set; } = null!;
@@ -44,9 +44,9 @@ namespace COTSEClient.Pages.Survey
         {
             try
             {
-                surveyInfo = await _repo.getSurey(survey_id);
-                feedbackResults = await _repo.getSurveySentimentResult(survey_id);
-                dataList = await _repo.getOtherData(survey_id);
+                surveyInfo = await _repo.getSurey(surveyId);
+                feedbackResults = await _repo.getSurveySentimentResult(surveyId);
+                dataList = await _repo.getOtherData(surveyId);
                 feedbackCount = await _repo.CountFeedback(feedbackResults);
                 state_display = true;
                 return Page();
@@ -58,8 +58,6 @@ namespace COTSEClient.Pages.Survey
             }
 
         }
-
-
 
     }
 }

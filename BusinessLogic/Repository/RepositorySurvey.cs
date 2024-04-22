@@ -15,10 +15,12 @@ using OfficeOpenXml;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
+using static Community.CsharpSqlite.Sqlite3;
 using static IronPython.Modules._ast;
 
 namespace BusinessLogic.Repository
 {
+
     public class RepositorySurvey : IRepositorySurvey
     {
         // Repo constant
@@ -35,24 +37,76 @@ namespace BusinessLogic.Repository
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
-        /// <summary>
-        /// CRUD survey
-        /// </summary>
-        public List<SurveyDTO> getListSurvey(int wss_id, int ws_id)
+        public WorkshopInfoDTO getCurrentWorkshopInformation(int wssId, int wsId, int surveyId)
         {
-            var survey_list = _context.WorkshopSurveyUrls
-                .Where(survey => survey.WorkshopSeriesId == wss_id && survey.WorkshopId == ws_id)
-                .Select(survey => new SurveyDTO
+
+            var selected_ws = _context.WorkshopSeries
+            .Include(series => series.Workshops)
+            .ThenInclude(ws => ws.UrlForms)
+            .ThenInclude(form => form.WorkshopSurveyUrlNavigation)
+            .Where(series => series.Id == wssId)
+            .SelectMany(series => series.Workshops, (series, ws) => new { series, ws })
+            .Where(join => join.ws.Id == wsId)
+            .SelectMany(join => join.ws.UrlForms, (join, form) => new WorkshopInfoDTO
+            {
+                wssId = join.series.Id,
+                wsId = join.ws.Id,
+                SeriesName = join.series.WorkshopSeriesName,
+                WorkshopName = join.ws.WorkshopName,
+                FormUrl = form.UrlForm1,
+                isPresenter = form.IsPresenter,
+                survey_id = form.WorkshopSurveyUrl,
+                url = form.WorkshopSurveyUrlNavigation.Url ?? form.WorkshopSurveyUrlNavigation.FileByte,
+                fileType = form.WorkshopSurveyUrlNavigation.FileType,
+                surveyName = form.WorkshopSurveyUrlNavigation.SurveyName
+            })
+
+            .Where(dto => dto.survey_id == surveyId)
+            .SingleOrDefault(); // Execute the query and get the single result
+            if (selected_ws != null)
+            {
+                return selected_ws;
+            }
+            else
+            {
+                throw new Exception("cant find ws");
+            }
+        }
+
+        public async Task<bool> deleteSurvey(int wssId, int wsId, int surveyId)
+        {
+            try
+            {
+                var exist = await _context.Workshops.Include(context => context.WorkshopSeries).SingleOrDefaultAsync(ws => ws.Id == wsId && ws.WorkshopSeries.Id == wssId);
+                if (exist == null)
                 {
-                    Id = survey.Id,
-                    wssId = wss_id,
-                    wsId = wss_id,
-                    survey_name = survey.SurveyName,
-                    survey_url = survey.Url != null ? survey.Url : survey.FileByte,
-                    added_date = survey.AddedDate
-                })
-                .ToList();
-            return survey_list;
+                    throw new NullReferenceException();
+                }
+                else
+                {
+                    var url = await _context.UrlForms.SingleOrDefaultAsync(form => form.WorkshopSurveyUrl == surveyId);
+                    var survey = await _context.WorkshopSurveyUrls.SingleOrDefaultAsync(survey => survey.Id == surveyId);
+                    if (url == null || survey == null)
+                    {
+                        throw new Exception();
+                    }
+                    _context.UrlForms.Remove(url);
+                    _context.WorkshopSurveyUrls.Remove(survey);
+                    var state = await _context.SaveChangesAsync();
+                    if (state > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
         }
 
         // add survey with file
@@ -61,12 +115,10 @@ namespace BusinessLogic.Repository
 
             string extension = Path.GetExtension(ws_info.url);
             string fileByte = getFileByte(ws_info.url);
-            var ws_exist = await _context.WorkshopSeries
-                .Join(_context.Workshops, wss => wss.Id, ws => ws.WorkshopSeriesId, (wss, ws) => new
-                {
-                    series_id = wss.Id,
-                    workshop_id = ws.Id,
-                }).SingleOrDefaultAsync(value => value.series_id == ws_info.wssId && value.workshop_id == ws_info.wsId);
+
+            var ws_exist = await _context.Workshops
+                .Include(context => context.WorkshopSeries)
+                .SingleOrDefaultAsync(ws => ws.Id == ws_info.wsId && ws.WorkshopSeries.Id == ws_info.wssId);
             if (ws_exist == null)
             {
                 throw new NullReferenceException();
@@ -111,11 +163,9 @@ namespace BusinessLogic.Repository
                 }
                 WorkshopSurveyUrl new_survey = new WorkshopSurveyUrl
                 {
-                    WorkshopSeriesId = ws_info.wssId,
-                    WorkshopId = ws_info.wsId,
                     FileByte = fileByte,
                     FileType = extension,
-                    AddedDate = DateTime.Now,
+                    AddedDate = System.DateTime.Now,
                     SurveyName = name,
                 };
                 // check if survey name is exist in database
@@ -135,6 +185,19 @@ namespace BusinessLogic.Repository
                 //    throw new Exception();
                 //}
                 await _context.WorkshopSurveyUrls.AddAsync(new_survey);
+
+                var addedEntity = _context.Entry(new_survey).Entity;
+
+                var urlForm = new UrlForm
+                {
+                    WorkshopId = (int)ws_info.wsId,
+                    IsPresenter = ws_info.isPresenter,
+                    Workshop = ws_exist,
+                    WorkshopSurveyUrlNavigation = addedEntity,
+                    UrlForm1 = ws_info.FormUrl,
+                };
+                await _context.UrlForms.AddAsync(urlForm);
+
                 var state = await _context.SaveChangesAsync();
                 if (state == 0)
                 {
@@ -160,57 +223,54 @@ namespace BusinessLogic.Repository
             throw new NotImplementedException("not support google sheet yet!");
         }
 
-        public async Task<string> getWorkshopData(int wssId, int wsId, string key)
+        public async Task<int> createNewSurvey(WorkshopInfoDTO ws_info)
         {
-
             try
             {
-                int state = -1;
-                WorkshopSurveyUrl? current_ws = null;
-                var data = await _context.WorkshopSurveyUrls.Where(survey => survey.WorkshopId == wsId && survey.WorkshopSeriesId == wssId).ToListAsync();
-                if (data.Any(survey => survey.Url == key))
+                var workshop = await _context.Workshops
+                    .Include(context => context.WorkshopSeries)
+                    .SingleOrDefaultAsync(ws => ws.Id == ws_info.wsId && ws.WorkshopSeries.Id == ws_info.wssId);
+                if (workshop == null)
                 {
-                    current_ws = data.SingleOrDefault(survey => survey.Url == key);
-                    state = COTSEConstants.MODE_ADD_URL;
+                    throw new NullReferenceException();
                 }
                 else
                 {
-                    current_ws = data.SingleOrDefault(survey => survey.FileByte == key);
-                    state = COTSEConstants.MODE_ADD_FILE;
-                }
-                if (state == -1)
-                {
-                    throw new Exception();
-                }
-                else if (state == COTSEConstants.MODE_ADD_URL)
-                {
-                    throw new Exception("not support yet");
-                }
-                else if (state == COTSEConstants.MODE_ADD_FILE)
-                {
-                    string fileByte = current_ws?.FileByte;
-                    string? name = current_ws.SurveyName;
-                    if (name == null)
+                    var survey = new WorkshopSurveyUrl
                     {
-                        name = "";
+                        AddedDate = System.DateTime.Now,
+                    };
+
+                    await _context.WorkshopSurveyUrls.AddAsync(survey);
+                    await _context.SaveChangesAsync();
+                    var addedEntity = _context.Entry(survey).Entity;
+
+                    var urlForm = new UrlForm
+                    {
+                        WorkshopId = (int)ws_info.wsId,
+                        IsPresenter = ws_info.isPresenter,
+                        Workshop = workshop,
+                        WorkshopSurveyUrlNavigation = addedEntity,
+                        UrlForm1 = ws_info.FormUrl,
+                    };
+                    await _context.UrlForms.AddAsync(urlForm);
+                    var state = await _context.SaveChangesAsync();
+                    if (state == 0)
+                    {
+                        throw new FormatException();
                     }
-                    string tmp_name = $"{name}.{current_ws.FileType}";
-                    throw new Exception();
+                    else
+                    {
+                        return state;
+                    }
                 }
-                else
-                {
-
-                    throw new Exception();
-                }
-
 
             }
-            catch (Exception)
+            catch
             {
                 throw new Exception();
             }
         }
-
         // get workshop information
         public WorkshopInfoDTO getWorkshopInformation(int wss_id, int ws_id)
         {
@@ -235,56 +295,7 @@ namespace BusinessLogic.Repository
             }
         }
 
-        //get survey in workshop series
-        public async Task<List<WorkshopSeriesWorkshopDTO>> seriesSurvey()
-        {
-            var allSeries = await _context.WorkshopSeries.Select(wss => new WorkshopSeriesWorkshopDTO
-            {
-                Id = wss.Id,
-                WorkshopSeriesName = wss.WorkshopSeriesName,
-                StartDate = wss.StartDate
-            }).Distinct().ToListAsync();
 
-            foreach (var series in allSeries)
-            {
-                var allWorkshops = await _context.Workshops.Where(ws => ws.WorkshopSeriesId == series.Id)
-                    .Select(wsDTO => new WorkshopDTO
-                    {
-                        Id = wsDTO.Id,
-                        DatePresent = wsDTO.DatePresent,
-                        WorkshopName = wsDTO.WorkshopName,
-                        KeyPresenter = wsDTO.KeyPresenter != null ? wsDTO.KeyPresenter.Replace(wsDTO.KeyPresenter, new string('*', wsDTO.KeyPresenter.Count())) : "",
-                    })
-                    .ToListAsync();
-                foreach (var workshop in allWorkshops)
-                {
-                    var allSurveys = await _context.WorkshopSurveyUrls
-                        .Where(survey => survey.WorkshopId == workshop.Id && survey.WorkshopSeriesId == series.Id)
-                        .Select(data => new SurveyDTO
-                        {
-                            Id = data.Id,
-                            added_date = data.AddedDate,
-                            survey_name = data.SurveyName
-                        })
-                        .ToListAsync();
-                    workshop.Survey = allSurveys;
-                }
-                series.workshops = allWorkshops;
-            }
-
-            return allSeries;
-        }
-
-        // get single survey by workshop name
-        public WorkshopSurveyUrl getSurveyByWorkshop(string workshop_series_id, string workshop_id)
-        {
-            var survey = _context.WorkshopSurveyUrls.SingleOrDefault(s => s.WorkshopSeriesId == int.Parse(workshop_series_id) && s.WorkshopId == int.Parse(workshop_id));
-            if (survey == null)
-            {
-                throw new Exception(SurveyErrorMessage.ERR_WS_URL);
-            }
-            return survey;
-        }
 
         public async Task<SurveyDTO> getSurey(int surveyId)
         {
@@ -300,7 +311,7 @@ namespace BusinessLogic.Repository
                     .SingleOrDefaultAsync(survey => survey.Id == surveyId);
                 if (survey == null)
                 {
-                    throw new NullReferenceException();
+                    throw new Exception("Survey Not Have Data");
                 }
                 else
                 {
@@ -313,6 +324,9 @@ namespace BusinessLogic.Repository
                 throw new Exception();
             }
         }
+
+
+
 
         /// <summary>
         /// get survey display content
@@ -338,7 +352,7 @@ namespace BusinessLogic.Repository
             }
             catch (Exception)
             {
-                throw new Exception();
+                throw new Exception("Survey has not been imported yet");
             }
         }
 
@@ -464,7 +478,7 @@ namespace BusinessLogic.Repository
             }
             catch (Exception)
             {
-                throw new Exception();
+                throw new Exception("survey has not been imported yet");
             }
             finally
             {
@@ -472,12 +486,70 @@ namespace BusinessLogic.Repository
             }
         }
 
+        public async Task<List<WorkshopSurveyDTO>> surveyList(List<DataAccess.Models.Assign> assignList)
+        {
+            List<WorkshopSurveyDTO> workshopSurveyDTOs = new List<WorkshopSurveyDTO>();
+            var workshopSeries = await _context.WorkshopSeries
+                .Include(wss => wss.Workshops)
+                    .ThenInclude(ws => ws.UrlForms)
+                        .ThenInclude(form => form.WorkshopSurveyUrlNavigation)
+                .Select(wss => new WorkshopSurveyDTO
+                {
+                    Id = wss.Id,
+                    StartDate = wss.StartDate,
+                    WorkshopSeriesName = wss.WorkshopSeriesName,
+                    workshops = wss.Workshops.Select(ws => new WorkshopDTO
+                    {
+                        Id = ws.Id,
+                        WorkshopSeriesId = wss.Id,
+                        DatePresent = ws.DatePresent,
+                        KeyPresenter = ws.KeyPresenter,
+                        WorkshopName = ws.WorkshopName,
+                        Survey = ws.UrlForms.Select(form => new SurveyDTO
+                        {
+                            Id = form.Id,
+                            survey_form = form.UrlForm1,
+                            isPresenter = form.IsPresenter == true ? SurveyConstant.IS_PRESENTER_FORM : SurveyConstant.IS_PATICIPANT_FORM,
+                            survey_name = form.WorkshopSurveyUrlNavigation.SurveyName ?? "unname survey",
+                            added_date = form.WorkshopSurveyUrlNavigation.AddedDate,
+                            survey_path = form.WorkshopSurveyUrlNavigation.Url != null ? "link" : (form.WorkshopSurveyUrlNavigation.FileByte != null ? "file" : null)
+                        }).ToList()
+                    }).ToList()
+                }).ToListAsync();
+            foreach (var item in assignList)
+            {
+                var checkExits = workshopSeries.FirstOrDefault(x => x.Id == item.WorkshopSeriesId);
+                if (checkExits != null)
+                {
+                    workshopSurveyDTOs.Add(checkExits);
+                }
+            }
+            return workshopSurveyDTOs;
+        }
 
 
+        public async Task<WorkshopSurveyUrl> findSurvey(int wssId, int wsId, int surveyId)
+        {
+            var survey = await _context.WorkshopSurveyUrls
+                .Include(survey => survey.UrlForms)
+                .ThenInclude(urlForm => urlForm.Workshop)
+                .ThenInclude(workshop => workshop.WorkshopSeries)
+                .Where(survey => survey.Id == surveyId &&
+                     survey.UrlForms.Any(urlForm => urlForm.WorkshopId == wsId && urlForm.Workshop.WorkshopSeries.Id == wssId))
+                .SingleOrDefaultAsync();
 
-
+            if (survey == null)
+            {
+                throw new NullReferenceException();
+            }
+            else
+            {
+                return survey;
+            }
+        }
         /// <summary>
-        ///  Support function
+        ///  Support 
+        ///  
         /// </summary>
         private async Task<string> GetJsonSentiment(List<string> sentiment_data_list)
         {
@@ -578,6 +650,12 @@ namespace BusinessLogic.Repository
         private string readFile(string file_byte, string file_name)
         {
             var fileByte = Convert.FromBase64String(file_byte);
+            string fileFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp");
+            // coutner feed
+            if (!Directory.Exists(fileFolder))
+            {
+                Directory.CreateDirectory(fileFolder);
+            }
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", $"{file_name}");
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
@@ -779,7 +857,7 @@ namespace BusinessLogic.Repository
                     if (_validator.common_question.IndexOf(data.Item1.ToLower()) == 0)
                     {
                         // time stamp
-                        DateTime time = DateTime.ParseExact(data.Item2, _validator.dateFormats, null);
+                        System.DateTime time = System.DateTime.ParseExact(data.Item2, _validator.dateFormats, null);
                         survey.timeStamp = time;
                     }
                     else if (_validator.common_question.IndexOf(data.Item1.ToLower()) == 1)
@@ -810,5 +888,118 @@ namespace BusinessLogic.Repository
             }
         }
 
+        public async Task<int> updateSurvey(WorkshopInfoDTO info, int mode)
+        {
+            try
+            {
+                var survey = await _context.WorkshopSurveyUrls.SingleOrDefaultAsync(survey => survey.Id == info.survey_id);
+                var urlForm = await _context.UrlForms.SingleOrDefaultAsync(url => url.WorkshopSurveyUrl == info.survey_id);
+                if (info == null || survey == null || urlForm == null)
+                {
+                    throw new NullReferenceException(SurveyErrorMessage.ERR_UPDATE_SURVEY_FAIL);
+                }
+                if (mode == COTSEConstants.MODE_ADD_FILE)
+                {
+                    if (survey.Url != null)
+                    {
+                        throw new NullReferenceException(SurveyErrorMessage.ERR_UPDATE_SURVEY_FAIL);
+                    }
+                    if (survey.Url == null)
+                    {
+                        string file_path = info.url;
+                        var file = readFileByte(file_path);
+                        survey.FileByte = file.Item1;
+                        survey.FileType = file.Item2;
+                        string survey_name = Path.GetFileNameWithoutExtension(file_path);
+                        if (survey.SurveyName == null)
+                        {
+                            survey.SurveyName = survey_name;
+                        }
+                        else if (!survey.SurveyName.Equals(survey_name))
+                        {
+                            survey.SurveyName = survey_name;
+                        }
+                    }
+                }
+                else if (mode == COTSEConstants.MODE_ADD_URL)
+                {
+                    if (survey.FileByte != null)
+                    {
+                        survey.FileByte = null;
+                        survey.FileType = null;
+                        survey.Url = info.url;
+                    }
+                    else
+                    {
+                        survey.Url = info.url;
+                    }
+                }
+
+                urlForm.UrlForm1 = info.FormUrl;
+                var state = await _context.SaveChangesAsync();
+                return state;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+
+        }
+
+
+        private (string, string) readFileByte(string file_path)
+        {
+            try
+            {
+                var extension = Path.GetExtension(file_path);
+                var name = Path.GetFileNameWithoutExtension(file_path);
+                int file_supported = _validator.getFileType(extension);
+                if (file_supported == COTSEConstants.CSV_INPUT)
+                {
+                    var file_data = ExtractCSVFile(file_path);
+                    if (file_data.Count == 0 || file_data == null)
+                    {
+                        throw new FormatException();
+                    }
+                }
+                else if (file_supported == COTSEConstants.EXCEL_INPUT)
+                {
+                    var file_data = ExtractExcelFile(file_path);
+                    if (file_data.Count == 0 || file_data == null)
+                    {
+                        throw new FormatException();
+                    }
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                string fileByte = getFileByte(file_path);
+                return (fileByte, extension);
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
+        public int GetWorkshopSurveyUrlIdOfParticipants(int wsId)
+        {
+            try
+            {
+                var findUrlForms = _context.UrlForms.FirstOrDefault(x => x.WorkshopId == wsId && x.IsPresenter == false);
+                if (findUrlForms == null)
+                {
+                    throw new Exception("Url form has not been imported yet");
+                }
+                return findUrlForms.WorkshopSurveyUrl;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
