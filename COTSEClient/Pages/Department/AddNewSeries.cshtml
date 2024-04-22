@@ -12,6 +12,19 @@
 </head>
 <body class="d-flex flex-column h-100 bg-light">
     <main class="flex-shrink-0">
+        <div class="container px-5 my-5">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Researcher Information</span></h1>
+                <div>
+                    <img style="width:200px;height:200px" id="avatarImage" src="data:image/png;base64,@Model.Researcher?.ImageUrl" class="avatar img-circle img-thumbnail" alt="avatar">
+                </div>
+                <div>
+                    <label class="col-lg-3 control-label">Họ: @Model.Researcher?.FirstName </label><br />
+                    <label class="col-lg-3 control-label">Tên: @Model.Researcher?.LastName</label><br />
+                    <label class="col-lg-3 control-label">Email: @Model.Researcher?.Email</label>
+                </div>
+            </div>
+        </div>
         <!-- Page Content-->
         <div class="container px-5 my-5">
             <div class="text-center mb-5">
@@ -22,6 +35,8 @@
                     <div class="mb-4">
                         <form asp-page-handler="AddNewSeries" method="post" id="importForm" enctype="multipart/form-data" class="d-flex align-items-center">
                             <input type="hidden" asp-for="@Model.SeriesWorkshopId" />
+                            <input type="hidden" asp-for="@Model.WorkshopSeries" />
+                            <input type="hidden" asp-for="@Model.Researcher" />
                             <span class="me-2 text-muted">Nhập dữ liệu để tạo hội thảo mới</span>
                             <label for="workshopFile" class="btn btn-primary px-4 py-3 ms-auto">
                                 <i class="bi bi-cloud-upload"></i>
@@ -44,7 +59,7 @@
                                             <th scope="col">Tiêu đề</th>
                                             <th scope="col">Số lượng ưa thích</th>
                                             <th scope="col">Trạng thái</th>
-                                            <th scope="col"></th> 
+                                            <th scope="col"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -84,7 +99,6 @@
             </div>
         </div>
     </main>
-
 
     <script>
         document.getElementById('workshopFile').addEventListener('change', function () {

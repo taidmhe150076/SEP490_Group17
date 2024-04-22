@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OfficeOpenXml;
 using System.ComponentModel;
+using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace COTSEClient.Pages.Department
@@ -21,16 +22,20 @@ namespace COTSEClient.Pages.Department
         public readonly IRepositoryWorkshopSeries _repositoryWorkshopsSeries;
         public readonly IRepositoryPresenter _repositoryPresenter;
         public readonly IRepositoryParticipants _repositoryParticipants;
+        public readonly IRepositoryAssign _repositoryAssign;
+        public readonly IRepositoryUser _repositoryUser;
         public string? urlRoom;
         public string? linkCF;
         public string? emailAdmin;
         public string? passwork;
-        public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryPresenter repositoryPresenter, IRepositoryParticipants repositoryParticipants, IConfiguration configuration)
+        public AddNewSeriesModel(IRepositoryWorkshops repositoryWorkshops, IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryPresenter repositoryPresenter, IRepositoryParticipants repositoryParticipants, IRepositoryAssign repositoryAssign, IRepositoryUser repositoryUser, IConfiguration configuration)
         {
             _repositoryWorkshops = repositoryWorkshops;
             _repositoryWorkshopsSeries = repositoryWorkshopSeries;
             _repositoryPresenter = repositoryPresenter;
             _repositoryParticipants = repositoryParticipants;
+            _repositoryAssign = repositoryAssign;
+            _repositoryUser = repositoryUser;
             _configuration = configuration;
             urlRoom = _configuration["ConfigWorkshop:URLRoom"];
             linkCF = _configuration["ConfigWorkshop:LinkCF"];
@@ -42,17 +47,25 @@ namespace COTSEClient.Pages.Department
         [BindProperty]
         public string NameSersies { get; set; }
         [BindProperty]
+        public WorkshopSeries WorkshopSeries { get; set; }
+        [BindProperty]
         public List<Workshop>? WorkShopList { get; set; }
         [BindProperty]
         public List<WorkshopDTO>? OrtherWorkShopList { get; set; }
         [BindProperty]
         public int? SeriesWorkshopId { get; set; }
+        [BindProperty]
+        public SystemUser? Researcher { get; set; }
+
         public void OnGet(int? seriesWorkshopId, int? idWorkshop, string? email, DateTime? date)
         {
             if (seriesWorkshopId != null)
             {
                 SeriesWorkshopId = seriesWorkshopId;
-                NameSersies = _context.WorkshopSeries.FirstOrDefault(x => x.Id == seriesWorkshopId).WorkshopSeriesName;
+                WorkshopSeries = _context.WorkshopSeries.FirstOrDefault(x => x.Id == seriesWorkshopId);
+                NameSersies = WorkshopSeries?.WorkshopSeriesName;
+                var researcherId = _repositoryAssign.GetResearchIdBySwsId((int)seriesWorkshopId);
+                Researcher = _repositoryUser.getUserById(researcherId);
             }
             if (idWorkshop != null && email != null && date != null)
             {
@@ -175,7 +188,6 @@ namespace COTSEClient.Pages.Department
                     var resultInsert = _repositoryParticipants.InsertRange(listParticipants);
                     if (resultInsert > 0)
                     {
-
                         // Get Toppic
                         List<string> listTopic = new List<string>();
                         var favoriteTopics = seriesWorkshopForm.Select(x => x.FavoriteTopics).ToList();
@@ -211,6 +223,36 @@ namespace COTSEClient.Pages.Department
                         if (resultCount > 0)
                         {
                             WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(SeriesWorkshopId).OrderByDescending(x => x.Index).ToList();
+
+                            WorkshopSeries = _context.WorkshopSeries.FirstOrDefault(x => x.Id == SeriesWorkshopId);
+                            var researcherId = _repositoryAssign.GetResearchIdBySwsId((int)SeriesWorkshopId);
+                            Researcher = _repositoryUser.getUserById(researcherId);
+
+                            StringBuilder workshopInfoBuilder = new StringBuilder();
+                            List<WorkshopInformation> workshopInformations = new List<WorkshopInformation>();
+                            foreach (var workshop in WorkShopList)
+                            {
+                                WorkshopInformation wsIf = new WorkshopInformation
+                                {
+                                    WorkshopName = workshop.WorkshopName,
+                                    WorkshopKey = workshop.KeyPresenter,
+                                };
+
+                                workshopInformations.Add(wsIf);
+                            }
+
+                            TemplateMailResearcher templateMailResearcher = new TemplateMailResearcher
+                            {
+                                WorkshopSeriesName = WorkshopSeries.WorkshopSeriesName,
+                                TimeStart = WorkshopSeries.StartDate.ToString(),
+                                WorkshopInformation = workshopInformations,
+                                UrlRoom = urlRoom,
+                                UrlDownLoadTool = "urlLinkDownLoad",
+                                UrlWebLogin = "urlLink Loggin"
+                            };
+                            var bodyMail = TeamplateMail.TeamplateMailResearch(templateMailResearcher);
+                            string subject = "Thư Mời Researcher";
+                            HelperMethods.SendMail(bodyMail, subject, emailAdmin, passwork, Researcher?.Email);
                             OrtherWorkShopList = new List<WorkshopDTO>();
                             foreach (var item in WorkShopList)
                             {
