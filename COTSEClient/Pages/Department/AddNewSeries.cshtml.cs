@@ -199,6 +199,7 @@ namespace COTSEClient.Pages.Department
                     var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
                     string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
                     HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, WorkShopUpdate.Email);
+                    Msg = "Update Prenter Success!!!";
                     return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWs.WorkshopSeriesId });
                 }
             }
