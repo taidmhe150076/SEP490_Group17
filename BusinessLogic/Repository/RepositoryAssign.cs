@@ -39,13 +39,13 @@ namespace BusinessLogic.Repository
 				var checkExits = _context.Assigns.FirstOrDefault(x => x.WorkshopSeriesId == id);
 				if (checkExits == null)
 				{
-					throw new Exception("WorkshopSeriesId Not Exits");
+					throw new Exception("Chuỗi workshop chưa có nhà nghiên cứu!!!");
 				}
 				return checkExits.UserSystemId;
             }
-			catch (Exception)
+			catch (Exception ex	)
 			{
-				throw;
+				throw ex;
 			}
         }
 

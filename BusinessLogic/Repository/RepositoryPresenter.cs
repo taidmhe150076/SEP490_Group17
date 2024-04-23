@@ -15,6 +15,24 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
+
+        public Presenter GetPresenterById(int id)
+        {
+            try
+            {
+                var findPresenter = _context.Presenters.FirstOrDefault(x => x.PresenterId == id);
+                if (findPresenter == null)
+                {
+                    throw new Exception("Presenter Not Found");
+                }
+                return findPresenter;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public int InsertPresenter(Presenter presenter)
         {
             try
@@ -22,9 +40,22 @@ namespace BusinessLogic.Repository
                 _context.Presenters.Add(presenter);
                 return _context.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
+            }
+        }
+
+        public int UpdatePresenter(Presenter presenter)
+        {
+            try
+            {
+                _context.Presenters.Update(presenter);
+                return _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

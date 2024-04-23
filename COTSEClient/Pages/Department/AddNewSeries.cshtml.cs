@@ -60,62 +60,98 @@ namespace COTSEClient.Pages.Department
         public int? SeriesWorkshopId { get; set; }
         [BindProperty]
         public SystemUser? Researcher { get; set; }
+        [BindProperty]
+        public WorkshopUpdateDTO? WorkShopUpdate { get; set; }
+        [BindProperty]
+        public string? Msg { get; set; }
 
         public void OnGet(int? seriesWorkshopId, int? idWorkshop, string? email, DateTime? date)
         {
-            if (seriesWorkshopId != null)
+            try
             {
-                SeriesWorkshopId = seriesWorkshopId;
-                WorkshopSeries = _context.WorkshopSeries.FirstOrDefault(x => x.Id == seriesWorkshopId);
-                NameSersies = WorkshopSeries?.WorkshopSeriesName;
-                var researcherId = _repositoryAssign.GetResearchIdBySwsId((int)seriesWorkshopId);
-                Researcher = _repositoryUser.getUserById(researcherId);
-            }
-            if (idWorkshop != null && email != null && date != null)
-            {
-                Presenter presenter = new Presenter
+                Msg = TempData["Msg"] as string;
+
+                if (seriesWorkshopId != null)
                 {
-                    PresenterEmail = email,
-                };
-                if (_repositoryPresenter.InsertPresenter(presenter) > 0)
+                    SeriesWorkshopId = seriesWorkshopId;
+                    WorkshopSeries = _context.WorkshopSeries.FirstOrDefault(x => x.Id == seriesWorkshopId);
+                    NameSersies = WorkshopSeries?.WorkshopSeriesName;
+                    var researcherId = _repositoryAssign.GetResearchIdBySwsId((int)seriesWorkshopId);
+                    Researcher = _repositoryUser.getUserById(researcherId);
+                }
+                if (idWorkshop != null && email != null && date != null)
                 {
-                    var findWs = _repositoryWorkshops.GetWorkshopByWorkshopId(idWorkshop);
-                    if (findWs != null)
+                    Presenter presenter = new Presenter
                     {
-                        findWs.DatePresent = date;
-                        findWs.StatusId = COTSEConstants.STATUS_PENDING;
-                        findWs.PresenterId = presenter.PresenterId;
-                        TeamplatePresenter teamplatePresenter = new TeamplatePresenter
+                        PresenterEmail = email,
+                    };
+                    if (_repositoryPresenter.InsertPresenter(presenter) > 0)
+                    {
+                        var findWs = _repositoryWorkshops.GetWorkshopByWorkshopId(idWorkshop);
+                        if (findWs != null)
                         {
-                            WorkshopName = findWs.WorkshopName,
-                            TimePresenter = findWs.DatePresent.ToString(),
-                            KeyPresent = findWs.KeyPresenter,
-                            UrlRoom = urlRoom,
-                            LinkCF = linkCF,
-                        };
-                        var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
-                        string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
-                        HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, email);
-                        _repositoryWorkshops.UpdateDatePresent(findWs);
+                            findWs.DatePresent = date;
+                            findWs.StatusId = COTSEConstants.STATUS_PENDING;
+                            findWs.PresenterId = presenter.PresenterId;
+                            TeamplatePresenter teamplatePresenter = new TeamplatePresenter
+                            {
+                                WorkshopName = findWs.WorkshopName,
+                                TimePresenter = findWs.DatePresent.ToString(),
+                                KeyPresent = findWs.KeyPresenter,
+                                UrlRoom = urlRoom,
+                                LinkCF = linkCF,
+                            };
+                            var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
+                            string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                            HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, email);
+                            _repositoryWorkshops.UpdateDatePresent(findWs);
+                        }
+                    }
+                }
+                //SeriesWorkshopId = 2;
+                if (seriesWorkshopId > 0)
+                {
+                    WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(seriesWorkshopId);
+                    OrtherWorkShopList = new List<WorkshopDTO>();
+                    foreach (var item in WorkShopList)
+                    {
+                        WorkshopDTO workshop = new WorkshopDTO();
+                        OrtherWorkShopList.Add(workshop);
                     }
                 }
             }
-            //SeriesWorkshopId = 2;
-            if (seriesWorkshopId > 0)
+            catch (Exception ex)
             {
-                WorkShopList = _repositoryWorkshops.GetWorkshopBySeriesWorkshopId(seriesWorkshopId);
-                OrtherWorkShopList = new List<WorkshopDTO>();
-                foreach (var item in WorkShopList)
-                {
-                    WorkshopDTO workshop = new WorkshopDTO();
-                    OrtherWorkShopList.Add(workshop);
-                }
+                Msg = ex.Message;
             }
-            
         }
         
         public IActionResult OnGetAsigntPresenter(int? id)
         {
+            if (WorkShopUpdate != null)
+            {
+                var findWs = _repositoryWorkshops.GetWorkshopByWorkshopId(WorkShopUpdate.Id);
+                var findPresenter = _repositoryPresenter.GetPresenterById((int)findWs.PresenterId);
+                findPresenter.PresenterEmail = WorkShopUpdate.Email;
+                findWs.DatePresent = WorkShopUpdate.DatePresent;
+                var resultUpdateDate = _repositoryWorkshops.UpdateDatePresent(findWs);
+                var resultUpdatePresenter = _repositoryPresenter.UpdatePresenter(findPresenter);
+                if (resultUpdatePresenter > 0)
+                {
+                    TeamplatePresenter teamplatePresenter = new TeamplatePresenter
+                    {
+                        WorkshopName = findWs.WorkshopName,
+                        TimePresenter = findWs.DatePresent.ToString(),
+                        KeyPresent = findWs.KeyPresenter,
+                        UrlRoom = urlRoom,
+                        LinkCF = linkCF,
+                    };
+                    var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
+                    string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                    HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, WorkShopUpdate.Email);
+                    return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWs.WorkshopSeriesId });
+                }
+            }
             if (OrtherWorkShopList.Count() > 0 && id > 0)
             {
                 var findWsOrthher = OrtherWorkShopList.FirstOrDefault(x => x.Id == id);
@@ -138,7 +174,35 @@ namespace COTSEClient.Pages.Department
                 }
                 return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWsOrthher.WorkshopSeriesId});
             }
-            return BadRequest();
+            return RedirectToPage("AddNewSeries", new { seriesWorkshopId = SeriesWorkshopId });
+        }
+        public IActionResult OnPostAsigntPresenter()
+        {
+            if (WorkShopUpdate != null)
+            {
+                var findWs = _repositoryWorkshops.GetWorkshopByWorkshopId(WorkShopUpdate.Id);
+                var findPresenter = _repositoryPresenter.GetPresenterById((int)findWs.PresenterId);
+                findPresenter.PresenterEmail = WorkShopUpdate.Email;
+                findWs.DatePresent = WorkShopUpdate.DatePresent;
+                var resultUpdateDate = _repositoryWorkshops.UpdateDatePresent(findWs);
+                var resultUpdatePresenter = _repositoryPresenter.UpdatePresenter(findPresenter);
+                if (resultUpdatePresenter > 0)
+                {
+                    TeamplatePresenter teamplatePresenter = new TeamplatePresenter
+                    {
+                        WorkshopName = findWs.WorkshopName,
+                        TimePresenter = findWs.DatePresent.ToString(),
+                        KeyPresent = findWs.KeyPresenter,
+                        UrlRoom = urlRoom,
+                        LinkCF = linkCF,
+                    };
+                    var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
+                    string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                    HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, WorkShopUpdate.Email);
+                    return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWs.WorkshopSeriesId });
+                }
+            }
+            return Page();
         }
 
         public IActionResult OnPostAddNewSeries()
