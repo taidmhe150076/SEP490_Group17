@@ -44,6 +44,14 @@
         .eye-icon {
             cursor: pointer;
         }
+
+        .modal-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
     </style>
 </head>
 <body>
@@ -109,11 +117,11 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">TestName</th>
-                        <th scope="col">TestType</th>
-                        <th scope="col">WorkshopName</th>
-                        <th scope="col">DateStart</th>
-                        <th scope="col">ExpiredTime</th>
+                        <th scope="col">Tên bài Quiz</th>
+                        <th scope="col">Kiểu bài Quiz</th>
+                        <th scope="col">Tên hội thảo</th>
+                        <th scope="col">Thời gian bắt đầu</th>
+                        <th scope="col">Thời gian kết thúc</th>
                         <th scope="col">QR</th>
                         <th>Tùy chọn</th>
                     </tr>
@@ -136,12 +144,10 @@
 
                             </td>
                             <td>
-                                <a asp-page="ListParticiPantScores" asp-route-testId="@item.Id">View Score Details</a>
-                            </td>
-                            <td>
+                                <a class="btn btn-info" asp-page="ListParticiPantScores" asp-route-testId="@item.Id">Xem điểm số</a>
                                 <form id="deleteForm" method="post" asp-page-handler="DeleteTest" onsubmit="return confirm('Bạn có muốn xóa bài kiểm tra này?');">
                                     <input type="hidden" id="testId" name="testId" value="@item.Id" />
-                                    <button type="submit">Xóa</button>
+                                    <button type="submit" class="btn btn-danger">Xóa</button>
                                    @*  @if (TempData["SuccessMessage"] != null)
                                     {
                                         <div class="alert alert-success">
@@ -170,12 +176,14 @@
                     <h5 class="modal-title" id="exampleModalLabel">Mã bài kiểm tra</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
+                    <!-- Thêm class text-center vào div modal-body -->
                     <img id="popupQRCodeImage" src="#" alt="QR Code" style="max-width: 100%; height: auto;">
                 </div>
             </div>
         </div>
     </div>
+
     <script>
         function showQRPopup(itemId) {
             console.log(itemId + 'alo');
