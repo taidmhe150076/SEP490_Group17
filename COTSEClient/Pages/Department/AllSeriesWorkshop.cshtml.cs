@@ -18,24 +18,24 @@ namespace COTSEClient.Pages.Department
         private readonly IRepositoryAssign _repositoryAssign;
 
         [BindProperty(SupportsGet = true)]
-        public string SearchInput { get; set; }
+        public string? SearchInput { get; set; }
         [BindProperty(SupportsGet = true)]
         public DateTime? CurentDate { get; set; }
 
         [BindProperty]
-        public  IFormFile imageFile { get;set; }
+        public  IFormFile? imageFile { get;set; }
 
         [BindProperty]
-        public WorkshopSeries WorkshopSeries { get; set; }
+        public WorkshopSeries? WorkshopSeries { get; set; }
   
-        public PageList<WorkshopSeries> WorkshopSeriesPage { get; set; }
+        public PageList<WorkshopSeries>? WorkshopSeriesPage { get; set; }
 
         [BindProperty]
-        public int ResearchAssignId { get; set; }
+        public int? ResearchAssignId { get; set; }
         [BindProperty]
-        public string Msg { get; set; }
+        public string? Msg { get; set; }
         [BindProperty]
-        public List<SystemUser> SystemUsers { get; set; }
+        public List<SystemUser>? SystemUsers { get; set; }
 
         public AllSeriesWorkshopModel(IRepositoryWorkshopSeries repositoryWorkshopSeries, IRepositoryUser repositoryUser, IRepositoryAssign repositoryAssign)
         {
@@ -100,7 +100,7 @@ namespace COTSEClient.Pages.Department
                 {
                     Assign newAssign = new Assign
                     {
-                        UserSystemId = ResearchAssignId,
+                        UserSystemId = (int)ResearchAssignId,
                         WorkshopSeriesId = workshopSeries.Id,
                     };
                     var resultInsert = _repositoryAssign.InsertAssignResearch(newAssign);

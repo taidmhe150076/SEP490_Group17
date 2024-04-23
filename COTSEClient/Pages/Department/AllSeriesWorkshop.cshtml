@@ -98,71 +98,75 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var series in Model.WorkshopSeriesPage)
+                                @if (Model.WorkshopSeriesPage != null)
                                 {
-                                    <tr>
-                                        <td>@series.WorkshopSeriesName</td>
-                                        <td>@Html.Raw(series.Description)</td>
-@*                                         <td>@series.Description</td>
- *@                                        <td>@series.StartDate</td>
-                                        <td>@series.EndDate</td>
-                                        <td>
-                                            <a class="btn btn-primary" href="/AllWorkshop?wsSeriesId=@series.Id">Xem chi tiết</a>
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSeriesModal-@series.Id">
-                                               Cập nhật thông tin
-                                            </button>
+                                    @foreach (var series in Model.WorkshopSeriesPage)
+                                    {
+                                        <tr>
+                                            <td>@series.WorkshopSeriesName</td>
+                                            <td>@Html.Raw(series.Description)</td>
+                                            @*                                         <td>@series.Description</td>
+                                    *@
+                                            <td>@series.StartDate</td>
+                                            <td>@series.EndDate</td>
+                                            <td>
+                                                <a class="btn btn-primary" href="/AllWorkshop?wsSeriesId=@series.Id">Xem chi tiết</a>
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSeriesModal-@series.Id">
+                                                    Cập nhật thông tin
+                                                </button>
 
-                                            <!-- Modal Update-->
-                                            <div class="modal fade" id="editSeriesModal-@series.Id" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="createSeriesModalLabel">Cập nhật thông tin chuỗi hội thảo </h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form asp-page-handler="UpdateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
-                                                                <input type="hidden" asp-for="@Model.WorkshopSeries.Id" value="@series.Id"/>
-                                                                
-                                                                <div class="mb-3">
-                                                                    <label  class="form-label">Tên chuỗi hội thảo</label>
-                                                                    <input asp-for="@Model.WorkshopSeries.WorkshopSeriesName" value="@series.WorkshopSeriesName" class="form-control" >
-                                                                    <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
-                                                                </div>
+                                                <!-- Modal Update-->
+                                                <div class="modal fade" id="editSeriesModal-@series.Id" tabindex="-1" aria-labelledby="createSeriesModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="createSeriesModalLabel">Cập nhật thông tin chuỗi hội thảo </h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form asp-page-handler="UpdateWorkshopSeries" method="post" id="createSeriesForm" enctype="multipart/form-data">
+                                                                    <input type="hidden" asp-for="@Model.WorkshopSeries.Id" value="@series.Id" />
 
-                                                                <input type="hidden" asp-for="@Model.WorkshopSeries.DepartmentId" value="@series.Id" />
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Tên chuỗi hội thảo</label>
+                                                                        <input asp-for="@Model.WorkshopSeries.WorkshopSeriesName" value="@series.WorkshopSeriesName" class="form-control">
+                                                                        <span asp-validation-for="WorkshopSeries.WorkshopSeriesName" class="text-danger"></span>
+                                                                    </div>
 
-                                                                <div class="mb-3">
-                                                                    <label class="form-label">Mô tả :</label>
-                                                                    <textarea id="WorkshopSeries_Description" asp-for="@Model.WorkshopSeries.Description" class="form-control">@series.Description</textarea>
+                                                                    <input type="hidden" asp-for="@Model.WorkshopSeries.DepartmentId" value="@series.Id" />
 
-                                                                    <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Mô tả :</label>
+                                                                        <textarea id="WorkshopSeries_Description" asp-for="@Model.WorkshopSeries.Description" class="form-control">@series.Description</textarea>
 
-                                                                </div>
+                                                                        <span asp-validation-for="WorkshopSeries.Description" class="text-danger"></span>
 
-                                                                <div class="mb-3">
-                                                                    <label  class="form-label">Ngày bắt đầu</label>
-                                                                    <input asp-for="@Model.WorkshopSeries.StartDate" value="@series.StartDate" class="form-control" type="date">
-                                                                    <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label class="form-label">Ngày kết thúc</label>
-                                                                    <input asp-for="@Model.WorkshopSeries.EndDate" value="@series.EndDate" class="form-control" type="date">
-                                                                    <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label asp-for="imageFile" class="form-label">Ảnh</label>
-                                                                    <input asp-for="imageFile" class="form-control" type="file">
-                                                                    <span asp-validation-for="imageFile" class="text-danger"></span>
-                                                                </div>
-                                                                <button type="submit" class="btn btn-primary">Cập nhật </button>
-                                                            </form>
+                                                                    </div>
+
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Ngày bắt đầu</label>
+                                                                        <input asp-for="@Model.WorkshopSeries.StartDate" value="@series.StartDate" class="form-control" type="date">
+                                                                        <span asp-validation-for="WorkshopSeries.StartDate" class="text-danger"></span>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Ngày kết thúc</label>
+                                                                        <input asp-for="@Model.WorkshopSeries.EndDate" value="@series.EndDate" class="form-control" type="date">
+                                                                        <span asp-validation-for="WorkshopSeries.EndDate" class="text-danger"></span>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label asp-for="imageFile" class="form-label">Ảnh</label>
+                                                                        <input asp-for="imageFile" class="form-control" type="file">
+                                                                        <span asp-validation-for="imageFile" class="text-danger"></span>
+                                                                    </div>
+                                                                    <button type="submit" class="btn btn-primary">Cập nhật </button>
+                                                                </form>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -172,29 +176,32 @@
                     <div class="col-lg-12">
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
-                                @if (Model.WorkshopSeriesPage.HasPreviousPage)
+                                @if (Model.WorkshopSeriesPage != null)
                                 {
-                                    <li class="page-item">
-                                        <a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                    </li>
-                                }
-                                @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
-                                {
-                                    <li class="page-item @(i == Model.WorkshopSeriesPage.PageIndex ? "active" : "")">
-                                        <a class="page-link" href="?pageIndex=@i">@i</a>
-                                    </li>
-                                }
-                                @if (Model.WorkshopSeriesPage.HasNextPage)
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                            <span class="sr-only">Next</span>
-                                        </a>
-                                    </li>
+                                    @if (Model.WorkshopSeriesPage.HasPreviousPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex - 1)" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                        </li>
+                                    }
+                                    @for (int i = 1; i <= Model.WorkshopSeriesPage.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == Model.WorkshopSeriesPage.PageIndex ? "active" : "")">
+                                            <a class="page-link" href="?pageIndex=@i">@i</a>
+                                        </li>
+                                    }
+                                    @if (Model.WorkshopSeriesPage.HasNextPage)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="?pageIndex=@(Model.WorkshopSeriesPage.PageIndex + 1)" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                                <span class="sr-only">Next</span>
+                                            </a>
+                                        </li>
+                                    }
                                 }
                             </ul>
                         </nav>

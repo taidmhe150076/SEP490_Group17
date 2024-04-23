@@ -25,7 +25,7 @@ namespace COTSEClient.Pages.Systems
         public void OnGet()
         {
             TotalUsers = _userRepository.getAllUser().Count();
-            TotalWorkshops = _workshopRepository.GetWorkshops().Count();
+            TotalWorkshops = _workshopRepository.GetWorkshops().Where(X => X.StatusId == 2).Count();
 
             GetChartData(DateTime.Now.Year);
         }
