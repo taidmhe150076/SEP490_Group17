@@ -5,6 +5,7 @@ using COTSEClient.Helper;
 using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OfficeOpenXml;
@@ -14,6 +15,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace COTSEClient.Pages.Department
 {
+    [Authorize(Roles = COTSEConstants.ROLE_ORGANIZER)]
     public class AddNewSeriesModel : PageModel
     {
         private readonly Sep490G17DbContext _context = new Sep490G17DbContext();

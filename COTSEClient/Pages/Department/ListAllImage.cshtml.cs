@@ -1,7 +1,9 @@
 ﻿using BusinessLogic.IRepository;
+using DataAccess.Constants;
 using DataAccess.Models;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,6 +14,8 @@ using System.IO;
 
 namespace COTSEClient.Pages.Department
 {
+
+    [Authorize(Roles = COTSEConstants.ROLE_ORGANIZER)]
     public class ListAllImageModel : PageModel
     {
         private readonly IConfiguration _configuration;
