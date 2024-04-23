@@ -15,13 +15,17 @@
         <div class="container px-5 my-5">
             <div class="text-center mb-5">
                 <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Researcher Information</span></h1>
-                <div>
-                    <img style="width:200px;height:200px" id="avatarImage" src="data:image/png;base64,@Model.Researcher?.ImageUrl" class="avatar img-circle img-thumbnail" alt="avatar">
-                </div>
-                <div>
-                    <label class="col-lg-3 control-label">Họ: @Model.Researcher?.FirstName </label><br />
-                    <label class="col-lg-3 control-label">Tên: @Model.Researcher?.LastName</label><br />
-                    <label class="col-lg-3 control-label">Email: @Model.Researcher?.Email</label>
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                        <img style="width:200px;height:200px" id="avatarImage" src="data:image/png;base64,@Model.Researcher?.ImageUrl" class="avatar img-circle img-thumbnail" alt="avatar">
+                    </div>
+                    <div class="col-lg-6">
+                        <div>
+                            <label class="control-label">Họ: @Model.Researcher?.FirstName </label><br />
+                            <label class="control-label">Tên: @Model.Researcher?.LastName</label><br />
+                            <label class="control-label">Email: @Model.Researcher?.Email</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
