@@ -17,17 +17,20 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
-        public List<SlideWorkShop> GetAllSlideWorkshop(int wsId)
+        public List<ImagesWorkShop> GetAllSlideWorkshop(int wsId)
         {
             try
             {
-                var slideworkshopList = _context.SlideWorkShops.Include(x => x.Image).Where(x => x.WorkshopId == wsId).ToList();
+                var slideworkshopList = _context.ImagesWorkShops.Include(x => x.Image).Where(x => x.WorkshopId == wsId && x.ImageId==2).ToList();
+                if (slideworkshopList == null)
+                {
+                    throw new Exception("NO PHOTO SLIDES");
+                }
                 return slideworkshopList;
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
     }

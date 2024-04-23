@@ -10,7 +10,7 @@ namespace BusinessLogic.IRepository
     public interface IRepositorySlideWorkshop
     {
 
-        public List<SlideWorkShop> GetAllSlideWorkshop(int wsId);
+        public List<ImagesWorkShop> GetAllSlideWorkshop(int wsId);
 
 
     }

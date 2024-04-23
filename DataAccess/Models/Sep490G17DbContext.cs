@@ -24,11 +24,13 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<Assign> Assigns { get; set; }
 
-    public virtual DbSet<ChartImage> ChartImages { get; set; }
-
     public virtual DbSet<Department> Departments { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
+
+    public virtual DbSet<ImageType> ImageTypes { get; set; }
+
+    public virtual DbSet<ImagesWorkShop> ImagesWorkShops { get; set; }
 
     public virtual DbSet<ParticiPantScore> ParticiPantScores { get; set; }
 
@@ -37,8 +39,6 @@ public partial class Sep490G17DbContext : DbContext
     public virtual DbSet<ParticipantAnswer> ParticipantAnswers { get; set; }
 
     public virtual DbSet<Presenter> Presenters { get; set; }
-
-    public virtual DbSet<SlideWorkShop> SlideWorkShops { get; set; }
 
     public virtual DbSet<StatusWorkShop> StatusWorkShops { get; set; }
 
@@ -154,24 +154,6 @@ public partial class Sep490G17DbContext : DbContext
                 .HasConstraintName("FK_Assign_WorkshopSeries");
         });
 
-        modelBuilder.Entity<ChartImage>(entity =>
-        {
-            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
-
-            entity.Property(e => e.Descriptions).HasColumnType("text");
-            entity.Property(e => e.Title).HasColumnType("text");
-
-            entity.HasOne(d => d.Image).WithMany(p => p.ChartImages)
-                .HasForeignKey(d => d.ImageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ChartImages_Image");
-
-            entity.HasOne(d => d.Workshop).WithMany(p => p.ChartImages)
-                .HasForeignKey(d => d.WorkshopId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ChartImages_Workshop");
-        });
-
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Departme__3213E83F5A2C4CA4");
@@ -189,6 +171,39 @@ public partial class Sep490G17DbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Image1).HasColumnName("Image");
+        });
+
+        modelBuilder.Entity<ImageType>(entity =>
+        {
+            entity.ToTable("ImageType");
+
+            entity.Property(e => e.ImageType1)
+                .HasMaxLength(50)
+                .HasColumnName("ImageType");
+        });
+
+        modelBuilder.Entity<ImagesWorkShop>(entity =>
+        {
+            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId, e.ImagesTypeId }).HasName("PK_SlideWorkShop");
+
+            entity.ToTable("ImagesWorkShop");
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+            entity.HasOne(d => d.Image).WithMany(p => p.ImagesWorkShops)
+                .HasForeignKey(d => d.ImageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SlideWorkShop_Image");
+
+            entity.HasOne(d => d.ImagesType).WithMany(p => p.ImagesWorkShops)
+                .HasForeignKey(d => d.ImagesTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ImagesWorkShop_ImageType");
+
+            entity.HasOne(d => d.Workshop).WithMany(p => p.ImagesWorkShops)
+                .HasForeignKey(d => d.WorkshopId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SlideWorkShop_Workshop");
         });
 
         modelBuilder.Entity<ParticiPantScore>(entity =>
@@ -233,25 +248,6 @@ public partial class Sep490G17DbContext : DbContext
             entity.ToTable("Presenter");
 
             entity.Property(e => e.PresenterEmail).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<SlideWorkShop>(entity =>
-        {
-            entity.HasKey(e => new { e.Id, e.ImageId, e.WorkshopId });
-
-            entity.ToTable("SlideWorkShop");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-            entity.HasOne(d => d.Image).WithMany(p => p.SlideWorkShops)
-                .HasForeignKey(d => d.ImageId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SlideWorkShop_Image");
-
-            entity.HasOne(d => d.Workshop).WithMany(p => p.SlideWorkShops)
-                .HasForeignKey(d => d.WorkshopId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SlideWorkShop_Workshop");
         });
 
         modelBuilder.Entity<StatusWorkShop>(entity =>

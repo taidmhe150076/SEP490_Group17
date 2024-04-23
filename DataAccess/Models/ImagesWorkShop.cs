@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DataAccess.Models;
 
-public partial class SlideWorkShop
+public partial class ImagesWorkShop
 {
     public int Id { get; set; }
 
@@ -11,7 +11,11 @@ public partial class SlideWorkShop
 
     public int WorkshopId { get; set; }
 
+    public int ImagesTypeId { get; set; }
+
     public virtual Image Image { get; set; } = null!;
+
+    public virtual ImageType ImagesType { get; set; } = null!;
 
     public virtual Workshop Workshop { get; set; } = null!;
 }
