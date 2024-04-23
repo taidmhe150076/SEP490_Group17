@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using static iTextSharp.text.pdf.AcroFields;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using DataAccess.Constants;
 
 namespace COTSEClient.Pages.Common
 {
@@ -73,19 +74,24 @@ namespace COTSEClient.Pages.Common
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperty);
 
-            return Redirect("/Users");
-            //if (role.Contains())
-            //{
-            //    return Redirect("/Users");
-            //}
-            //else if (role.Contains("User"))
-            //{
-            //    return Redirect("/Home");
-            //}
-            //else
-            //{
-            //    return Redirect("/Index");
-            //}
+            if (role.Any(x => x.RoleldNavigation.RoleName == COTSEConstants.ROLE_ORGANIZER))
+            {
+                return Redirect("/AllSeries");
+            }
+            else if (role.Any(x => x.RoleldNavigation.RoleName == COTSEConstants.ROLE_ADMIN))
+            {
+                return Redirect("/DashBoard");
+            }
+            else if (role.Any(x => x.RoleldNavigation.RoleName == COTSEConstants.ROLE_RESEARCHER))
+            {
+                return Redirect("/Surveys/All");
+            }
+            else if (role.Any(x => x.RoleldNavigation.RoleName == COTSEConstants.ROLE_STAFF))
+            {
+                return Redirect("/PresenterWorkshop");
+            }
+            ViewData["ErrorMessage"] = "Error";
+            return Page();
         }
 
     }

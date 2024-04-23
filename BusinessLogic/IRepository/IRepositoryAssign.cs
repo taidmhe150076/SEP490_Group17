@@ -11,6 +11,7 @@ namespace BusinessLogic.IRepository
     {
         public int InsertAssignResearch(Assign assign);
         public List<Assign> GetListSeriesWsByUserId(int id);
+        public int GetResearchIdBySwsId(int id);
 
     }
 }

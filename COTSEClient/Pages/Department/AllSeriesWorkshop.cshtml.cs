@@ -104,6 +104,7 @@ namespace COTSEClient.Pages.Department
                         WorkshopSeriesId = workshopSeries.Id,
                     };
                     var resultInsert = _repositoryAssign.InsertAssignResearch(newAssign);
+
                     if (resultInsert > 0)
                     {
                         return RedirectToPage("AddNewSeries", new { seriesWorkshopId = createdWorkshopSeries.Id });

@@ -1,4 +1,5 @@
 ﻿using DataAccess.DTO;
+using System.Text;
 
 namespace COTSEClient.Helper
 {
@@ -31,6 +32,38 @@ namespace COTSEClient.Helper
 
                             </html>";
             return html;
+        }
+
+        public static string TeamplateMailResearch(TemplateMailResearcher templateMailResearcher)
+        {
+            StringBuilder htmlBuilder = new StringBuilder();
+            htmlBuilder.Append($@"
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Thư Mời Làm Researcher Series {templateMailResearcher.WorkshopSeriesName}</title>
+                </head>
+
+                <body>
+                    <h1>Chào bạn,</h1>
+                    <p>Chúng tôi mời bạn tham gia với vai trò làm researcher cho series {templateMailResearcher.WorkshopSeriesName}.</p>
+                    <p>Thời gian: {templateMailResearcher.TimeStart}</p>
+                    <p>Infomation WorkShops: </p>");
+
+            foreach (var workshopInfo in templateMailResearcher.WorkshopInformation)
+            {
+                htmlBuilder.AppendLine($"<p>WorkshopName: {workshopInfo.WorkshopName} - Workshop Key {workshopInfo.WorkshopKey}</p>");
+            }
+            htmlBuilder.Append($@"
+                    <p>Link Room: {templateMailResearcher.UrlRoom}</p>
+                    <p>Link Download chuỗi công cụ đánh giá : {templateMailResearcher.UrlDownLoadTool}</p>
+                    <p>Link Website Phục vụ research: {templateMailResearcher.UrlWebLogin}</p>
+                    <p>Trân trọng,</p>
+                    <p>Phòng Nghiên Cứu Lab318 FPT</p>
+                </body>
+            </html>");
+
+            return htmlBuilder.ToString();
         }
     }
 }

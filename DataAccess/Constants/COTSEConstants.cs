@@ -16,6 +16,8 @@ namespace DataAccess.Constants
         public const int TEST_PRE = 1;
         public const int TEST_POST = 2;
         public const int RESEARCHER_ROLE = 3;
+        public const string DOWNLOADTOOLS = "DownloadTools";
+        public const string LOGIN = "Login";
 
 
         // survey

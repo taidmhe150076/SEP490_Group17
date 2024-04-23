@@ -32,6 +32,23 @@ namespace BusinessLogic.Repository
 			}
         }
 
+        public int GetResearchIdBySwsId(int id)
+        {
+			try
+			{
+				var checkExits = _context.Assigns.FirstOrDefault(x => x.WorkshopSeriesId == id);
+				if (checkExits == null)
+				{
+					throw new Exception("Chuỗi workshop chưa có nhà nghiên cứu!!!");
+				}
+				return checkExits.UserSystemId;
+            }
+			catch (Exception ex	)
+			{
+				throw ex;
+			}
+        }
+
         public int InsertAssignResearch(Assign assign)
         {
 			try

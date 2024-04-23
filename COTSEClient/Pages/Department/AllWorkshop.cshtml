@@ -35,6 +35,37 @@
             .search-bar .input-group-append button {
                 border-radius: 20px; /* Round corners of button */
             }
+        /* CSS để căn chỉnh ảnh, mô tả và bảng */
+        .image-description-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px; /* Khoảng cách giữa container và phần tiếp theo */
+        }
+
+        .image-container {
+            flex: 0 0 auto; 
+            margin-right: 20px; 
+            margin-bottom: 10px; 
+            max-width: 100%
+        }
+
+            .image-container img {
+                max-width: 100%%; /* Ảnh không vượt quá chiều rộng của container */
+                height: auto; /* Chiều cao tự động tính theo tỉ lệ */
+            }
+
+        .description, .custom-table {
+            flex: 1; /* Mô tả và bảng chiếm phần còn lại của không gian */
+            margin-bottom: 0; /* Không có khoảng cách giữa mô tả và bảng */
+        }
+
+        .description-container {
+            padding: 20px; /* Tăng khoảng cách giữa phần mô tả và viền container */
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
     </style>
 </head>
 <body>
@@ -42,7 +73,7 @@
         <section class="py-5">
             <div class="container mb-5">
                 <div class="text-center mb-5">
-                    <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Các hội thảo đã tổ chức</span></h1>
+                    <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">@Model.workshopSeries.WorkshopSeriesName</span></h1>
                 </div>
                 <!-- Search bar -->
                 <div class="row justify-content-center search-bar">
@@ -53,6 +84,21 @@
                                 <button class="btn btn-primary" type="button">Tìm kiếm</button>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <!--Series Workshop Infor-->
+
+                <div class="row justify-content-center image-description-container">
+                    <!-- Container cho ảnh -->
+                    <div class="col-md-3 image-container">
+                        <div class="text-center">
+                            <img style="width: 200%; height: auto;" src="data:image/png;base64,@Model.workshopSeries.Image" class="avatar img-circle img-thumbnail" alt="avatar">
+                        </div>
+                    </div>
+
+                    <!-- Container cho mô tả -->
+                    <div class="col-md-9 description-container">
+                        <p>Mô tả: @Html.Raw(@Model.workshopSeries.Description)</p>
                     </div>
                 </div>
                 <!-- Workshop table -->

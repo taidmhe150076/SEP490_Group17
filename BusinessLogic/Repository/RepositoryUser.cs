@@ -19,20 +19,7 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
-
-        public SystemUser getUserById(int? id)
-        {
-            SystemUser user = new SystemUser();
-            try
-            {
-                user = _context.SystemUsers.Include(x => x.DepartmentldNavigation).Include(x => x.RoleldNavigation).FirstOrDefault(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return user;
-        }
+      
         public void addUser(SystemUser user)
         {
             try
