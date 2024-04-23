@@ -12,6 +12,7 @@ using static iTextSharp.text.pdf.AcroFields;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using DataAccess.Constants;
+using Microsoft.AspNetCore.Http;
 
 namespace COTSEClient.Pages.Common
 {
@@ -19,7 +20,7 @@ namespace COTSEClient.Pages.Common
     {
         private readonly Sep490G17DbContext _context;
         private readonly IRepositoryUser _repository;
-        
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public LoginModel(Sep490G17DbContext context , IRepositoryUser repository)
         {
             _context = context;
@@ -61,8 +62,11 @@ namespace COTSEClient.Pages.Common
                 if (item != null)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, item.RoleldNavigation.RoleName));
+                    TempData["UserRole"] = item.RoleldNavigation.RoleName;
+                    HttpContext.Session.SetString("Role", item.RoleldNavigation.RoleName);
                 }
             }
+
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperty = new AuthenticationProperties
             {
@@ -70,7 +74,7 @@ namespace COTSEClient.Pages.Common
                 ExpiresUtc = DateTime.UtcNow.AddHours(0.2),
                 AllowRefresh = true,
                 IssuedUtc = DateTime.UtcNow
-            };
+            };          
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperty);
 
@@ -92,6 +96,7 @@ namespace COTSEClient.Pages.Common
             }
             ViewData["ErrorMessage"] = "Error";
             return Page();
+            
         }
 
     }
