@@ -21,7 +21,7 @@ namespace BusinessLogic.Repository
         {
             try
             {
-                var slideworkshopList = _context.ImagesWorkShops.Include(x => x.Image).Where(x => x.WorkshopId == wsId && x.ImageId==2).ToList();
+                var slideworkshopList = _context.ImagesWorkShops.Include(x => x.Image).Where(x => x.WorkshopId == wsId && x.ImagesTypeId == 2).ToList();
                 if (slideworkshopList == null)
                 {
                     throw new Exception("NO PHOTO SLIDES");
