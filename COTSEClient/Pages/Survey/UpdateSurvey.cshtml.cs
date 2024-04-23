@@ -1,11 +1,13 @@
 using BusinessLogic.IRepository;
 using DataAccess.Constants;
 using DataAccess.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Survey
 {
+    [Authorize(Roles = COTSEConstants.ROLE_RESEARCHER + "," + COTSEConstants.ROLE_ORGANIZER)]
     public class UpdateSurveyModel : PageModel
     {
         private readonly IRepositorySurvey _repositorySurvey;

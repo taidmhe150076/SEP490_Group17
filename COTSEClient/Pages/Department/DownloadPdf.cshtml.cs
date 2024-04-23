@@ -1,9 +1,12 @@
-﻿using iTextSharp.text.pdf;
+﻿using DataAccess.Constants;
+using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Department
 {
+    [Authorize(Roles = COTSEConstants.ROLE_ORGANIZER)]
     public class DownloadPdfModel : PageModel
     {
 

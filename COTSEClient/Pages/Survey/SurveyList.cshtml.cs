@@ -10,8 +10,7 @@ using System.Security.Claims;
 
 namespace COTSEClient.Pages.Survey
 {
-    [Authorize(Roles = COTSEConstants.ROLE_RESEARCHER)]
-    [Authorize(Roles = COTSEConstants.ROLE_ORGANIZER)]
+    [Authorize(Roles = COTSEConstants.ROLE_RESEARCHER + "," + COTSEConstants.ROLE_ORGANIZER)]
     public class SurveyListModel : PageModel
     {
 

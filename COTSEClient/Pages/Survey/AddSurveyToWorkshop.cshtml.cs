@@ -2,12 +2,14 @@ using BusinessLogic.IRepository;
 using BusinessLogic.Validator;
 using DataAccess.Constants;
 using DataAccess.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Survey
 {
+    [Authorize(Roles = COTSEConstants.ROLE_RESEARCHER + "," + COTSEConstants.ROLE_ORGANIZER)]
     public class AddSurveyToWorkshopModel : PageModel
     {
 

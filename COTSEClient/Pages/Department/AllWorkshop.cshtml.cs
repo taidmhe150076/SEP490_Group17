@@ -1,10 +1,13 @@
 using BusinessLogic.IRepository;
+using DataAccess.Constants;
 using DataAccess.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace COTSEClient.Pages.Department
 {
+    [Authorize(Roles = COTSEConstants.ROLE_ORGANIZER)]
     public class AllWorkshopModel : PageModel
     {
         public readonly IRepositoryWorkshops _repositoryWorkshop;
