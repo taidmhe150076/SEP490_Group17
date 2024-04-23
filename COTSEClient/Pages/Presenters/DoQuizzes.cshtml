@@ -17,11 +17,11 @@
         .modal-content {
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            background-color: #f8f9fa; 
+            background-color: #f8f9fa;
         }
 
         .modal-header {
-            background-color: #6c757d; 
+            background-color: #6c757d;
             color: #fff;
             border-radius: 15px 15px 0 0;
         }
@@ -163,11 +163,9 @@
                     }
                 });
                 document.getElementById('closeModal').addEventListener('click', function (event) {
-                    if (event.target === this) {
-                        window.location.href = urlForm;
-                    }
+                    window.location.href = urlForm;
                 });
-                var countdown = 5; 
+                var countdown = 5;
                 var countdownInterval = setInterval(function () {
                     countdown--;
                     if (countdown <= 0) {
@@ -184,36 +182,11 @@
                     }
                 });
                 document.getElementById('closeModal').addEventListener('click', function (event) {
-                    if (event.target === this) {
-                        window.location.href = 'https://th.bing.com/th/id/R.f420b19e42e49bf0791fa317747d9a2e?rik=Lkqtfo1weyN8aA&pid=ImgRaw&r=0';
-                    }
+                    console.log("Clicksssss");
+                    window.location.href = 'https://th.bing.com/th/id/R.f420b19e42e49bf0791fa317747d9a2e?rik=Lkqtfo1weyN8aA&pid=ImgRaw&r=0';
                 });
             }
         }
-    </script>
-
-    <script>
-        // Function to submit the form
-        function submitForm() {
-            document.getElementById("questionForm").submit();
-        }
-
-        var countdownTime = 120;
-        var countdownInterval = setInterval(function () {
-            countdownTime--;
-            if (countdownTime <= 0) {
-                clearInterval(countdownInterval);
-                submitForm(); // Automatically submit the form after 2 minutes
-            } else {
-                // Calculate hours and minutes
-                var hours = Math.floor(countdownTime / 60); // Convert to minutes
-                var minutes = countdownTime % 60;
-
-                // Display the countdown in the format "hh:mm"
-                var countdownDisplay = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes;
-                document.getElementById("countdownDisplay").innerText = "Time remaining: " + countdownDisplay;
-            }
-        }, 1000);
     </script>
 </body>
 </html>

@@ -19,7 +19,12 @@ namespace BusinessLogic.Repository
         {
 			try
 			{
-                return null;			
+                var check = _context.UrlForms.FirstOrDefault(x => x.WorkshopId == wsId && x.IsPresenter == false);
+                if (check != null)
+                {
+                    return check.UrlForm1;
+                }
+                return null;	
             }
 			catch (Exception)
 			{

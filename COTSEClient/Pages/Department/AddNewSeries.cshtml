@@ -9,12 +9,14 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <title>Tạo hội thảo mới</title>
     <link href="~/css/stylemessage.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body class="d-flex flex-column h-100 bg-light">
     <main class="flex-shrink-0">
         <div class="container px-5 my-5">
             <div class="text-center mb-5">
-                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Researcher Information</span></h1>
+                <h1 class="display-5 fw-bolder mb-0"><span class="text-gradient d-inline">Thông Tin Người Nghiên Cứu</span></h1>
                 <div class="row align-items-center justify-content-center">
                     <div class="col-lg-6 d-flex align-items-center justify-content-center">
                         <img style="width:200px;height:200px" id="avatarImage" src="data:image/png;base64,@Model.Researcher?.ImageUrl" class="avatar img-circle img-thumbnail" alt="avatar">
@@ -45,7 +47,7 @@
                             <label for="workshopFile" class="btn btn-primary px-4 py-3 ms-auto">
                                 <i class="bi bi-cloud-upload"></i>
                                 <input type="file" id="workshopFile" accept=".xlsx" style="display: none;" asp-for="Upload">
-                                Import Data Excel
+                                Nhập Dữ Liệu Từ Excel
                             </label>
                         </form>
                     </div>
@@ -59,7 +61,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">Ngày diễn ra</th>
-                                            <th scope="col" style="width: 150px;" >Mail Presenter</th>
+                                            <th scope="col" style="width: 150px;">Mail Presenter</th>
                                             <th scope="col" style="width: 150px;">Tiêu đề</th>
                                             <th scope="col">Số lượng ưa thích</th>
                                             <th scope="col">Trạng thái</th>
@@ -80,7 +82,15 @@
                                                 else
                                                 {
                                                     <td>
-                                                        <input id="date_@item.Id" type="date" class="form-control" required />
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="bi bi-calendar2-week">
+                                                                        <input type="text" id="date_@item.Id" class="datetimepicker form-control" required />
+                                                                    </i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <input id="mail_@item.Id" type="email" class="form-control" placeholder="Nhập Email" required />
@@ -115,7 +125,7 @@
                                                                         </div>
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Số lượng ưa thích</label>
-                                                                            <input  class="form-control" value="@item.Index" readonly required>
+                                                                            <input class="form-control" value="@item.Index" readonly required>
                                                                         </div>
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Trạng thái</label>
@@ -206,6 +216,19 @@
             this.href = `NewWorkshop?idWorkshop=${itemId}&email=${emailValue}&date=${dateValue}&seriesWorkshopId=${workshopSeriesId}`;
             location.href = this.href;
         }
+    </script>
+    <script>
+        // Lấy tất cả các phần tử có lớp là 'datetimepicker'
+        var datetimepickers = document.querySelectorAll('.datetimepicker');
+
+        // Lặp qua mỗi phần tử
+        datetimepickers.forEach(function (datetimepicker) {
+            flatpickr(datetimepicker, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                // Các tùy chọn khác tại đây...
+            });
+        });
     </script>
 </body>
 </html>

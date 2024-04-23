@@ -26,7 +26,7 @@ namespace COTSEClient.Pages.Report
                 ListChartSeries = _repositorySlideWorkshop.GetAllChartVideoWorkshop((int)wsId);
                 if (ListChartSeries.Count == 0)
                 {
-                    Msg = "Biểu Đồ Hiện Tại Đang Trong Qúa Trình Đợi Researcher Export!!!";
+                    Msg = "Biểu Đồ Hiện Tại Đang Trong Quá Trình Đợi Researcher Export!!!";
                     return Page();
                 }
                 return Page();

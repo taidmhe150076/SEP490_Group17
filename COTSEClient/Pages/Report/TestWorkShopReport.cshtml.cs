@@ -65,7 +65,7 @@ namespace COTSEClient.Pages.Report
                                    .Where(x => x.ParticiPantScores.HasValue)
                                    .Average(x => x.ParticiPantScores.Value).ToString("N2"),
                     NumberParticipant = InfoTestPre.Count(),
-                    Width = InfoTestPre.Count() < 10 ? InfoTestPre.Count() * 5 : InfoTestPre.Count() * 5
+                    Width = InfoTestPre.Count() < 10 ? InfoTestPre.Count() * 3 : InfoTestPre.Count() * 3
                 };
 
                 BubbleChartGPAPOST = new BubbleChartGPADTO
@@ -74,7 +74,7 @@ namespace COTSEClient.Pages.Report
                                         .Where(x => x.ParticiPantScores.HasValue)
                                         .Average(x => x.ParticiPantScores.Value).ToString("N2"),
                     NumberParticipant = InfoTestPos.Count(),
-                    Width = InfoTestPos.Count() < 10 ? InfoTestPos.Count() * 5 : InfoTestPos.Count() * 5
+                    Width = InfoTestPos.Count() < 10 ? InfoTestPos.Count() * 3 : InfoTestPos.Count() * 3
                 };
 
 

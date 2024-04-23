@@ -74,7 +74,7 @@ namespace COTSEClient.Pages.Department
             }
             if (ImageUrls.Count() <= 0)
             {
-                Msg = "Slide Đang Trong Qúa Trình Đợi Researcher Export!!";
+                Msg = "Slide Đang Trong Quá Trình Đợi Researcher Export!!";
             }
             return Page();
         }
