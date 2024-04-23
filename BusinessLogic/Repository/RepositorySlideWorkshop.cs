@@ -17,6 +17,20 @@ namespace BusinessLogic.Repository
         {
             _context = context;
         }
+
+        public List<ImagesWorkShop> GetAllChartVideoWorkshop(int wsId)
+        {
+            try
+            {
+                var chartVideoWorkshopList = _context.ImagesWorkShops.Include(x => x.Image).Where(x => x.WorkshopId == wsId && x.ImagesTypeId == 1).ToList();
+                return chartVideoWorkshopList;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<ImagesWorkShop> GetAllSlideWorkshop(int wsId)
         {
             try

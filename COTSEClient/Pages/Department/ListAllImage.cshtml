@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link href="~/css/stylemessage.css" rel="stylesheet">
 
     <style>
 
@@ -76,13 +77,6 @@
 </head>
 <body>
     <h1 class="display-5 fw-bolder mb-0">
-        <span> Biểu Đồ Số Lượng Slide Của Các Workshop</span>
-    </h1>
-    <div class="row gx-5 justify-content-center">
-        <canvas id="participantsChart" width="500" height="500"></canvas>
-    </div>
-
-    <h1 class="display-5 fw-bolder mb-0">
         <span> Slides Of WorkShop @Model.WorkShop.WorkshopName</span>
     </h1>
     <form asp-page-handler="SavetoPdf" method="post">
@@ -118,45 +112,22 @@
         link.click();
     }
 </script>
-
-
-<script>
-    const data = {
-        labels: ['Slide WS1', 'Slide WS2', 'Slide WS3'], // Các nhãn cho các slide
-        datasets: [
-            {
-                label: 'Slide WS',
-                data: [30, 35, 45], // Phần trăm của mỗi slide
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                ],
-                borderWidth: 1, // Độ dày biên
-            }
-        ],
-    };
-
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-            }
-        }
-    };
-
-    const ctx = document.getElementById('participantsChart').getContext('2d');
-
-    const participantsChart = new Chart(ctx, {
-        type: 'pie',
-        data: data,
-        options: options
-    });
-</script>
+@{
+    if (Model.Msg != null)
+    {
+        <input type="checkbox" id="alert-success-popup" class="input-hidden" @(string.IsNullOrEmpty(Model.Msg) ? "" : "checked")>
+        <div class="alert-box-wrap alert-success-popup">
+            <div class="alert-content">
+                <div class="icon">
+                    <img src="~/Image/success-icon.svg" alt="alert-icon">
+                </div>
+                <div class="body">
+                    <h3>@Model.Msg</h3>
+                </div>
+                <div class="close-alert">
+                    <label for="alert-success-popup">&times;</label>
+                </div>
+            </div>
+        </div>
+    }
+}

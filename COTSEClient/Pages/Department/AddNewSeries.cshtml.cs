@@ -102,9 +102,10 @@ namespace COTSEClient.Pages.Department
                                 KeyPresent = findWs.KeyPresenter,
                                 UrlRoom = urlRoom,
                                 LinkCF = linkCF,
+                                LinkTemplateQuestion = baseURL + COTSEConstants.TEMPALTE_QUESTION
                             };
                             var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
-                            string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                            string subject = "Thư Mời Tham Dự Làm Diễn Giả";
                             HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, email);
                             _repositoryWorkshops.UpdateDatePresent(findWs);
                         }
@@ -147,9 +148,11 @@ namespace COTSEClient.Pages.Department
                         KeyPresent = findWs.KeyPresenter,
                         UrlRoom = urlRoom,
                         LinkCF = linkCF,
+                        LinkTemplateQuestion = baseURL + COTSEConstants.TEMPALTE_QUESTION
+,
                     };
                     var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
-                    string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                    string subject = "Thư Mời Tham Dự Làm Diễn Giả";
                     HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, WorkShopUpdate.Email);
                     return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWs.WorkshopSeriesId });
                 }
@@ -168,9 +171,10 @@ namespace COTSEClient.Pages.Department
                         KeyPresent = findWs.KeyPresenter,
                         UrlRoom = urlRoom,
                         LinkCF = linkCF,
+                        LinkTemplateQuestion = baseURL + COTSEConstants.TEMPALTE_QUESTION
                     };
                     var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
-                    string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                    string subject = "Thư Mời Tham Dự Làm Diễn Giả";
                     HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, findWsOrthher.Email);
                     _repositoryWorkshops.UpdateDatePresent(findWs);
                 }
@@ -199,7 +203,7 @@ namespace COTSEClient.Pages.Department
                         LinkCF = linkCF,
                     };
                     var getBody = TeamplateMail.TeamplateMailPresenter(teamplatePresenter);
-                    string subject = "Thư Mời Tham Dự Làm Diễn Gỉa Phòng Nghiên Cứu Lab318 FPT";
+                    string subject = "Thư Mời Tham Dự Làm Diễn Giả";
                     HelperMethods.SendMail(getBody, subject, emailAdmin, passwork, WorkShopUpdate.Email);
                     Msg = "Update Prenter Success!!!";
                     return RedirectToPage("AddNewSeries", new { seriesWorkshopId = findWs.WorkshopSeriesId });
@@ -319,7 +323,8 @@ namespace COTSEClient.Pages.Department
                                 WorkshopInformation = workshopInformations,
                                 UrlRoom = urlRoom,
                                 UrlDownLoadTool = baseURL+ COTSEConstants.DOWNLOADTOOLS,
-                                UrlWebLogin = baseURL + COTSEConstants.LOGIN
+                                UrlWebLogin = baseURL + COTSEConstants.LOGIN,
+                                UrlTemplate = baseURL + COTSEConstants.RESEARCHTEMPALTE
                             };
                             var bodyMail = TeamplateMail.TeamplateMailResearch(templateMailResearcher);
                             string subject = "Thư Mời Researcher";

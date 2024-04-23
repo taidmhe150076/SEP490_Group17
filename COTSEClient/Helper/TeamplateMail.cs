@@ -25,7 +25,8 @@ namespace COTSEClient.Helper
                                 <p>Vui lòng xác nhận tham dự bằng cách vào Link phía dưới và đăng nhập mã khách khán giả để xác nhận và Import
                                     Document cho buổi workshop gồm bộ câu hỏi và Link slide.</p>
                                 <p>Mã Khách Mời: {teamplatePresenter.KeyPresent}</p>
-                                <p>link Comfirm và Submit : {teamplatePresenter.LinkCF}</p>
+                                <p>Link Comfirm và Submit : {teamplatePresenter.LinkCF}</p>
+                                <p>Link Tải Template Question : {teamplatePresenter.LinkTemplateQuestion}</p>
                                 <p>Trân trọng,</p>
                                 <p>Phòng Nghiên Cứu Lab318 FPT</p>
                             </body>
@@ -57,7 +58,8 @@ namespace COTSEClient.Helper
             htmlBuilder.Append($@"
                     <p>Link Room: {templateMailResearcher.UrlRoom}</p>
                     <p>Link Download chuỗi công cụ đánh giá : {templateMailResearcher.UrlDownLoadTool}</p>
-                    <p>Link Website Phục vụ research: {templateMailResearcher.UrlWebLogin}</p>
+                    <p>Link Download Template cho chuỗi công cụ đánh giá : {templateMailResearcher.UrlTemplate}</p>
+                    <p>Đăng nhập vào website để tiến hành nghiên cứu: {templateMailResearcher.UrlWebLogin}</p>
                     <p>Trân trọng,</p>
                     <p>Phòng Nghiên Cứu Lab318 FPT</p>
                 </body>

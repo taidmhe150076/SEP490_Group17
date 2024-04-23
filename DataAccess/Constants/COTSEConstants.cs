@@ -18,6 +18,8 @@ namespace DataAccess.Constants
         public const int RESEARCHER_ROLE = 3;
         public const string DOWNLOADTOOLS = "DownloadTools";
         public const string LOGIN = "Login";
+        public const string RESEARCHTEMPALTE = "TemplateResearch";
+        public const string TEMPALTE_QUESTION = "TemplateQuestion";
 
 
         // survey

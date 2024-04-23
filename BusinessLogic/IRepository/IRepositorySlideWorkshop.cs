@@ -11,6 +11,7 @@ namespace BusinessLogic.IRepository
     {
 
         public List<ImagesWorkShop> GetAllSlideWorkshop(int wsId);
+        public List<ImagesWorkShop> GetAllChartVideoWorkshop(int wsId);
 
 
     }

@@ -13,5 +13,6 @@ namespace DataAccess.DTO
         public string? UrlRoom {  get; set; }
         public string? KeyPresent {  get; set; }
         public string? LinkCF {  get; set; }
+        public string? LinkTemplateQuestion {  get; set; }
     }
 }

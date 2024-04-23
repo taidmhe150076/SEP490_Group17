@@ -26,7 +26,7 @@ namespace COTSEClient.Pages.Department
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         [BindProperty]
-        public List<string> ImageUrls { get; set; }
+        public List<string>? ImageUrls { get; set; }
         [BindProperty]
         public int WorkShopId { get; set; }
         [BindProperty]
@@ -37,7 +37,8 @@ namespace COTSEClient.Pages.Department
         public Workshop WorkShop { get; set; } = new Workshop();
         [BindProperty]
         public string Url { get; set; }
-
+        [BindProperty]
+        public string? Msg { get; set; }
 
         public ListAllImageModel(IRepositorySlideWorkshop repositorySlideWorkshop , IWebHostEnvironment webHostEnvironment , IRepositoryWorkshops repositoryWorkshops, IConfiguration configuration)
         {
@@ -70,6 +71,10 @@ namespace COTSEClient.Pages.Department
                     ImageUrls.Add(workshop.Image.Image1);
                 }
 
+            }
+            if (ImageUrls.Count() <= 0)
+            {
+                Msg = "Slide Đang Trong Qúa Trình Đợi Researcher Export!!";
             }
             return Page();
         }

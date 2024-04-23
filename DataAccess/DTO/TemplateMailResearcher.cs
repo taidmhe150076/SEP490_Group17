@@ -13,6 +13,7 @@ namespace DataAccess.DTO
         public List<WorkshopInformation>? WorkshopInformation {  get; set; }
         public string? UrlRoom {  get; set; }
         public string? UrlDownLoadTool {  get; set; }
+        public string? UrlTemplate {  get; set; }
         public string? UrlWebLogin {  get; set; }
     }
     public class WorkshopInformation

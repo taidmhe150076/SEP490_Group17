@@ -36,7 +36,7 @@ namespace COTSEClient.Pages.Presenters
                 }
                 var checkExist = _repositoryWorkshops.GetWorkshopByKeyPresenter(invitationCode);
                 
-                if (checkExist != null && checkExist.StatusId == 1)
+                if (checkExist != null && checkExist.StatusId == 2)
                 {
                     Flag = true;
                     InvitationCode = invitationCode;
