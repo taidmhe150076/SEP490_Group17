@@ -89,6 +89,7 @@ var changeSentimentChart = () => {
     sentiment_chart(sentiment_data, chart_type)
 };
 
+
 var generate_common_chart = () => {
     dataList.forEach((item,index) => {
         list_key = []
@@ -97,9 +98,18 @@ var generate_common_chart = () => {
             list_key.push(key)
             list_value.push(value)
         });
-        var canva = $(`#question_${index}`)
+        list_color = [];
+        var r = Math.floor(Math.random() * 256) // Random value for red (0-255)
+        var g = Math.floor(Math.random() * 256) // Random value for green (0-255)
+        var b = Math.floor(Math.random() * 256) // Random value for blue (0-255)
+        var color = (`rgb(${r},${g},${b})`)
+        list_key.forEach(() => {
+            list_color.push(color)
+        });
+
+        var canva = $(`#question_${index}`);
         var canva_label = `${item.question}`;
-        var color_list = random_rpg_list(list_key);
+        var color_list = [...list_color];
         var chart_data = chart_data_format("bar", canva_label, list_key, list_value, color_list);
         create_chart(canva, chart_data, options = {}, "bar");
        
