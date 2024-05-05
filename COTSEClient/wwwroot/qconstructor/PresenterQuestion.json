@@ -1,0 +1,25 @@
+{
+  "vn": [
+    {
+      "question": "Timestamp",
+      "type": "time"
+    },
+    {
+      "question": "Email address",
+      "type": "email"
+    },
+    {
+      "question": "nếu ban tổ chức thực hiện thêm các buổi workshop khác thì bạn có tham gia không?",
+      "type": "yes/no"
+    },
+    {
+      "question": "bạn thấy ban tổ chức có giúp đỡ nhiều không?",
+      "type": "number"
+    },
+    {
+      "question": "bạn cảm thấy sao khi làm diễn giả của buổi workshop?",
+      "type": "sentiment"
+    }
+
+  ]
+}

@@ -34,9 +34,6 @@ namespace COTSEClient.Pages.Survey
         public string formUrl { get; set; } = null!;
 
         [BindProperty]
-        public string? url { get; set; } = null!;
-
-        [BindProperty]
         public IFormFile? key { get; set; } = null!;
 
         [BindProperty]
@@ -84,15 +81,11 @@ namespace COTSEClient.Pages.Survey
                 };
                 updated_data.url = filePath;
             }
-            else if(url != null){
-                updated_data.url = url;
-                state = COTSEConstants.MODE_ADD_URL;
-            }
             updated_data.FormUrl = formUrl;
             int result = -1;
             try
             {
-                result = await _repositorySurvey.updateSurvey(updated_data, state);
+                result = await _repositorySurvey.updateSurvey(updated_data);
                 if (result == COTSEConstants.DB_STATUS_FAIL)
                 {
                     TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;

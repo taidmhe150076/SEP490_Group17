@@ -23,5 +23,7 @@ public partial class WorkshopSurveyUrl
 
     public string? FileType { get; set; }
 
+    public virtual ICollection<SentimentAnswerResult> SentimentAnswerResults { get; set; } = new List<SentimentAnswerResult>();
+
     public virtual ICollection<UrlForm> UrlForms { get; set; } = new List<UrlForm>();
 }

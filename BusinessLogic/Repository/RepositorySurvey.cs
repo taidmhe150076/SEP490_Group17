@@ -1,4 +1,4 @@
-﻿using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal;
 using Amazon.S3.Model;
 using BusinessLogic.IRepository;
 using BusinessLogic.Validator;
@@ -8,15 +8,20 @@ using DataAccess.Constants;
 using DataAccess.DTO;
 using DataAccess.Models;
 using Google.Apis.Sheets.v4.Data;
+using IronPython.Runtime;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using static Community.CsharpSqlite.Sqlite3;
 using static IronPython.Modules._ast;
+using static OfficeOpenXml.ExcelErrorValue;
 
 namespace BusinessLogic.Repository
 {
@@ -112,47 +117,44 @@ namespace BusinessLogic.Repository
         // add survey with file
         public async Task<int> createNewSurveyFile(WorkshopInfoDTO ws_info)
         {
-
-            string extension = Path.GetExtension(ws_info.url);
-            string fileByte = getFileByte(ws_info.url);
-
-            var ws_exist = await _context.Workshops
-                .Include(context => context.WorkshopSeries)
-                .SingleOrDefaultAsync(ws => ws.Id == ws_info.wsId && ws.WorkshopSeries.Id == ws_info.wssId);
-            if (ws_exist == null)
-            {
-                throw new NullReferenceException();
-            }
             try
             {
+                string extension = Path.GetExtension(ws_info.url);
+                string fileByte = getFileByte(ws_info.url);
+
+                var ws_exist = await _context.Workshops
+                    .Include(context => context.WorkshopSeries)
+                    .SingleOrDefaultAsync(ws => ws.Id == ws_info.wsId && ws.WorkshopSeries.Id == ws_info.wssId);
+
+                if (ws_exist == null)
+                {
+                    throw new NullReferenceException("Invalid workshop");
+                }
                 var name = Path.GetFileNameWithoutExtension(ws_info.url);
                 int file_supported = _validator.getFileType(extension);
                 if (file_supported == COTSEConstants.CSV_INPUT)
                 {
-                    try
+                    if (ws_info.isPresenter == null)
                     {
-                        var file_data = ExtractCSVFile(ws_info.url);
-                        if (file_data.Count == 0 || file_data == null)
-                        {
-                            throw new FormatException();
-                        }
+                        throw new Exception();
                     }
-                    catch (Exception)
+
+                    var file_data = ExtractCSVFile(ws_info.url, (bool)ws_info.isPresenter);
+
+                    if (file_data.Count == 0 || file_data == null)
                     {
                         throw new FormatException();
                     }
                 }
+
                 else if (file_supported == COTSEConstants.EXCEL_INPUT)
                 {
-                    try
+                    if (ws_info.isPresenter == null)
                     {
-                        var file_data = ExtractExcelFile(ws_info.url);
-                        if (file_data.Count == 0 || file_data == null)
-                        {
-                            throw new FormatException();
-                        }
+                        throw new Exception();
                     }
-                    catch (Exception)
+                    var file_data = ExtractExcelFile(ws_info.url, (bool)ws_info.isPresenter);
+                    if (file_data.Count == 0 || file_data == null)
                     {
                         throw new FormatException();
                     }
@@ -177,36 +179,57 @@ namespace BusinessLogic.Repository
                 {
                     new_survey.SurveyName = $"{name} ({exist_name.Count})";
                 }
-                // check if the file is the same or not
-                //var exist_survey = await _context.WorkshopSurveyUrls
-                //    .Where(survey => survey.FileByte == new_survey.FileByte).ToListAsync();
-                //if (exist_survey != null)
-                //{
-                //    throw new Exception();
-                //}
+
                 await _context.WorkshopSurveyUrls.AddAsync(new_survey);
-
-                var addedEntity = _context.Entry(new_survey).Entity;
-
-                var urlForm = new UrlForm
+                if (await _context.SaveChangesAsync() > 0)
                 {
-                    WorkshopId = (int)ws_info.wsId,
-                    IsPresenter = ws_info.isPresenter,
-                    Workshop = ws_exist,
-                    WorkshopSurveyUrlNavigation = addedEntity,
-                    UrlForm1 = ws_info.FormUrl,
-                };
-                await _context.UrlForms.AddAsync(urlForm);
+                    var urlForm = new UrlForm
+                    {
+                        WorkshopId = (int)ws_info.wsId,
+                        IsPresenter = ws_info.isPresenter,
+                        Workshop = ws_exist,
+                        WorkshopSurveyUrlNavigation = new_survey,
+                        UrlForm1 = ws_info.FormUrl,
+                    };
+                    await _context.UrlForms.AddAsync(urlForm);
+                    if (await _context.SaveChangesAsync() > 0)
+                    {
 
-                var state = await _context.SaveChangesAsync();
-                if (state == 0)
-                {
-                    throw new FormatException();
+                        var sentiment_datas = await getSurveySentimentResult(new_survey.Id);
+                        foreach (var data in sentiment_datas)
+                        {
+                            var sentiment_result = new SentimentAnswerResult
+                            {
+                                SurveyId = new_survey.Id,
+                                Question = data.Question,
+                                SentimentAnswer = data.getResult()
+                            };
+                            await _context.SentimentAnswerResults.AddAsync(sentiment_result);
+                        }
+                        var state = await _context.SaveChangesAsync();
+                        if (state == 0)
+                        {
+                            throw new FormatException();
+                        }
+                        else
+                        {
+                            return state;
+                        }
+                    }
+
+
                 }
-                else
-                {
-                    return state;
-                }
+                return 0;
+
+            }
+            catch (NotImplementedException)
+            {
+
+                throw new FormatException();
+            }
+            catch (FormatException)
+            {
+                throw new FormatException();
             }
             catch (Exception)
             {
@@ -218,9 +241,14 @@ namespace BusinessLogic.Repository
             }
         }
 
-        public async Task<int> createNewSurveyUrl(WorkshopInfoDTO ws_info)
+        public async Task<List<SentimentAnswerResult>> getSentimentList(int surveyId)
         {
-            throw new NotImplementedException("not support google sheet yet!");
+            var data = await _context.SentimentAnswerResults
+                .Include(context => context.Survey)
+                .Include(context => context.Survey.UrlForms)
+                .Where(sentiment => sentiment.Survey.Id == surveyId).ToListAsync();
+
+            return data;
         }
 
         public async Task<int> createNewSurvey(WorkshopInfoDTO ws_info)
@@ -295,8 +323,6 @@ namespace BusinessLogic.Repository
             }
         }
 
-
-
         public async Task<SurveyDTO> getSurey(int surveyId)
         {
             try
@@ -336,11 +362,15 @@ namespace BusinessLogic.Repository
             string temp_path = "";
             try
             {
-                var survey = _context.WorkshopSurveyUrls.Find(surveyId);
+                var survey = await _context.WorkshopSurveyUrls
+                   .Include(s => s.UrlForms) // Include the navigation property
+                   .SingleOrDefaultAsync(s => s.Id == surveyId && s.UrlForms.Any(u => u.WorkshopSurveyUrl == surveyId));
+                var is_Presenter = survey.UrlForms.FirstOrDefault()?.IsPresenter;
+
                 if (survey != null)
                 {
                     temp_path = readFile(survey.FileByte, $"{survey.SurveyName}{survey.FileType}");
-                    var questions = await GetSentimentAnswer(temp_path);
+                    var questions = await GetSentimentAnswer(temp_path, is_Presenter);
                     var json_data = await GetJsonSentiment(questions);
                     var result = Rate(questions, json_data);
                     return result;
@@ -356,13 +386,13 @@ namespace BusinessLogic.Repository
             }
         }
 
-        public async Task<Dictionary<string, int>> CountFeedback(List<FeedbackResult> survey_sentiment)
+        public async Task<Dictionary<string, int>> CountFeedback(List<SentimentAnswerResult> survey_sentiment)
         {
             Dictionary<string, int> data = new Dictionary<string, int>
             {
-                { "Positive", survey_sentiment.Where(feedback => feedback.getResult() == "Positive").Count() },
-                { "Negative", survey_sentiment.Where(feedback => feedback.getResult() == "Negative").Count() },
-                { "Neutral", survey_sentiment.Where(feedback => feedback.getResult() == "Neutral").Count() }
+                { "Positive", survey_sentiment.Where(feedback => feedback.SentimentAnswer == "Positive").Count() },
+                { "Negative", survey_sentiment.Where(feedback => feedback.SentimentAnswer == "Negative").Count() },
+                { "Neutral", survey_sentiment.Where(feedback => feedback.SentimentAnswer == "Neutral").Count() }
             };
             return data;
         }
@@ -373,101 +403,99 @@ namespace BusinessLogic.Repository
             try
             {
                 var output = new List<Dictionary<string, string>>();
-                var survey = _context.WorkshopSurveyUrls.Find(surveyId);
+                var survey = await _context.WorkshopSurveyUrls
+                    .Include(s => s.UrlForms) // Include the navigation property
+                    .SingleOrDefaultAsync(s => s.Id == surveyId && s.UrlForms.Any(u => u.WorkshopSurveyUrl == surveyId));
+                var is_Presenter = survey.UrlForms.FirstOrDefault()?.IsPresenter;
+
+                if (is_Presenter == null)
+                {
+                    throw new Exception();
+                }
+                List<Questions> questions = getCommonQuestion((bool)is_Presenter);
+                var newList = questions.Where(key => key.Type != "time" && key.Type != "email" && key.Type != "sentiment").ToList();
+
                 if (survey != null)
                 {
                     var survey_content = new List<SurveyContentDTO>();
                     temp_path = readFile(survey.FileByte, $"{survey.SurveyName}{survey.FileType}");
                     if (_validator.getFileType(survey.FileType) == COTSEConstants.EXCEL_INPUT)
                     {
-                        survey_content = ExtractExcelFile(temp_path);
+                        survey_content = ExtractExcelFile(temp_path, (bool)is_Presenter);
                     }
                     else if (_validator.getFileType(survey.FileType) == COTSEConstants.CSV_INPUT)
                     {
-                        survey_content = ExtractCSVFile(temp_path);
+                        survey_content = ExtractCSVFile(temp_path, (bool)is_Presenter);
                     }
                     var commonqa = new List<CommonQA>();
 
-                    // Define possible answer options for range 1-5
+                    //Define possible answer options for range 1 - 5
+
                     var rangeAnswers = new List<string> { "1", "2", "3", "4", "5" };
+                    var yesNoAnswers = new List<string> { "Có", "Không" };
 
                     var groupedRangeQA = survey_content
                         .SelectMany(dto => dto.QA)
-                        .Where(pair => _validator.common_question.Skip(2).Take(_validator.common_question.Count - 4).Contains(pair.Key))
                         .GroupBy(pair => pair.Key)
-                        .ToDictionary(group => group.Key,
+                        .ToDictionary(group => group.Key,  // Use key.Question as dictionary key
                                       group => group.Select(pair => pair.Value).ToList());
-
-                    // Define possible answer options for "yes" or "no"
-                    var yesNoAnswers = new List<string> { "có", "không" };
 
                     var groupedYesNoQA = survey_content
                         .SelectMany(dto => dto.QA)
-                        .Where(pair => (_validator.common_question.Skip(_validator.common_question.Count - 2).Contains(pair.Key)))
                         .GroupBy(pair => pair.Key)
-                        .ToDictionary(group => group.Key,
+                        .ToDictionary(group => group.Key,  // Use key.Question as dictionary key
                                       group => group.Select(pair => pair.Value).ToList());
 
-                    // Process range 1-5 questions
-                    foreach (var key in _validator.common_question.Skip(2).Take(_validator.common_question.Count - 4))
+                    //Process range 1 - 5 questions
+
+                    foreach (var key in newList)
                     {
-                        // Create dictionary for counting answers
                         var answerCounts = new Dictionary<string, int>();
 
                         // Initialize counts to 0 for all possible answers
-                        foreach (var answer in rangeAnswers)
+                        if (key.Type == "number")
                         {
-                            answerCounts[answer] = 0;
-                        }
-
-                        // Update counts based on groupedQA
-                        if (groupedRangeQA.ContainsKey(key))
-                        {
-                            foreach (var value in groupedRangeQA[key])
+                            foreach (var answer in rangeAnswers)
                             {
-                                if (!answerCounts.ContainsKey(value))
-                                    answerCounts[value] = 0;
-                                answerCounts[value]++;
+                                answerCounts[answer] = 0;
+                            }
+
+                            // Update counts based on groupedQA
+                            if (groupedRangeQA.ContainsKey(key.Question))
+                            {
+                                foreach (var value in groupedRangeQA[key.Question])
+                                {
+                                    if (!answerCounts.ContainsKey(value))
+                                        answerCounts[value] = 0;
+                                    answerCounts[value]++;
+                                }
                             }
                         }
-
-                        var answerCount = new CommonQA
+                        else if (key.Type == "yes/no")
                         {
-                            Question = key,
-                            Counts = answerCounts
-                        };
-                        commonqa.Add(answerCount);
-                    }
-
-                    // Process "yes" or "no" questions
-                    foreach (var key in _validator.common_question.Skip(_validator.common_question.Count - 2))
-                    {
-                        // Create dictionary for counting answers
-                        var answerCounts = new Dictionary<string, int>();
-
-                        // Initialize counts to 0 for all possible answers
-                        foreach (var answer in yesNoAnswers)
-                        {
-                            answerCounts[answer] = 0;
-                        }
-
-                        // Update counts based on groupedQA
-                        if (groupedYesNoQA.ContainsKey(key))
-                        {
-                            foreach (var value in groupedYesNoQA[key])
+                            foreach (var answer in yesNoAnswers)
                             {
-                                if (!answerCounts.ContainsKey(value))
-                                    answerCounts[value] = 0;
-                                answerCounts[value]++;
+                                answerCounts[answer] = 0;
+                            }
+
+                            if (groupedYesNoQA.ContainsKey(key.Question))
+                            {
+                                foreach (var value in groupedYesNoQA[key.Question])
+                                {
+                                    if (!answerCounts.ContainsKey(value))
+                                        answerCounts[value] = 0;
+                                    answerCounts[value]++;
+                                }
                             }
                         }
-
-                        var answerCount = new CommonQA
-                        {
-                            Question = key,
-                            Counts = answerCounts
-                        };
-                        commonqa.Add(answerCount);
+                        if (key.Type != "time" || key.Type != "email" || key.Type != "sentiment")  {
+                            var answerCount = new CommonQA
+                            {
+                                Question = key.Question,
+                                Counts = answerCounts
+                            };
+                            commonqa.Add(answerCount);
+                        }
                     }
                     return commonqa;
                 }
@@ -574,12 +602,15 @@ namespace BusinessLogic.Repository
         }
 
         // get last question
-        private async Task<List<string>> GetSentimentAnswer(string file_path)
+        private async Task<List<string>> GetSentimentAnswer(string file_path, bool? isPresenter)
         {
             try
             {
-
-                List<SurveyContentDTO> survey = getPaticipantFeedback(file_path);
+                if (isPresenter == null)
+                {
+                    throw new NullReferenceException();
+                }
+                List<SurveyContentDTO> survey = getPaticipantFeedback(file_path, (bool)isPresenter);
                 var unchecked_answer = new List<string>();
                 foreach (var answer in survey)
                 {
@@ -720,7 +751,7 @@ namespace BusinessLogic.Repository
 
         }
 
-        private List<SurveyContentDTO> getPaticipantFeedback(string file_path)
+        private List<SurveyContentDTO> getPaticipantFeedback(string file_path, bool isPresenter)
         {
             if (!File.Exists(file_path))
             {
@@ -729,15 +760,14 @@ namespace BusinessLogic.Repository
             switch (file_path.Split(".")[^1])
             {
                 case "xlsx":
-                    return ExtractExcelFile(file_path);
+                    return ExtractExcelFile(file_path, isPresenter);
                 case "csv":
-                    return ExtractCSVFile(file_path);
+                    return ExtractCSVFile(file_path, isPresenter);
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        // convert fileByte to string byte
         private string getFileByte(string file_path)
         {
             try
@@ -758,13 +788,33 @@ namespace BusinessLogic.Repository
             }
         }
 
+        private List<Questions> getCommonQuestion(bool isPresenter)
+        {
+            string? QuestionPath = string.Empty;
+            if (isPresenter)
+            {
+                QuestionPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "qconstructor", "PresenterQuestion.json");
 
+            }
+            else
+            {
+                QuestionPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "qconstructor", "PaticipantQuestion.json");
+            }
+            string jsonString = File.ReadAllText(QuestionPath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            JArray questionsArray = (JArray)jsonObject["vn"];
+            List<Questions> questions = questionsArray.ToObject<List<Questions>>();
+            return questions;
+        }
         // extract value from file
 
-        private List<SurveyContentDTO> ExtractExcelFile(string file_path)
+        private List<SurveyContentDTO> ExtractExcelFile(string url, bool isPresenter)
         {
             List<SurveyContentDTO> list_response = new List<SurveyContentDTO>();
-            using (var package = new ExcelPackage(new FileInfo(file_path)))
+            var questions = getCommonQuestion(isPresenter);
+            var common_header = questions.Select(q => q.Question).ToArray();
+
+            using (var package = new ExcelPackage(new FileInfo(url)))
             {
                 int total_worksheet = package.Workbook.Worksheets.Count();
                 if (total_worksheet > 1)
@@ -785,40 +835,43 @@ namespace BusinessLogic.Repository
                 }
                 header = header.Skip(1).ToArray();
                 //validate header
-                if (!_validator.validateHeader(header))
+                if (!_validator.validateHeader(header, common_header))
                 {
                     throw new FormatException();
                 }
                 // count from the first response
-                for (int row = 2; row <= rowCount - 1; row++)
+                for (int row = 2; row <= rowCount; row++)
                 {
                     var list_row = new List<Tuple<string, string?>>();
                     for (int col = 1; col <= colCount; col++)
                     {
                         var content = worksheet.Cells[row, col].Text;
                         var response = new Tuple<string, string?>(header[col - 1], content.ToString());
-                        if (!_validator.validateCommonRow(response))
+                        if (!_validator.validateCommonRow(response, questions))
                         {
                             throw new FormatException();
                         }
                         list_row.Add(response);
                     }
-                    var response_output = PutData(list_row);
+                    var response_output = PutData(list_row, questions);
                     list_response.Add(response_output);
                 }
             }
             return list_response;
+
+            throw new NotImplementedException();
         }
 
-
-        private List<SurveyContentDTO> ExtractCSVFile(string file_path)
+        private List<SurveyContentDTO> ExtractCSVFile(string url, bool isPresenter)
         {
             List<SurveyContentDTO> list_response = new List<SurveyContentDTO>();
-            using (var stream = new StreamReader(file_path))
+            using (var stream = new StreamReader(url))
             {
+                var questions = getCommonQuestion(isPresenter);
+                var common_header = questions.Select(q => q.Question.ToLower()).ToArray();
                 var headerLine = stream.ReadLine();
                 string[] header = headerLine.Split(",");
-                if (!_validator.validateHeader(header))
+                if (!_validator.validateHeader(header, common_header))
                 {
                     throw new FormatException();
                 }
@@ -830,39 +883,38 @@ namespace BusinessLogic.Repository
                     for (int i = 0; i < body_content.Length; i++)
                     {
                         var response = new Tuple<string, string?>(header[i], body_content[i]);
-                        if (!_validator.validateCommonRow(response))
+                        if (!_validator.validateCommonRow(response, questions))
                         {
                             throw new FormatException();
                         }
                         list_row.Add(response);
                     }
-                    var response_output = PutData(list_row);
+                    var response_output = PutData(list_row, questions);
                     list_response.Add(response_output);
                 }
             }
             return list_response;
         }
 
-        private SurveyContentDTO PutData(List<Tuple<string, string?>> list_row)
+        private SurveyContentDTO PutData(List<Tuple<string, string?>> list_row, List<Questions> question)
         {
-            var question_list = _validator.common_question;
             SurveyContentDTO survey = new SurveyContentDTO();
             Dictionary<string, string> qa = new Dictionary<string, string>();
             //list response
             foreach (var data in list_row)
             {
-                //every single col in the response
-                if (_validator.common_question.Contains(data.Item1.ToLower()))
+                var questionObject = question.FirstOrDefault(q => q.Question.ToLower() == data.Item1.ToLower());
+
+                if (questionObject != null)
                 {
-                    if (_validator.common_question.IndexOf(data.Item1.ToLower()) == 0)
+                    if (questionObject.Type == "time")
                     {
                         // time stamp
                         System.DateTime time = System.DateTime.ParseExact(data.Item2, _validator.dateFormats, null);
                         survey.timeStamp = time;
                     }
-                    else if (_validator.common_question.IndexOf(data.Item1.ToLower()) == 1)
+                    else if (questionObject.Type == "email")
                     {
-                        //email
                         survey.AnswerBy = data.Item2;
                     }
                     else
@@ -872,7 +924,7 @@ namespace BusinessLogic.Repository
                 }
                 else
                 {
-                    //sentiment question
+                    // other question
                     qa.Add(data.Item1, data.Item2);
                 }
             }
@@ -888,7 +940,7 @@ namespace BusinessLogic.Repository
             }
         }
 
-        public async Task<int> updateSurvey(WorkshopInfoDTO info, int mode)
+        public async Task<int> updateSurvey(WorkshopInfoDTO info)
         {
             try
             {
@@ -898,65 +950,47 @@ namespace BusinessLogic.Repository
                 {
                     throw new NullReferenceException(SurveyErrorMessage.ERR_UPDATE_SURVEY_FAIL);
                 }
-                if (mode == COTSEConstants.MODE_ADD_FILE)
+
+                string file_path = info.url;
+                var file = readFileByte(file_path, urlForm.IsPresenter);
+                survey.FileByte = file.Item1;
+                survey.FileType = file.Item2;
+                string survey_name = Path.GetFileNameWithoutExtension(file_path);
+                if (survey.SurveyName == null)
                 {
-                    if (survey.Url != null)
-                    {
-                        throw new NullReferenceException(SurveyErrorMessage.ERR_UPDATE_SURVEY_FAIL);
-                    }
-                    if (survey.Url == null)
-                    {
-                        string file_path = info.url;
-                        var file = readFileByte(file_path);
-                        survey.FileByte = file.Item1;
-                        survey.FileType = file.Item2;
-                        string survey_name = Path.GetFileNameWithoutExtension(file_path);
-                        if (survey.SurveyName == null)
-                        {
-                            survey.SurveyName = survey_name;
-                        }
-                        else if (!survey.SurveyName.Equals(survey_name))
-                        {
-                            survey.SurveyName = survey_name;
-                        }
-                    }
+                    survey.SurveyName = survey_name;
                 }
-                else if (mode == COTSEConstants.MODE_ADD_URL)
+                else if (!survey.SurveyName.Equals(survey_name))
                 {
-                    if (survey.FileByte != null)
-                    {
-                        survey.FileByte = null;
-                        survey.FileType = null;
-                        survey.Url = info.url;
-                    }
-                    else
-                    {
-                        survey.Url = info.url;
-                    }
+                    survey.SurveyName = survey_name;
                 }
 
                 urlForm.UrlForm1 = info.FormUrl;
                 var state = await _context.SaveChangesAsync();
                 return state;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new Exception();
+                throw new Exception(e.Message);
             }
 
         }
 
 
-        private (string, string) readFileByte(string file_path)
+        private (string, string) readFileByte(string file_path, bool? isPresenter)
         {
             try
             {
+                if (isPresenter == null)
+                {
+                    throw new NullReferenceException();
+                }
                 var extension = Path.GetExtension(file_path);
                 var name = Path.GetFileNameWithoutExtension(file_path);
                 int file_supported = _validator.getFileType(extension);
                 if (file_supported == COTSEConstants.CSV_INPUT)
                 {
-                    var file_data = ExtractCSVFile(file_path);
+                    var file_data = ExtractCSVFile(file_path, (bool)isPresenter);
                     if (file_data.Count == 0 || file_data == null)
                     {
                         throw new FormatException();
@@ -964,7 +998,7 @@ namespace BusinessLogic.Repository
                 }
                 else if (file_supported == COTSEConstants.EXCEL_INPUT)
                 {
-                    var file_data = ExtractExcelFile(file_path);
+                    var file_data = ExtractExcelFile(file_path, (bool)isPresenter);
                     if (file_data.Count == 0 || file_data == null)
                     {
                         throw new FormatException();

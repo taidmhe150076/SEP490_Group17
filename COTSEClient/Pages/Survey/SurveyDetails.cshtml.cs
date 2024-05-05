@@ -1,6 +1,7 @@
 using BusinessLogic.IRepository;
 using DataAccess.Constants;
 using DataAccess.DTO;
+using DataAccess.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -29,7 +30,7 @@ namespace COTSEClient.Pages.Survey
         [BindProperty]
         public SurveyDTO surveyInfo { get; set; } = new SurveyDTO();
         [BindProperty]
-        public List<FeedbackResult> feedbackResults { get; set; }
+        public List<SentimentAnswerResult> feedbackResults { get; set; }
 
         [BindProperty]
         public Dictionary<string, int> feedbackCount { get; set; }
@@ -45,9 +46,11 @@ namespace COTSEClient.Pages.Survey
             try
             {
                 surveyInfo = await _repo.getSurey(surveyId);
-                feedbackResults = await _repo.getSurveySentimentResult(surveyId);
                 dataList = await _repo.getOtherData(surveyId);
+                feedbackResults = await _repo.getSentimentList(surveyId);
                 feedbackCount = await _repo.CountFeedback(feedbackResults);
+                var data = await _repo.getSentimentList(surveyId);
+                feedbackCount = await _repo.CountFeedback(data);
                 state_display = true;
                 return Page();
             }

@@ -40,6 +40,8 @@ public partial class Sep490G17DbContext : DbContext
 
     public virtual DbSet<Presenter> Presenters { get; set; }
 
+    public virtual DbSet<SentimentAnswerResult> SentimentAnswerResults { get; set; }
+
     public virtual DbSet<StatusWorkShop> StatusWorkShops { get; set; }
 
     public virtual DbSet<SurveyAnswerDetail> SurveyAnswerDetails { get; set; }
@@ -74,11 +76,10 @@ public partial class Sep490G17DbContext : DbContext
     {
         var builder = new ConfigurationBuilder()
                      .SetBasePath(Directory.GetCurrentDirectory())
-                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                     .AddJsonFile("appsettingss.json", optional: true, reloadOnChange: true);
         IConfigurationRoot configuration = builder.Build();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("AzureConnection"));
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AnswerParticipant>(entity =>
@@ -248,6 +249,24 @@ public partial class Sep490G17DbContext : DbContext
             entity.ToTable("Presenter");
 
             entity.Property(e => e.PresenterEmail).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<SentimentAnswerResult>(entity =>
+        {
+            entity.ToTable("SentimentAnswerResult");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Question)
+                .HasMaxLength(200)
+                .HasColumnName("question");
+            entity.Property(e => e.SentimentAnswer)
+                .HasMaxLength(200)
+                .HasColumnName("sentiment answer");
+            entity.Property(e => e.SurveyId).HasColumnName("surveyId");
+
+            entity.HasOne(d => d.Survey).WithMany(p => p.SentimentAnswerResults)
+                .HasForeignKey(d => d.SurveyId)
+                .HasConstraintName("FK_SentimentAnswerResult_WorkshopSurveyUrl");
         });
 
         modelBuilder.Entity<StatusWorkShop>(entity =>

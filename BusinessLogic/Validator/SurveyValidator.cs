@@ -20,24 +20,7 @@ namespace BusinessLogic.Validator
             "csv",
             "xlsx",
         };
-
-        public string[] dateFormats = { "M/d/yyyy HH:mm:ss", "M/d/yyyy HH:mm", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm"};
-
-        // list common question
-        public List<string> common_question = new List<string>()
-        {
-            "Timestamp",
-            "Email address",
-            "bạn có học được nhiều từ series workshop này không?",
-            "thời gian và địa điểm của workshop có hợp lý không?",
-            "bạn thấy chất lượng của workshop có tốt không?",
-            "bạn thấy sao về cách chia sẻ của các diễn giả?",
-            "bạn thấy thông tin mà diễn giả trình bày có dễ hiểu không?",
-            "bạn có muốn được gặp lại các diễn giả trong các buổi workshop sau hay không?",
-            "nếu được tổ chức thêm các sự kiện workshop khác liên quan thì bạn có muốn tham gia không?",
-        }.ConvertAll(question => question.ToLower());
-
-        public const string sentiment_question = "cảm nghĩ của bạn về series workshop này như thế nào?";
+        public string[] dateFormats = { "M/d/yyyy HH:mm:ss", "M/d/yyyy HH:mm", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm","MM/dd/yyyy hh:mm:ss", "M/dd/yyyy H:mm:ss" };
 
         public int getFileType(string file_extension) {
             var index = file_types.IndexOf(file_extension);
@@ -80,14 +63,11 @@ namespace BusinessLogic.Validator
 
         public bool validateFileName(string filePath)
         {
-            string file_type = filePath.Split(".")[^1];
-            string file_name = filePath.Split(".")[0];
+            string file_type = Path.GetExtension(filePath);
             if (!file_types.Contains(file_type))
             {
                 return false;
             }
-            var file_name_part = file_name.Split("_");
-            //file name must contain the workshop name file name must contain workshop date
             return true;
         }
 
@@ -147,54 +127,33 @@ namespace BusinessLogic.Validator
         }
 
         // validate excel header
-        public bool validateHeader(string[] header)
+        public bool validateHeader(string[] header, string[] commonHeader)
         {
-            // default value in excel file
-            if (header.Length < common_question.Count + 1)
-            {
-                return false;
-            }
+          
             // check if all of the first common question is identical
-            var inputCommonHeader = header.Take(common_question.Count).Select(question => question.Trim().ToLower()).ToList();
-            var x = header.Take(common_question.Count).Any(h => common_question.Any(q => q.StartsWith(h)));
-
-            bool isCorrectRequireQuestion = inputCommonHeader.SequenceEqual(common_question.Select(cq => cq.Trim().ToLower()).ToList());
+            var inputCommonHeader = header.Take(commonHeader.Length).ToList();
+            bool isCorrectRequireQuestion = header.Take(commonHeader.Length).Any(h => commonHeader.Any(q => q.StartsWith(h)));
             if (!isCorrectRequireQuestion)
             {
                 return false;
             }
 
             //check if the last question is sentiment question
-            if (header[^1].Trim().ToLower() != sentiment_question)
+            if (header[^1].Trim().ToLower() != commonHeader[^1])
             {
                 return false;
             }
             return true;
         }
 
-        public bool validateCommonRow(Tuple<string, string?> response)
+        public bool validateCommonRow(Tuple<string, string?> response, List<Questions> commonQuestion)
         {
             var question = response.Item1.Trim().ToLower();
-            var questionIndex = common_question.IndexOf(question);
-
-            // if it is not the common question then skip validate
-            if (questionIndex == -1)
+            string value = response.Item2.ToString();
+            var questionObject = commonQuestion.FirstOrDefault(q => q.Question.ToLower() == question);
+            if (questionObject != null)
             {
-                if (question == sentiment_question)
-                {
-                    // do some thing with sentiment
-                    return true;
-                }
-                else
-                {
-                    //other dont do anything
-                    return true;
-                }
-            }
-            else
-            {
-                string value = response.Item2.ToString();
-                if (questionIndex == 0)
+                if (questionObject.Type == "time")
                 {
                     DateTime test;
                     if (DateTime.TryParseExact(value, dateFormats, CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out test))
@@ -206,12 +165,18 @@ namespace BusinessLogic.Validator
                         return false;
                     }
                 }
-                else if (questionIndex == 1)
+                else if (questionObject.Type == "email")
                 {
-                    // validate email
-                    return true;
+                    if (value.Contains("@"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
+                else if (questionObject.Type == "number")
                 {
                     // validate int
                     int outputvalue;
@@ -221,15 +186,22 @@ namespace BusinessLogic.Validator
                     }
                     else
                     {
-                        //validate 2 string question
-                        if (value == "Có" || value == "Không")
-                        {
-                            return true;
-                        }
                         return false;
                     }
                 }
+                else if (questionObject.Type == "yes/no")
+                {
+                    if (value == "Có" || value == "Không")
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
             }
+            return true;
         }
 
 

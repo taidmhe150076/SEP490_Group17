@@ -33,130 +33,108 @@ namespace COTSEClient.Pages.Survey
         public string formUrl { get; set; } = null!;
 
         [BindProperty]
-        public string? url { get; set; } = null!;
-
-        [BindProperty]
         public IFormFile? key { get; set; } = null!;
 
         [BindProperty]
         public bool IsPresenterSurvey { get; set; }
 
-        public void OnGet()
+        public async void OnGetAsync()
         {
-            data = _repo.getWorkshopInformation(wssId, wsId);
+            try
+            {
+
+                data = _repo.getWorkshopInformation(wssId, wsId);
+            }
+            catch (Exception) {
+            
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             int result = -1;
-            bool url_selected = false;
             if (formUrl == null || formUrl.Trim().Length == 0)
             {
                 TempData["err_mess"] = SurveyErrorMessage.ERR_FORM_URL_PROVIDE;
                 return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
             }
-            if (url != null && key != null)
+            if (key != null)
             {
-                TempData["err_mess"] = SurveyErrorMessage.ERR_ILLEGAL_CALL;
-                return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-            }
-            else
-            {
-                if (url != null) { url_selected = true; } // check if is url
-                if (url_selected)
+                //valudate file
+                if (!validator.validateFileName(key.FileName))
                 {
-                    //validate url
-                    if (!validator.validateUrlPath(url))
-                    {
-                        TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
-                        return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-                    }
-                    else
-                    {
-                        WorkshopInfoDTO new_survey = data;
-                        new_survey.url = url;
-                        new_survey.FormUrl = formUrl;
-                        new_survey.isPresenter = IsPresenterSurvey;
-                        try
-                        {
-                            result = await _repo.createNewSurveyUrl(new_survey);
-                        }
-                        catch (Exception e)
-                        {
-
-                            TempData["err_mess"] = e.Message;
-                            return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-                        }
-                    }
-                }
-                else if (key != null)
-                {
-                    //valudate file
-                    if (!validator.validateFileName(key.FileName))
-                    {
-                        TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
-                        return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-                    }
-                    else
-                    {
-                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", key.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await key.CopyToAsync(stream);
-                        };
-                        WorkshopInfoDTO new_survey = data;
-                        new_survey.url = filePath;
-                        new_survey.FormUrl = formUrl;
-                        new_survey.isPresenter = IsPresenterSurvey;
-                        try
-                        {
-                            result = await _repo.createNewSurveyFile(new_survey);
-                        }
-                        catch (Exception)
-                        {
-
-                            TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
-                            return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-
-                        }
-                    }
+                    TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
+                    return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
                 }
                 else
                 {
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp", key.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await key.CopyToAsync(stream);
+                    };
+                    WorkshopInfoDTO new_survey = data;
+                    new_survey.url = filePath;
+                    new_survey.FormUrl = formUrl;
+                    new_survey.isPresenter = IsPresenterSurvey;
                     try
                     {
-
-                        WorkshopInfoDTO new_survey = data;
-                        new_survey.FormUrl = formUrl;
-                        new_survey.isPresenter = IsPresenterSurvey;
-                        result = await _repo.createNewSurvey(new_survey);
+                        int attempt = 0;
+                        while (true) {
+                            result = await _repo.createNewSurveyFile(new_survey);
+                            if (result != 0) {
+                                break;
+                            }
+                            attempt++;
+                            if (attempt == 3 && result == 0) {
+                                throw new Exception("out of time");
+                            }
+                        }
                     }
                     catch (Exception)
                     {
 
                         TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
                         return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
+
                     }
                 }
-                if (result == COTSEConstants.DB_STATUS_FAIL)
+            }
+            else
+            {
+                try
                 {
+                    WorkshopInfoDTO new_survey = data;
+                    new_survey.FormUrl = formUrl;
+                    new_survey.isPresenter = IsPresenterSurvey;
+                    result = await _repo.createNewSurvey(new_survey);
+                }
+                catch (Exception)
+                {
+
                     TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
                     return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
                 }
-                else if (result >= COTSEConstants.DB_STATUS_SUCCESS)
-                {
-                    return RedirectToPage("SurveyList");
-                }
-                else if (result >= COTSEConstants.DB_STATUS_EXIST)
-                {
-                    TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
-                    return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-                }
-                else
-                {
-                    TempData["err_mess"] = SurveyErrorMessage.ERR_ILLEGAL_CALL;
-                    return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
-                }
+            }
+
+            if (result == COTSEConstants.DB_STATUS_FAIL)
+            {
+                TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
+                return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
+            }
+            else if (result >= COTSEConstants.DB_STATUS_SUCCESS)
+            {
+                return RedirectToPage("SurveyList");
+            }
+            else if (result >= COTSEConstants.DB_STATUS_EXIST)
+            {
+                TempData["err_mess"] = SurveyErrorMessage.ERR_SURVEY_FAIL;
+                return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
+            }
+            else
+            {
+                TempData["err_mess"] = SurveyErrorMessage.ERR_ILLEGAL_CALL;
+                return RedirectToPage("AddSurveyToWorkshop", new { wssId = wssId, wsId = wsId });
             }
         }
     }

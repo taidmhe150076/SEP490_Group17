@@ -1,0 +1,49 @@
+{
+  "vn": [
+    {
+      "question": "Timestamp",
+      "type": "time"
+    },
+    {
+      "question": "Email address",
+      "type": "email"
+    },
+    {
+      "question": "bạn có học được nhiều từ series workshop này không?",
+      "type": "number"
+    },
+    {
+      "question": "thời gian và địa điểm tổ chức của workshop có hợp lý không?",
+      "type": "number"
+    },
+    {
+      "question": "bạn thấy workshop có thú vị không?",
+      "type": "number"
+    },
+    {
+      "question": "bạn thấy workshop có đem lại kiến thức cho bạn nhiều không?",
+      "type": "number"
+    },
+    {
+      "question": "bạn thấy sao về cách chia sẻ của các diễn giả?",
+      "type": "number"
+    },
+    {
+      "question": "bạn thấy thông tin mà diễn giả trình bày có dễ hiểu không?",
+      "type": "number"
+    },
+    {
+      "question": "bạn có muốn được gặp lại các diễn giả trong các buổi workshop sau hay không?",
+      "type": "yes/no"
+    },
+    {
+      "question": "nếu được tổ chức thêm các sự kiện workshop khác liên quan thì bạn có muốn tham gia không?",
+      "type": "yes/no"
+    },
+    {
+      "question": "cảm nghĩ của bạn về series workshop này như thế nào?",
+      "type": "sentiment"
+    },
+
+  ]
+}
